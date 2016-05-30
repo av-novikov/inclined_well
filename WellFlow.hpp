@@ -47,12 +47,13 @@ class WellFlow
 		
 		double highIntegral2D(const Point& r, double xi_c);
 		double lowIntegral2D(const Point& r, double xi_c);
+		double calc3D(const Point& r);
 		
 	public:
 		WellFlow(const Parameters& _props);
 		~WellFlow();
 		
-		virtual double calcPressure(const Point& r);
+		virtual double calcPressure(const Point& r, bool debug);
 };
 
 #endif /* WELLFLOW_HPP_ */

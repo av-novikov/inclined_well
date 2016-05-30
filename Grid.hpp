@@ -6,7 +6,7 @@
 
 #include "Well.hpp"
 
-typedef std::function<double(Point&)> FooType;
+typedef std::function<double(Point&, bool)> FooType;
 
 class Grid
 {

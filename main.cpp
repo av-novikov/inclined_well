@@ -69,7 +69,7 @@ Parameters loadTask(string fileName)
 	return props;
 }
 
-double getPbhp(WellFlow* solver, Parameters* props)
+double getPbhp(WellFlow* solver, Parameters* props, bool debug)
 {
 	const double h_phi = 2.0 * M_PI / 36.0;
 	const double h_z = props->sizes.z / props->K;
@@ -81,7 +81,7 @@ double getPbhp(WellFlow* solver, Parameters* props)
 		{
 			z = (double)(kz) * h_z;
 			Point point (props->r1.x + tan(props->alpha) * z + props->rw * cos((double)(phi) * h_phi), props->r1.y + props->rw * sin((double)(phi) * h_phi), -z);
-			p_bhp += solver->calcPressure(point);
+			p_bhp += solver->calcPressure(point, debug);
 		}
 		
 	return p_bhp / (props->K + 1) / 36.0 / BAR;
@@ -98,7 +98,7 @@ int main()
 	WellFlow solver (props);
 	
 	Grid grid (props.sizes, props.nx, props.ny, props.nz, props.x_dim);
-	grid.setPresFoo( bind(&WellFlow::calcPressure, &solver, _1) );
+	grid.setPresFoo( bind(&WellFlow::calcPressure, &solver, _1, _2) );
 	//grid.snapshot("snap_" + to_string(rank) + ".vts");
 	
 	if(rank == 0)
@@ -106,7 +106,7 @@ int main()
 		cout << "Well coords:" << endl 
 			<< "\t" << props.x_dim * props.r1
 			<< "\t" << props.x_dim * props.r2;
-		cout << "P_bhp = " << getPbhp(&solver, &props) << endl;
+		cout << "P_old= " << getPbhp(&solver, &props, true) << endl;
 	}
 	
 	MPI::Finalize();
