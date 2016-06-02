@@ -1,6 +1,8 @@
 #include "src/VerticalWellFlow.hpp"
 
-VerticalWellFlow::VerticalWellFlow(const Parameters& _props) : WellFlow(_props)
+using std::string;
+
+VerticalWellFlow::VerticalWellFlow(const string fileName) : WellFlow( fileName )
 {
 }
 
@@ -8,7 +10,7 @@ VerticalWellFlow::~VerticalWellFlow()
 {
 }
 
-double VerticalWellFlow::calcPressure(const Point& r)
+/*double VerticalWellFlow::calcPressure(const Point& r)
 {
 	double sum = 0.0;
 	
@@ -24,4 +26,4 @@ double VerticalWellFlow::calcPressure(const Point& r)
 	sum *= (4.0 * props.rate * props.visc / M_PI / M_PI / props.sizes.x / props.sizes.y / props.sizes.z / props.perm);			
 
 	return sum;
-}
+}*/

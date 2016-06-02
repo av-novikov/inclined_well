@@ -5,18 +5,22 @@
 using namespace std::placeholders;
 using std::for_each;
 using std::bind;
+using std::cout;
+using std::endl;
 
-Well::Well(const Point& _r1, const Point& _r2, const int _num) : r1(_r1), r2(_r2), num(_num)
+Well::Well(const Point& _r1, const Point& _r2, const int _num, const double _r_w) : r1(_r1), r2(_r2), num(_num), r_w(_r_w)
 {
 	length = sqrt((r2 - r1) * (r2 - r1));
-	pres_av = rate = 0.0;
+	alpha = atan( (r2.x - r1.x) / (r1.z - r2.z) );
+	pres_av = pres_dev = rate = 0.0;
 	
 	Point tmp1 = r1;
-	Point tmp2;
+	Point tmp2, tmp3;
 	for(int i = 0; i < num; i++)
 	{
 		tmp2 = r1 + (double)( i + 1 ) * (r2 - r1) / (double)( num );
-		segs.push_back( WellSegment(tmp1, tmp2) );
+		tmp3 = (tmp1 + tmp2) / 2.0;		tmp3.x += r_w / cos(alpha);
+		segs.push_back( WellSegment(tmp1, tmp2, tmp3) );
 		tmp1 = tmp2;
 	};
 }
@@ -32,10 +36,8 @@ void Well::setRate(double _rate)
 
 void Well::setUniformRate()
 {
-	for_each(segs.begin(), segs.end(), bind(&Well::uniformRate, this, _1) );
-}
-
-void Well::uniformRate(WellSegment& seg)
-{
-	seg.rate = seg.length / length * rate;
+	for_each(segs.begin(), segs.end(), [this](WellSegment& seg)
+	{
+		seg.rate = seg.length / length * rate;
+	});
 }

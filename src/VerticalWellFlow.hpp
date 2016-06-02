@@ -6,10 +6,10 @@
 class VerticalWellFlow : public WellFlow
 {
 public:
-	VerticalWellFlow(const Parameters& _props);
+	VerticalWellFlow(const std::string fileName);
 	~VerticalWellFlow();
 	
-	double calcPressure(const Point& r);
+	//double calcPressure(const Point& r);
 	
 };
 

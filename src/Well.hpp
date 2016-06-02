@@ -91,12 +91,13 @@ struct WellSegment
 {
 	const Point r1;
 	const Point r2;
+	const Point r_bhp;
 	
 	double length;
 	double pres;
 	double rate;
 	
-	WellSegment(const Point& _r1, const Point& _r2) : r1(_r1), r2(_r2)
+	WellSegment(const Point& _r1, const Point& _r2, const Point _r_bhp) : r1(_r1), r2(_r2), r_bhp(_r_bhp)
 	{
 		length = sqrt((r2 - r1) * (r2 -r1));
 		pres = rate = 0.0;
@@ -110,22 +111,33 @@ class Well
 		const Point r1;
 		const Point r2;
 	
+		double alpha;
+		double r_w;
 		double length;
-		double pres_av;
 		double rate;
 		
 		const int num;
 		
-		void uniformRate(WellSegment& seg);
-		
 	public:
-		Well(const Point& _r1, const Point& _r2, const int _num);
+		Well(const Point& _r1, const Point& _r2, const int _num, const double _r_w);
 		~Well();
 		
 		void setRate(double _rate);
 		void setUniformRate();
 		
 		std::vector<WellSegment> segs;
+		
+		double pres_av;
+		double pres_dev;
+		
+		inline void printRates()
+		{
+			for(int i = 0; i < num; i++)
+			{
+				//std::cout << "--- " << i << " ---\tRate = " < segs[i].rate << "\tPressure = " << segs[i].pres << std::endl;
+			};
+			//std::cout << "Av. pressure = " << pres_av << "\tDeviation = " << pres_dev << std::endl;
+		}
 };
 
 #endif /* WELL_HPP_ */

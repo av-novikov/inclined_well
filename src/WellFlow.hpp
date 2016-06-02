@@ -1,59 +1,44 @@
 #ifndef WELLFLOW_HPP_
 #define WELLFLOW_HPP_
 
+#include <string>
+#include <gsl/gsl_linalg.h>
+
+#include "src/inclined_sum/InclinedSum.hpp"
 #include "src/Well.hpp"
-
-#include <cmath>
-
-#define BAR 1.E+5
-
-struct Parameters
-{	
-	// Dimensions
-	double x_dim, t_dim, p_dim;
-	
-	// Spacial params
-	Point sizes;
-	Point r1;	// at z = 0
-	double alpha;
-	Point r2;
-	
-	double rw;
-	
-	// Other params
-	double visc;
-	double perm;
-	double rate;
-	
-	// Numbers
-	int K;	
-	int M, N, L;	
-	int I;
-	
-	// Grid sizes
-	int nx, ny, nz;
-	
-	// Integral division limit
-	double xi_c;
-};
 
 class WellFlow
 {
 	protected:
 		Parameters props;
 		Well* well;
+		InclinedSum* inclSum;
 		
-		void findRateDistribution();
+		void loadTask(const std::string fileName);
 		
-		double highIntegral2D(const Point& r, double xi_c);
+		gsl_vector* q_gsl;
+		gsl_vector* dq_gsl;
+		gsl_vector* b_gsl;
+		gsl_vector* x_gsl;
+		gsl_matrix* a_gsl;
+		gsl_matrix* dpdq_gsl;
+		gsl_permutation* perm_gsl;
+		
+		/*double highIntegral2D(const Point& r, double xi_c);
 		double lowIntegral2D(const Point& r, double xi_c);
-		double calc3D(const Point& r);
+		double calc3D(const Point& r);*/
 		
 	public:
-		WellFlow(const Parameters& _props);
+		WellFlow(const std::string fileName);
 		~WellFlow();
 		
-		virtual double calcPressure(const Point& r, bool debug);
+		void setSummator(InclinedSum* _inclSum);
+		const Parameters* getProps() const;
+		const Well* getWell() const;
+		void findRateDistribution();
+				
+		void calcPressure();
+		double getP_bhp();
 };
 
 #endif /* WELLFLOW_HPP_ */
