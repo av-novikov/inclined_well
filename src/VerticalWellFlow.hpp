@@ -1,7 +1,7 @@
 #ifndef VERTICALWELLFLOW_HPP_
 #define VERTICALWELLFLOW_HPP_
 
-#include "WellFlow.hpp"
+#include "src/WellFlow.hpp"
 
 class VerticalWellFlow : public WellFlow
 {

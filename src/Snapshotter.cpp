@@ -9,12 +9,12 @@
 
 #include <mpi.h>
 
-#include "Grid.hpp"
-#include "WellFlow.hpp"
+#include "src/Snapshotter.hpp"
+#include "src/WellFlow.hpp"
 
 using std::string;
 
-Grid::Grid(const Point& _sizes, const int _nx, const int _ny, const int _nz, double _x_dim) :
+Snapshotter::Snapshotter(const Point& _sizes, const int _nx, const int _ny, const int _nz, double _x_dim) :
 			sizes(_sizes), nx(_nx), ny(_ny), nz(_nz), x_dim(_x_dim)
 {
 	steps.x = sizes.x / (double)(nx);
@@ -28,11 +28,11 @@ Grid::Grid(const Point& _sizes, const int _nx, const int _ny, const int _nz, dou
 	finishIdx = int((double)(rank + 1) / (double)(size) * (double)(nx));
 }
 
-Grid::~Grid()
+Snapshotter::~Snapshotter()
 {
 }
 
-void Grid::snapshot(string name)
+void Snapshotter::snapshot(string name)
 {
 	vtkSmartPointer<vtkStructuredGrid> grid =
 		vtkSmartPointer<vtkStructuredGrid>::New();
@@ -73,7 +73,7 @@ void Grid::snapshot(string name)
 	writer->Write();
 }
 
-void Grid::setPresFoo(const FooType& foo)
+void Snapshotter::setPresFoo(const FooType& foo)
 {
 	presFoo = foo;
 }

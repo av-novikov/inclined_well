@@ -1,14 +1,14 @@
-#ifndef GRID_HPP_
-#define GRID_HPP_
+#ifndef SNAPSHOTTER_HPP_
+#define SNAPSHOTTER_HPP_
 
 #include <string>
 #include <functional>
 
-#include "Well.hpp"
+#include "src/Well.hpp"
 
 typedef std::function<double(Point&, bool)> FooType;
 
-class Grid
+class Snapshotter
 {
 protected:
 		Point sizes;
@@ -25,11 +25,11 @@ protected:
 		FooType presFoo;
 		
 public:
-		Grid(const Point& _sizes, const int _nx, const int _ny, const int _nz, double _x_dim);
-		~Grid();
+		Snapshotter(const Point& _sizes, const int _nx, const int _ny, const int _nz, double _x_dim);
+		~Snapshotter();
 		
 		void setPresFoo(const FooType& foo);
 		void snapshot(std::string name);
 };
 
-#endif /* GRID_HPP_ */
+#endif /* SNAPSHOTTER_HPP_ */

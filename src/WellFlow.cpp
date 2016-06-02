@@ -1,6 +1,6 @@
 #include <cassert>
 
-#include "WellFlow.hpp"
+#include "src/WellFlow.hpp"
 
 WellFlow::WellFlow(const Parameters& _props) : props(_props)
 {

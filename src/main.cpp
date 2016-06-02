@@ -3,9 +3,9 @@
 #include <tinyxml.h>
 #include <string>
 
-#include "WellFlow.hpp"
-#include "VerticalWellFlow.hpp"
-#include "Grid.hpp"
+#include "src/WellFlow.hpp"
+#include "src/VerticalWellFlow.hpp"
+#include "src/Snapshotter.hpp"
 
 using namespace std;
 using namespace std::placeholders;
@@ -93,11 +93,11 @@ int main()
 	const int rank = MPI::COMM_WORLD.Get_rank();
 	//const int size = MPI::COMM_WORLD.Get_size();
 	
-	Parameters props = loadTask("config.xml");
+	Parameters props = loadTask("task/config.xml");
 	
 	WellFlow solver (props);
 	
-	Grid grid (props.sizes, props.nx, props.ny, props.nz, props.x_dim);
+	Snapshotter grid (props.sizes, props.nx, props.ny, props.nz, props.x_dim);
 	grid.setPresFoo( bind(&WellFlow::calcPressure, &solver, _1, _2) );
 	//grid.snapshot("snap_" + to_string(rank) + ".vts");
 	

@@ -9,7 +9,7 @@
 	<viscosity value="1" />
 	<permeability value="1" />
 	<rate value="10" />
-	<indexes K="10" M="100" N="100" L="100" I="1" />
+	<indexes K="10" M="50" N="20" L="50" I="1" />
 	<grid nx="20" ny="20" nz="10" />
 	<xi_c value="2000" />
 </task>

@@ -1,7 +1,7 @@
 #ifndef WELLFLOW_HPP_
 #define WELLFLOW_HPP_
 
-#include "Well.hpp"
+#include "src/Well.hpp"
 
 #include <cmath>
 
