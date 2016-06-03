@@ -1,5 +1,6 @@
 #include <iostream>
 #include <mpi.h>
+#include <unistd.h>
 #include <string>
 
 #include "src/WellFlow.hpp"
@@ -11,8 +12,18 @@
 using namespace std;
 using namespace std::placeholders;
 
-int main()
+int main(int argc, char* argv[])
 {
+	int opt = 0;
+	bool writeSnapshots = false;
+	
+	while ((opt = getopt(argc, argv, "s")) != -1) {
+		switch (opt) {
+			case 's' : writeSnapshots = true; break;
+			case '?' : fprintf(stderr, "Usage: inclined -s[to write snaps]\n"); return -1;
+		}
+	}
+	
 	MPI::Init();
 	const int rank = MPI::COMM_WORLD.Get_rank();
 	//const int size = MPI::COMM_WORLD.Get_size();	
@@ -20,7 +31,6 @@ int main()
 	WellFlow solver ("task/config.xml");
 	InclinedSum inclSum( solver.getProps(), solver.getWell() );
 	solver.setSummator( &inclSum );
-
 
 	const Parameters* props = solver.getProps();
 	if(rank == 0)
