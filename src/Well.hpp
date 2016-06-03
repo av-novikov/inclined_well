@@ -8,6 +8,7 @@
 #include <cmath>
 
 #define EQUALITY_TOLERANCE 1.E-6
+#define BAR 1.E+5
 
 struct Point
 {
@@ -138,6 +139,36 @@ class Well
 			};
 			//std::cout << "Av. pressure = " << pres_av << "\tDeviation = " << pres_dev << std::endl;
 		}
+};
+
+struct Parameters
+{	
+	// Dimensions
+	double x_dim, t_dim, p_dim;
+	
+	// Spacial params
+	Point sizes;
+	Point r1;	// at z = 0
+	double alpha;
+	Point r2;
+	
+	double rw;
+	
+	// Other params
+	double visc;
+	double perm;
+	double rate;
+	
+	// Numbers
+	int K;	
+	int M, N, L;	
+	int I;
+	
+	// Grid sizes
+	int nx, ny, nz;
+	
+	// Integral division limit
+	double xi_c;
 };
 
 #endif /* WELL_HPP_ */
