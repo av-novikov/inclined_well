@@ -16,16 +16,15 @@ double InclinedSum::get2D(const Point& r)
 		for(int m = 1; m <= props->M; m++)
 			for(int i = -props->I; i <= props->I; i++)
 			{
-				sum += /*well->segs[k].rate / well->segs[k].length*/ 1.0 / (double)(m) / (double)(m) * 
+				sum += well->segs[k].rate / well->segs[k].length / (double)(m) / (double)(m) * 
 					( exp(-M_PI * (double)(m) * fabs(r.y - props->r1.y + 2.0 * (double)(i) * props->sizes.y) / props->sizes.x) - 
 					exp(-M_PI * (double)(m) * fabs(r.y + props->r1.y + 2.0 * (double)(i) * props->sizes.y) / props->sizes.x) ) *
 					sin(M_PI * (double)(m) * r.x / props->sizes.x) * 
 					(cos(M_PI * (double)(m) * well->segs[k].r1.x / props->sizes.x) -
 					cos(M_PI * (double)(m) * (well->segs[k].r1.x + tan(props->alpha) * (well->segs[k].r1.z - well->segs[k].r2.z)) / props->sizes.x));
 			}
-	//sum *= (props->visc * props->sizes.x / M_PI / M_PI / props->sizes.z / props->perm / sin(props->alpha));
-	//sum *= (well->segs[0].length);
-		
+	sum *= (props->visc * props->sizes.x / M_PI / M_PI / props->sizes.z / props->perm / sin(props->alpha));
+
 	return sum;	
 }
 
@@ -71,6 +70,6 @@ double InclinedSum::get3D(const Point& r)
 
 double InclinedSum::getPres(const Point& r)
 {
-	return get2D(r);
-	//return ( get2D(r) + get3D(r) ) * props->p_dim;
+	//return get2D(r);
+	return ( get2D(r) /*+ get3D(r)*/ ) * props->p_dim;
 }

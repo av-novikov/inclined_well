@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 		cout << "Well coords:" << endl 
 			<< "\t" << props->x_dim * props->r1
 			<< "\t" << props->x_dim * props->r2;
-		cout << "P_old= " << solver.getP_bhp() << endl;
+		cout << "P_old= " << solver.getP_bhp() / BAR << endl;
 	}
 	
 	MPI::Finalize();
