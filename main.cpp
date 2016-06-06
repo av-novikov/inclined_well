@@ -2,6 +2,7 @@
 #include <mpi.h>
 #include <unistd.h>
 #include <string>
+#include <iomanip>
 
 #include "src/WellFlow.hpp"
 #include "src/VerticalWellFlow.hpp"

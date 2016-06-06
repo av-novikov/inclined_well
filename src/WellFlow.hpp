@@ -12,7 +12,6 @@ class WellFlow
 	protected:
 		Parameters props;
 		Well* well;
-		InclinedSum* inclSum;
 		
 		void loadTask(const std::string fileName);
 		
@@ -32,6 +31,8 @@ class WellFlow
 		WellFlow(const std::string fileName);
 		~WellFlow();
 		
+		InclinedSum* inclSum;
+		
 		void setSummator(InclinedSum* _inclSum);
 		const Parameters* getProps() const;
 		const Well* getWell() const;
@@ -39,6 +40,7 @@ class WellFlow
 				
 		void calcPressure();
 		double getP_bhp();
+		Point getObsPoint() const;
 };
 
 #endif /* WELLFLOW_HPP_ */

@@ -5,7 +5,7 @@
 #include <iostream>
 #include <iomanip>
 
-#include "test/perf/utils.hpp"
+#include "src/utils/perf-utils.hpp"
 
 using namespace std;
 using namespace std::chrono;

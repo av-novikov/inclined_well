@@ -352,7 +352,7 @@ void WellFlow::loadTask(const string fileName)
 	props.visc = 1.E-3 * stod( xml_visc->Attribute("value") ) / (props.p_dim * props.t_dim);
 	
 	TiXmlElement* xml_perm = xml_task->FirstChildElement("permeability");
-	props.perm = 1.E-15 * stod( xml_perm->Attribute("value") ) / (props.x_dim * props.x_dim);
+	props.perm = 0.986923 * 1.E-15 * stod( xml_perm->Attribute("value") ) / (props.x_dim * props.x_dim);
 	
 	TiXmlElement* xml_rate = xml_task->FirstChildElement("rate");
 	props.rate = stod( xml_rate->Attribute("value") ) / 86400.0 / (props.x_dim * props.x_dim * props.x_dim / props.t_dim);
@@ -403,12 +403,17 @@ const Well* WellFlow::getWell() const
 	return well;
 }
 
+Point WellFlow::getObsPoint() const
+{
+	return well->segs[ int(props.K / 2) ].r_bhp;
+}
+
 double WellFlow::getP_bhp()
 {
 	//findRateDistribution();
 	
-	Point p = well->segs[ int(props.K / 2) ].r_bhp;
+	Point p = getObsPoint();
 	std::cout << std::setprecision(10);
-	std::cout << p;
+	std::cout << "Observation point: "<< props.x_dim * p;
 	return inclSum->getPres(p);
 }
