@@ -410,7 +410,7 @@ Point WellFlow::getObsPoint() const
 
 double WellFlow::getP_bhp()
 {
-	//findRateDistribution();
+	findRateDistribution();
 	
 	Point p = getObsPoint();
 	std::cout << std::setprecision(10);

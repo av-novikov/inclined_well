@@ -33,7 +33,7 @@ double InclinedSum::get2D(const Point& r)
 					cos(M_PI * (double)(m) * (well->segs[k].r1.x + tan(props->alpha) * (well->segs[k].r1.z - well->segs[k].r2.z)) / props->sizes.x));
 			}
 			
-			if( fabs(sum - sum_prev) > sum * 0.1 * EQUALITY_TOLERANCE )
+			if( fabs(sum - sum_prev) > sum * EQUALITY_TOLERANCE )
 			{
 				sum_prev = sum;
 				break_idx = 0;
@@ -103,7 +103,7 @@ double InclinedSum::get3D(const Point& r)
 						cos(M_PI * (double)(l) * r.z / props->sizes.z);
 				}
 				
-				if( fabs(sum - sum_prev1) > sum * 0.1 * EQUALITY_TOLERANCE )
+				if( fabs(sum - sum_prev1) > sum * EQUALITY_TOLERANCE )
 				{
 					sum_prev1 = sum;
 					break_idx1 = 0;
@@ -117,7 +117,7 @@ double InclinedSum::get3D(const Point& r)
 				}
 			}
 			
-			if( fabs(sum - sum_prev2) > sum * 0.1 * EQUALITY_TOLERANCE )
+			if( fabs(sum - sum_prev2) > sum * EQUALITY_TOLERANCE )
 			{
 				sum_prev2 = sum;
 				break_idx2 = 0;
