@@ -133,7 +133,7 @@ void WellFlow::findRateDistribution()
 	double H0 = well->pres_dev;
 	if(H0 > 0.1)
 	{
-		well->printRates();
+		well->printRates(&props);
 		fill_q();
 		
 		double mult = 0.9;
@@ -153,7 +153,7 @@ void WellFlow::findRateDistribution()
 				}
 				
 				calcPressure();
-				well->printRates();
+				well->printRates(&props);
 
 				H = well->pres_dev;
 		}
@@ -413,7 +413,5 @@ double WellFlow::getP_bhp()
 	findRateDistribution();
 	
 	Point p = getObsPoint();
-	std::cout << std::setprecision(10);
-	std::cout << "Observation point: "<< props.x_dim * p;
 	return inclSum->getPres(p);
 }

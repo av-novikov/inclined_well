@@ -3,13 +3,13 @@
 	<geometry>
 		<sizes sx="1000" sy="1000" sz="10" />
 		<r1 x="500" y="500" z="0" />
-		<alpha value="89" />
+		<alpha value="30" />
 		<rw value="0.1" />	
 	</geometry>
 	<viscosity value="1" />
 	<permeability value="20" />
 	<rate value="50" />
-	<indexes K="1" M="100000" N="1" L="1000" I="1" />
+	<indexes K="1" M="10000" N="1" L="1000" I="1" />
 	<grid nx="20" ny="20" nz="10" />
 	<xi_c value="2000" />
 </task>

@@ -34,12 +34,12 @@ int main(int argc, char* argv[])
 	solver.setSummator( &inclSum );
 
 	const Parameters* props = solver.getProps();
+	Point p = solver.getObsPoint();
+
 	if(rank == 0)
 	{
-		cout << "Well coords:" << endl 
-			<< "\t" << props->x_dim * props->r1
-			<< "\t" << props->x_dim * props->r2;
-		cout << "P_old= " << solver.getP_bhp() / BAR << endl;
+		cout << "Observation point: " << props->x_dim * p;
+		cout << "P_bhp = " << solver.getP_bhp() * props->p_dim / BAR << endl;
 	}
 	
 	MPI::Finalize();

@@ -7,7 +7,7 @@
 #include <new>
 #include <cmath>
 
-#define EQUALITY_TOLERANCE 1.E-6
+#define EQUALITY_TOLERANCE 1.E-8
 #define BAR 1.E+5
 
 struct Point
@@ -105,42 +105,6 @@ struct WellSegment
 	};
 };
 
-class Well
-{
-	protected:
-		
-		const Point r1;
-		const Point r2;
-	
-		double alpha;
-		double r_w;
-		double length;
-		double rate;
-		
-		const int num;
-		
-	public:
-		Well(const Point& _r1, const Point& _r2, const int _num, const double _r_w);
-		~Well();
-		
-		void setRate(double _rate);
-		void setUniformRate();
-		
-		std::vector<WellSegment> segs;
-		
-		double pres_av;
-		double pres_dev;
-		
-		inline void printRates()
-		{
-			for(int i = 0; i < num; i++)
-			{
-				//std::cout << "--- " << i << " ---\tRate = " < segs[i].rate << "\tPressure = " << segs[i].pres << std::endl;
-			};
-			//std::cout << "Av. pressure = " << pres_av << "\tDeviation = " << pres_dev << std::endl;
-		}
-};
-
 struct Parameters
 {	
 	// Dimensions
@@ -169,6 +133,36 @@ struct Parameters
 	
 	// Integral division limit
 	double xi_c;
+};
+
+class Well
+{
+	protected:
+		
+		const Point r1;
+		const Point r2;
+	
+		double alpha;
+		double r_w;
+		double length;
+		double rate;
+		
+		const int num;
+		
+	public:
+		Well(const Point& _r1, const Point& _r2, const int _num, const double _r_w);
+		~Well();
+		
+		void setRate(double _rate);
+		void setUniformRate();
+		
+		std::vector<WellSegment> segs;
+		
+		double pres_av;
+		double pres_dev;
+		
+		void printRates(const Parameters* props);
+
 };
 
 #endif /* WELL_HPP_ */

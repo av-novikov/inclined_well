@@ -41,3 +41,14 @@ void Well::setUniformRate()
 		seg.rate = seg.length / length * rate;
 	});
 }
+
+void Well::printRates(const Parameters* props)
+{
+	for(int i = 0; i < num; i++)
+	{
+		std::cout << BAR << std::endl;
+		std::cout << "--- " << i << " ---\tRate = " << segs[i].rate * 86400.0 * props->x_dim * props->x_dim * props->x_dim / props->t_dim << 
+									"\tPressure = " << segs[i].pres * props->p_dim / (double)(BAR) << std::endl;
+	}
+	std::cout << "Av. pressure = " << pres_av * props->p_dim / BAR << "\tDeviation = " << pres_dev * props->p_dim * props->p_dim / BAR / BAR << std::endl;
+}

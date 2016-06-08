@@ -187,5 +187,5 @@ double InclinedSum::getPres(const Point& r)
 	s1 = get2D(r);
 	s2 = get3D(r);
 	std::cout << "2d = " << s1 << "\t3d = " << s2 << std::endl;
-	return ( s1 + s2 ) * props->p_dim;
+	return s1 + s2;
 }
