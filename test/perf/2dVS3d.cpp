@@ -1,4 +1,5 @@
 #include <iostream>
+#include <mpi.h>
 
 #include "src/utils/perf-utils.hpp"
 #include "src/WellFlow.hpp"
@@ -11,6 +12,9 @@ using std::endl;
 
 int main(int argc, char* argv[])
 {
+	MPI::Init();
+	const int rank = MPI::COMM_WORLD.Get_rank();
+	
 	WellFlow solver ("task/2d.xml");
 	InclinedSum inclSum( solver.getProps(), solver.getWell() );
 	solver.setSummator( &inclSum );
@@ -18,8 +22,11 @@ int main(int argc, char* argv[])
 	const Parameters* props = solver.getProps();
 	Point p = solver.getObsPoint();
 
-	print_test_title("2d VS 3d");
-	cout << "Observation point: " << props->x_dim * p;
+	if(rank == 0)
+	{
+		print_test_title("2d VS 3d");
+		cout << "Observation point: " << props->x_dim * p;
+	}
 
 	double p_2d, p_3d;
 	auto t = measure_time2(
@@ -28,10 +35,15 @@ int main(int argc, char* argv[])
         1
     );
 
-	cout << "p_2d = " << p_2d << endl;
-	cout << "p_3d = " << p_3d << endl;
-	cout << "sum  = " << p_2d + p_3d << endl;
-	print_test_results("2D", t.first, "3D", t.second);
+	if(rank == 0)
+	{
+		cout << "p_2d = " << p_2d << endl;
+		cout << "p_3d = " << p_3d << endl;
+		cout << "sum  = " << p_2d + p_3d << endl;
+		print_test_results("2D", t.first, "3D", t.second);
+	}
+	
+	MPI::Finalize();
 	
 	return 0;
 }

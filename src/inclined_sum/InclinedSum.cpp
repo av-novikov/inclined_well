@@ -1,10 +1,16 @@
 #include "src/inclined_sum/InclinedSum.hpp"
 
-#include <fstream>
-using std::ofstream;
+#define TAG_EMPTY_MES 100000000
+
+using namespace MPI;
 
 InclinedSum::InclinedSum(const Parameters* _props, const Well* _well) : props(_props), well(_well)
 {
+	rank = COMM_WORLD.Get_rank();
+	size = COMM_WORLD.Get_size();
+	
+	startIdx = 1 + int((double)(rank) / (double)(size) * (double)(props->M));
+	finishIdx = int((double)(rank + 1) / (double)(size) * (double)(props->M));
 }
 
 InclinedSum::~InclinedSum()
@@ -21,7 +27,7 @@ double InclinedSum::get2D(const Point& r)
 	{
 		break_idx = 0;
 		
-		for(int m = 1; m <= props->M; m++)
+		for(int m = startIdx; m <= finishIdx; m++)
 		{
 			for(int i = -props->I; i <= props->I; i++)
 			{
@@ -42,13 +48,32 @@ double InclinedSum::get2D(const Point& r)
 				
 			if(break_idx > 1)
 			{
-				//std::cout << m << std::endl;
+				std::cout << m << std::endl;
 				break;
 			}
 			
 		}
 	}
+	
 	sum *= (props->visc * props->sizes.x / M_PI / M_PI / props->sizes.z / props->perm / sin(props->alpha));
+	
+	if(size > 1)
+	{
+		if(rank == 0)
+		{
+			MPI_Status status;
+			double sum_buf;
+		
+			for(int i = 1; i < size; i++)
+			{
+				MPI_Recv(&sum_buf, 1, MPI_DOUBLE, i, TAG_EMPTY_MES + i, MPI_COMM_WORLD, &status);
+				sum += sum_buf;
+			}	
+		} else
+			MPI_Send(&sum, 1, MPI_DOUBLE, 0, TAG_EMPTY_MES + rank, MPI_COMM_WORLD);
+	}
+		
+	COMM_WORLD.Barrier();
 
 	return sum;	
 }
@@ -64,7 +89,7 @@ double InclinedSum::get3D(const Point& r)
 	{
 		break_idx2 = 0;
 		
-		for(int m = 1; m <= props->M; m++)
+		for(int m = startIdx; m <= finishIdx; m++)
 		{
 			break_idx1 = 0;
 			
@@ -131,6 +156,24 @@ double InclinedSum::get3D(const Point& r)
 			}
 		}
 	}
+	
+	if(size > 1)
+	{
+		if(rank == 0)
+		{
+			MPI_Status status;
+			double sum_buf;
+		
+			for(int i = 1; i < size; i++)
+			{
+				MPI_Recv(&sum_buf, 1, MPI_DOUBLE, i, TAG_EMPTY_MES + i, MPI_COMM_WORLD, &status);
+				sum += sum_buf;
+			}	
+		} else
+			MPI_Send(&sum, 1, MPI_DOUBLE, 0, TAG_EMPTY_MES + rank, MPI_COMM_WORLD);
+	}
+		
+	COMM_WORLD.Barrier();
 				
 	sum *= (2.0 * props->visc / M_PI / props->sizes.x / props->sizes.z / props->perm / cos(props->alpha));
 				
