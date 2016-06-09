@@ -1,3 +1,5 @@
+#include <iomanip>
+
 #include "src/inclined_sum/InclinedSum.hpp"
 
 #define TAG_EMPTY_MES 100000000
@@ -48,7 +50,7 @@ double InclinedSum::get2D(const Point& r)
 				
 			if(break_idx > 1)
 			{
-				std::cout << m << std::endl;
+				//std::cout << m << std::endl;
 				break;
 			}
 			
@@ -97,30 +99,20 @@ double InclinedSum::get3D(const Point& r)
 			{
 				buf = sqrt((double)(m) * (double)(m) / props->sizes.x / props->sizes.x + (double)(l) * (double)(l) / props->sizes.z / props->sizes.z);
 				
-				F = ((cos(M_PI * (double)(m) * well->segs[k].r2.x / props->sizes.x + M_PI * (double)(l) * well->segs[k].r1.z / props->sizes.z) -
-					cos(M_PI * (double)(m) * well->segs[k].r1.x / props->sizes.x + M_PI * (double)(l) * well->segs[k].r2.z / props->sizes.z)) /
-							(M_PI * (double)(l) / props->sizes.z - M_PI * (double)(m) * tan(props->alpha) / props->sizes.x) - 
-					(cos(M_PI * (double)(m) * well->segs[k].r2.x / props->sizes.x - M_PI * (double)(l) * well->segs[k].r1.z / props->sizes.z) -
-					cos(M_PI * (double)(m) * well->segs[k].r1.x / props->sizes.x - M_PI * (double)(l) * well->segs[k].r2.z / props->sizes.z)) /
-							(M_PI * (double)(l) / props->sizes.z + M_PI * (double)(m) * tan(props->alpha) / props->sizes.x)
+				/*double ttmp = M_PI * (double)(l) / props->sizes.z - M_PI * (double)(m) * tan(props->alpha) / props->sizes.x;
+				if(fabs( ttmp ) < 1.E-3)
+					std::cout << "ttmp=" << ttmp << std::endl;*/
+				
+				F = ((	cos(M_PI * (double)(m) * well->segs[k].r1.x / props->sizes.x - M_PI * (double)(l) * well->segs[k].r1.z / props->sizes.z) -
+						cos(M_PI * (double)(m) * well->segs[k].r2.x / props->sizes.x - M_PI * (double)(l) * well->segs[k].r2.z / props->sizes.z)) /
+							( M_PI * (double)(m) * tan(props->alpha) / props->sizes.x + M_PI * (double)(l) / props->sizes.z ) - 
+					( 	cos(M_PI * (double)(m) * well->segs[k].r1.x / props->sizes.x + M_PI * (double)(l) * well->segs[k].r1.z / props->sizes.z) -
+						cos(M_PI * (double)(m) * well->segs[k].r2.x / props->sizes.x + M_PI * (double)(l) * well->segs[k].r2.z / props->sizes.z)) /
+							( M_PI * (double)(m) * tan(props->alpha) / props->sizes.x - M_PI * (double)(l) / props->sizes.z )
 					) / 2.0;
 				
 				for(int i = -props->I; i <= props->I; i++)
-				{
-					/*F = ((cos(M_PI * (double)(m) * (well->segs[k].r1.x + 
-							tan(props->alpha) * (well->segs[k].r1.z - well->segs[k].r2.z)) / props->sizes.x + 
-							M_PI * (double)(l) * well->segs[k].r1.z / props->sizes.z) -
-						cos(M_PI * (double)(m) * well->segs[k].r1.x / props->sizes.x +
-							M_PI * (double)(l) * well->segs[k].r2.z / props->sizes.z)) /
-							(M_PI * (double)(l) / props->sizes.z - M_PI * (double)(m) * tan(props->alpha) / props->sizes.x) - 
-						(cos(M_PI * (double)(m) * (well->segs[k].r1.x + 
-							tan(props->alpha) * (well->segs[k].r1.z - well->segs[k].r2.z)) / props->sizes.x - 
-							M_PI * (double)(l) * well->segs[k].r1.z / props->sizes.z) -
-						cos(M_PI * (double)(m) * well->segs[k].r1.x / props->sizes.x -
-							M_PI * (double)(l) * well->segs[k].r2.z / props->sizes.z)) /
-							(M_PI * (double)(l) / props->sizes.z + M_PI * (double)(m) * tan(props->alpha) / props->sizes.x)
-							) / 2.0;*/
-						
+				{	
 					sum += F * well->segs[k].rate / well->segs[k].length / buf * 
 						( exp(-M_PI * buf * fabs(r.y - props->r1.y + 2.0 * (double)(i) * props->sizes.y)) - 
 						exp(-M_PI * buf * fabs(r.y + props->r1.y + 2.0 * (double)(i) * props->sizes.y)) ) *
@@ -186,6 +178,6 @@ double InclinedSum::getPres(const Point& r)
 	double s1, s2;
 	s1 = get2D(r);
 	s2 = get3D(r);
-	//std::cout << "2d = " << s1 << "\t3d = " << s2 << std::endl;
+	std::cout << std::setprecision(10) << props->x_dim * r << "2d = " << s1 << "\t3d = " << s2 << std::endl;
 	return s1 + s2;
 }

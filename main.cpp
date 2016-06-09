@@ -38,7 +38,6 @@ int main(int argc, char* argv[])
 
 	if(rank == 0)
 	{
-		cout << "Observation point: " << props->x_dim * p;
 		cout << "P_bhp = " << solver.getP_bhp() * props->p_dim / BAR << endl;
 	}
 	

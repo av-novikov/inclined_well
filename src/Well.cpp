@@ -1,12 +1,14 @@
 #include "src/Well.hpp"
 
 #include <functional>
+#include <fstream>
 
 using namespace std::placeholders;
 using std::for_each;
 using std::bind;
 using std::cout;
 using std::endl;
+using std::ofstream;
 
 Well::Well(const Point& _r1, const Point& _r2, const int _num, const double _r_w) : r1(_r1), r2(_r2), num(_num), r_w(_r_w)
 {
@@ -19,7 +21,7 @@ Well::Well(const Point& _r1, const Point& _r2, const int _num, const double _r_w
 	for(int i = 0; i < num; i++)
 	{
 		tmp2 = r1 + (double)( i + 1 ) * (r2 - r1) / (double)( num );
-		tmp3 = (tmp1 + tmp2) / 2.0;		tmp3.x += r_w / cos(alpha);
+		tmp3 = (tmp1 + tmp2) / 2.0;		tmp3.y += r_w; // cos(alpha);
 		segs.push_back( WellSegment(tmp1, tmp2, tmp3) );
 		tmp1 = tmp2;
 	};
@@ -46,9 +48,22 @@ void Well::printRates(const Parameters* props)
 {
 	for(int i = 0; i < num; i++)
 	{
-		std::cout << BAR << std::endl;
-		std::cout << "--- " << i << " ---\tRate = " << segs[i].rate * 86400.0 * props->x_dim * props->x_dim * props->x_dim / props->t_dim << 
-									"\tPressure = " << segs[i].pres * props->p_dim / (double)(BAR) << std::endl;
+		cout << "--- " << i << " ---\tRate = " << segs[i].rate * 86400.0 * props->x_dim * props->x_dim * props->x_dim / props->t_dim << 
+									"\tPressure = " << segs[i].pres * props->p_dim / (double)(BAR) << endl;
 	}
-	std::cout << "Av. pressure = " << pres_av * props->p_dim / BAR << "\tDeviation = " << pres_dev * props->p_dim * props->p_dim / BAR / BAR << std::endl;
+	cout << "Av. pressure = " << pres_av * props->p_dim / BAR << "\tDeviation = " << pres_dev * props->p_dim * props->p_dim / BAR / BAR << endl;
+	
+	
+	ofstream file;
+	file.open("rate.dat", ofstream::out);
+	for(int i = 0; i < num; i++)
+	{
+		file << i << "\t" << 
+			segs[i].rate * 86400.0 * props->x_dim * props->x_dim * props->x_dim / props->t_dim << "\t" <<
+			segs[i].rate * 86400.0 * props->x_dim * props->x_dim / props->t_dim / segs[i].length << "\t" <<
+			segs[i].pres * props->p_dim / (double)(BAR) << endl;
+	}
+	file << "Av. pressure = " << pres_av * props->p_dim / BAR << "\tDeviation = " << pres_dev * props->p_dim * props->p_dim / BAR / BAR << endl;
+	
+	file.close();
 }
