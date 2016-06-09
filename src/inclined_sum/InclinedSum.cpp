@@ -186,6 +186,6 @@ double InclinedSum::getPres(const Point& r)
 	double s1, s2;
 	s1 = get2D(r);
 	s2 = get3D(r);
-	std::cout << "2d = " << s1 << "\t3d = " << s2 << std::endl;
+	//std::cout << "2d = " << s1 << "\t3d = " << s2 << std::endl;
 	return s1 + s2;
 }

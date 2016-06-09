@@ -50,7 +50,7 @@ void WellFlow::findRateDistribution()
  	// Fills the vector of rate's deviations with zeros
 	auto fill_dq = [this]() {
 		for(int i = 0; i < props.K; i++)
-			gsl_vector_set( q_gsl, i, 0.0 );
+			gsl_vector_set( dq_gsl, i, 0.0 );
  	};
  	
  	// Set rate deviation
@@ -136,7 +136,7 @@ void WellFlow::findRateDistribution()
 		well->printRates(&props);
 		fill_q();
 		
-		double mult = 0.9;
+		double mult = 0.7;
 		double H = H0;	
 		
 		while(H > H0 / 50.0 || H > 0.05)
@@ -412,6 +412,6 @@ double WellFlow::getP_bhp()
 {
 	findRateDistribution();
 	
-	Point p = getObsPoint();
-	return inclSum->getPres(p);
+	//Point p = getObsPoint();
+	return well->pres_av;
 }
