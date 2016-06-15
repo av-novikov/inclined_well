@@ -112,9 +112,10 @@ struct Parameters
 	
 	// Spacial params
 	Point sizes;
-	Point r1;	// at z = 0
+	Point rc;	// middle point of well
+	double length;
 	double alpha;
-	Point r2;
+	Point r1, r2;
 	
 	double rw;
 	
@@ -141,13 +142,12 @@ class Well
 		
 		const Point r1;
 		const Point r2;
+		const int num;
+		const double r_w;
 	
 		double alpha;
-		double r_w;
 		double length;
 		double rate;
-		
-		const int num;
 		
 	public:
 		Well(const Point& _r1, const Point& _r2, const int _num, const double _r_w);

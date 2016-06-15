@@ -13,7 +13,8 @@ using std::stod;
 WellFlow::WellFlow(const string fileName)
 {
 	loadTask(fileName);
-	assert( fabs(props.alpha) > EQUALITY_TOLERANCE);
+	assert( fabs(props.alpha) > EQUALITY_TOLERANCE); // non-vertical
+	assert( fabs(props.alpha) < M_PI_2 - EQUALITY_TOLERANCE); // non-horizontal
 	
 	well = new Well(props.r1, props.r2, props.K, props.rw);
 	well->setRate(props.rate);
@@ -339,10 +340,12 @@ void WellFlow::loadTask(const string fileName)
 	props.sizes.x = stod( xml_sizes->Attribute("sx") ) / props.x_dim;
 	props.sizes.y = stod( xml_sizes->Attribute("sy") ) / props.x_dim;
 	props.sizes.z = stod( xml_sizes->Attribute("sz") ) / props.x_dim;
-	TiXmlElement* xml_r1 = xml_geometry->FirstChildElement("r1");
-	props.r1.x = stod( xml_r1->Attribute("x") ) / props.x_dim;
-	props.r1.y = stod( xml_r1->Attribute("y") ) / props.x_dim;
-	props.r1.z = stod( xml_r1->Attribute("z") ) / props.x_dim;
+	TiXmlElement* xml_rc = xml_geometry->FirstChildElement("rc");
+	props.rc.x = stod( xml_rc->Attribute("x") ) / props.x_dim;
+	props.rc.y = stod( xml_rc->Attribute("y") ) / props.x_dim;
+	props.rc.z = stod( xml_rc->Attribute("z") ) / props.x_dim;
+	TiXmlElement* xml_length = xml_geometry->FirstChildElement("length");
+	props.length = stod( xml_length->Attribute("value") ) / props.x_dim;
 	TiXmlElement* xml_alpha = xml_geometry->FirstChildElement("alpha");
 	props.alpha = stod( xml_alpha->Attribute("value") ) * M_PI / 180.0;
 	TiXmlElement* xml_rw = xml_geometry->FirstChildElement("rw");
@@ -372,9 +375,11 @@ void WellFlow::loadTask(const string fileName)
 	TiXmlElement* xml_xi_c = xml_task->FirstChildElement("xi_c");
 	props.xi_c = stod( xml_xi_c->Attribute("value") ) / props.x_dim / props.x_dim;
 	
-	props.r2 = props.r1;
-	props.r2.x += tan(props.alpha) * props.sizes.z;
-	props.r2.z = -props.sizes.z;
+	props.r1 = props.r2 = props.rc;
+	props.r1.x -= props.length * sin(props.alpha) / 2.0;
+	props.r2.x += props.length * sin(props.alpha) / 2.0;
+	props.r1.z += props.length * cos(props.alpha) / 2.0;
+	props.r2.z -= props.length * cos(props.alpha) / 2.0;
 	
 	if( props.K > 1 )
 	{

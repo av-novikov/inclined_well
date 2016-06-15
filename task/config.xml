@@ -2,8 +2,9 @@
 	<dimensions x_dim="1000" t_dim="3600" p_dim="100000" />
 	<geometry>
 		<sizes sx="1000" sy="1000" sz="10" />
-		<r1 x="500" y="500" z="0" />
-		<alpha value="30" />
+		<rc x="500" y="500" z="-5" />
+		<length value="10" />
+		<alpha value="89.9" />
 		<rw value="0.1" />	
 	</geometry>
 	<viscosity value="1" />
