@@ -38,7 +38,14 @@ int main(int argc, char* argv[])
 
 	if(rank == 0)
 	{
-		cout << "P_bhp = " << solver.getP_bhp() * props->p_dim / BAR << endl;
+		cout << "P_bhp = " << solver.getP_bhp() * props->p_dim / BAR << endl;		
+	}
+	
+	if( writeSnapshots )
+	{
+		Snapshotter snapshotter (props->sizes, props->nx, props->ny, props->nz, props->x_dim);
+		snapshotter.setPresFoo( bind(&InclinedSum::getPres, &inclSum, _1) );
+		snapshotter.snapshot("snap_0.vts");
 	}
 	
 	MPI::Finalize();

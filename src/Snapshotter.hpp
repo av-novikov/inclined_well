@@ -6,7 +6,7 @@
 
 #include "src/Well.hpp"
 
-typedef std::function<double(Point&, bool)> FooType;
+typedef std::function<double(Point&)> FooType;
 
 class Snapshotter
 {
