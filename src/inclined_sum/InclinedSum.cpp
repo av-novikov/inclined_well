@@ -29,7 +29,7 @@ double InclinedSum::get2D(const Point& r)
 	{
 		break_idx = 0;
 		
-		for(int m = startIdx; m <= finishIdx; m++)
+		for(int m = 1; m <= props->M; m++)
 		{
 			for(int i = -props->I; i <= props->I; i++)
 			{
@@ -57,25 +57,7 @@ double InclinedSum::get2D(const Point& r)
 		}
 	}
 	
-	sum *= (props->visc * props->sizes.x / M_PI / M_PI / props->sizes.z / props->perm / sin(props->alpha));
-	
-	if(size > 1)
-	{
-		if(rank == 0)
-		{
-			MPI_Status status;
-			double sum_buf;
-		
-			for(int i = 1; i < size; i++)
-			{
-				MPI_Recv(&sum_buf, 1, MPI_DOUBLE, i, TAG_EMPTY_MES + i, MPI_COMM_WORLD, &status);
-				sum += sum_buf;
-			}	
-		} else
-			MPI_Send(&sum, 1, MPI_DOUBLE, 0, TAG_EMPTY_MES + rank, MPI_COMM_WORLD);
-	}
-		
-	COMM_WORLD.Barrier();
+	sum *= (props->visc * props->sizes.x / M_PI / M_PI / props->sizes.z / props->kz / sin(props->alpha));
 
 	return sum;	
 }
@@ -91,7 +73,7 @@ double InclinedSum::get3D(const Point& r)
 	{
 		break_idx2 = 0;
 		
-		for(int m = startIdx; m <= finishIdx; m++)
+		for(int m = 1; m <= props->M; m++)
 		{
 			break_idx1 = 0;
 			
@@ -105,7 +87,7 @@ double InclinedSum::get3D(const Point& r)
 				
 				F = ((	cos(M_PI * (double)(m) * well->segs[k].r1.x / props->sizes.x - M_PI * (double)(l) * well->segs[k].r1.z / props->sizes.z) -
 						cos(M_PI * (double)(m) * well->segs[k].r2.x / props->sizes.x - M_PI * (double)(l) * well->segs[k].r2.z / props->sizes.z)) /
-							( M_PI * (double)(m) * tan(props->alpha) / props->sizes.x + M_PI * (double)(l) / props->sizes.z ) - 
+							( M_PI * (double)(m) * tan(props->alpha) / props->sizes.x + M_PI * (double)(l) / props->sizes.z ) + 
 					( 	cos(M_PI * (double)(m) * well->segs[k].r1.x / props->sizes.x + M_PI * (double)(l) * well->segs[k].r1.z / props->sizes.z) -
 						cos(M_PI * (double)(m) * well->segs[k].r2.x / props->sizes.x + M_PI * (double)(l) * well->segs[k].r2.z / props->sizes.z)) /
 							( M_PI * (double)(m) * tan(props->alpha) / props->sizes.x - M_PI * (double)(l) / props->sizes.z )
@@ -148,26 +130,8 @@ double InclinedSum::get3D(const Point& r)
 			}
 		}
 	}
-	
-	if(size > 1)
-	{
-		if(rank == 0)
-		{
-			MPI_Status status;
-			double sum_buf;
-		
-			for(int i = 1; i < size; i++)
-			{
-				MPI_Recv(&sum_buf, 1, MPI_DOUBLE, i, TAG_EMPTY_MES + i, MPI_COMM_WORLD, &status);
-				sum += sum_buf;
-			}	
-		} else
-			MPI_Send(&sum, 1, MPI_DOUBLE, 0, TAG_EMPTY_MES + rank, MPI_COMM_WORLD);
-	}
-		
-	COMM_WORLD.Barrier();
 				
-	sum *= (2.0 * props->visc / M_PI / props->sizes.x / props->sizes.z / props->perm / cos(props->alpha));
+	sum *= (2.0 * props->visc / M_PI / props->sizes.x / props->sizes.z / props->kx / cos(props->alpha));
 				
 	return sum;	
 }

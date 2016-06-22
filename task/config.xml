@@ -4,13 +4,13 @@
 		<sizes sx="1000" sy="1000" sz="10" />
 		<rc x="500" y="500" z="-5" />
 		<length value="10" />
-		<alpha value="89.9" />
+		<alpha value="80" />
 		<rw value="0.1" />	
 	</geometry>
 	<viscosity value="1" />
-	<permeability value="20" />
+	<permeability kx="20" kz="20" />
 	<rate value="50" />
-	<indexes K="10" M="5000" N="1" L="30" I="0" />
+	<indexes K="10" M="3000" N="1" L="30" I="1" />
 	<grid nx="20" ny="20" nz="10" />
 	<xi_c value="2000" />
 </task>

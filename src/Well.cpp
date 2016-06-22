@@ -46,12 +46,21 @@ void Well::setUniformRate()
 
 void Well::printRates(const Parameters* props)
 {
+	double av2d = 0.0, av3d = 0.0;
 	for(int i = 0; i < num; i++)
 	{
+		av2d += segs[i].pres2D;
+		av3d += segs[i].pres3D;
 		cout << "--- " << i << " ---\tRate = " << segs[i].rate * 86400.0 * props->x_dim * props->x_dim * props->x_dim / props->t_dim << 
-									"\tPressure = " << segs[i].pres * props->p_dim / (double)(BAR) << endl;
+									"\tPressure = " << segs[i].pres * props->p_dim / (double)(BAR) << "\t" << segs[i].pres2D * props->p_dim / (double)(BAR) <<
+			"\t" << segs[i].pres3D * props->p_dim / (double)(BAR) << endl;
 	}
-	cout << "Av. pressure = " << pres_av * props->p_dim / BAR << "\tDeviation = " << pres_dev * props->p_dim * props->p_dim / BAR / BAR << endl;
+	av2d /= (double)(num);	av3d /= (double)(num);
+	
+	cout << "Av. pressure = " << pres_av * props->p_dim / BAR << endl;
+	cout << "Av. 2D = " << av2d * props->p_dim / BAR << endl;
+	cout << "Av. 3D = " << av3d * props->p_dim / BAR << endl;
+	cout << "Deviation = " << pres_dev * props->p_dim * props->p_dim / BAR / BAR << endl;
 	
 	
 	ofstream file;
@@ -60,10 +69,15 @@ void Well::printRates(const Parameters* props)
 	{
 		file << i << "\t" << 
 			segs[i].rate * 86400.0 * props->x_dim * props->x_dim * props->x_dim / props->t_dim << "\t" <<
-			segs[i].rate * 86400.0 * props->x_dim * props->x_dim / props->t_dim / segs[i].length << "\t" <<
-			segs[i].pres * props->p_dim / (double)(BAR) << endl;
+			segs[i].pres * props->p_dim / (double)(BAR) <<
+			"\t" << segs[i].pres2D * props->p_dim / (double)(BAR) <<
+			"\t" << segs[i].pres3D * props->p_dim / (double)(BAR) << endl;
 	}
-	file << "Av. pressure = " << pres_av * props->p_dim / BAR << "\tDeviation = " << pres_dev * props->p_dim * props->p_dim / BAR / BAR << endl;
+	
+	file << "Av. pressure = " << pres_av * props->p_dim / BAR << endl;
+	file << "Av. 2D = " << av2d * props->p_dim / BAR << endl;
+	file << "Av. 3D = " << av3d * props->p_dim / BAR << endl;
+	file << "Deviation = " << pres_dev * props->p_dim * props->p_dim / BAR / BAR << endl;
 	
 	file.close();
 }

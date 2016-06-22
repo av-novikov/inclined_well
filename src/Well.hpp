@@ -96,12 +96,14 @@ struct WellSegment
 	
 	double length;
 	double pres;
+	double pres2D;
+	double pres3D;
 	double rate;
 	
 	WellSegment(const Point& _r1, const Point& _r2, const Point _r_bhp) : r1(_r1), r2(_r2), r_bhp(_r_bhp)
 	{
 		length = sqrt((r2 - r1) * (r2 -r1));
-		pres = rate = 0.0;
+		pres = pres2D = pres3D = rate = 0.0;
 	};
 };
 
@@ -121,7 +123,7 @@ struct Parameters
 	
 	// Other params
 	double visc;
-	double perm;
+	double kx, kz;
 	double rate;
 	
 	// Numbers
