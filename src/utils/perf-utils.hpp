@@ -20,6 +20,7 @@ std::pair<exec_time, exec_time> measure_time2(std::function<void (void)> do_befo
 std::pair<exec_time, exec_time> measure_time2(std::function<void (void)> func1, std::function<void (void)> func2, int n = 10);
 
 void print_test_results(std::string test1, exec_time time1, std::string test2, exec_time time2);
+void print_test_results(std::string test1, exec_time time1);
 void print_test_title(std::string s);
 
 #endif /* PERF_UTILS_H */

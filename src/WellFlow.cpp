@@ -218,6 +218,7 @@ void WellFlow::loadTask(const string fileName)
 	props.visc = 1.E-3 * stod( xml_visc->Attribute("value") ) / (props.p_dim * props.t_dim);
 	
 	TiXmlElement* xml_perm = xml_task->FirstChildElement("permeability");
+	//props.perm = 0.986923 * 1.E-15 * stod( xml_perm->Attribute("value") ) / (props.x_dim * props.x_dim);
 	props.kx = 0.986923 * 1.E-15 * stod( xml_perm->Attribute("kx") ) / (props.x_dim * props.x_dim);
 	props.kz = 0.986923 * 1.E-15 * stod( xml_perm->Attribute("kz") ) / (props.x_dim * props.x_dim);
 	
@@ -239,9 +240,9 @@ void WellFlow::loadTask(const string fileName)
 	TiXmlElement* xml_xi_c = xml_task->FirstChildElement("xi_c");
 	props.xi_c = stod( xml_xi_c->Attribute("value") ) / props.x_dim / props.x_dim;
 	
-	props.length = sqrt( (props.length * cos(props.alpha) * sqrt( props.kx / props.kz )) * (props.length * cos(props.alpha) * sqrt( props.kx / props.kz ))
-					+ props.length * sin(props.alpha) * props.length * sin(props.alpha) );
-	props.alpha = atan( tan(props.alpha) * sqrt(props.kz / props.kx) );
+	double alpha = props.alpha;
+	props.alpha = atan( tan(alpha) * sqrt(props.kz / props.kx) );
+	props.length *= sin(alpha) / sin(props.alpha);
 	props.sizes.z *= sqrt(props.kx / props.kz);
 	props.rc.z *= sqrt(props.kx / props.kz);
 	

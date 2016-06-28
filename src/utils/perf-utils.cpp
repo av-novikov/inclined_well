@@ -87,6 +87,19 @@ void print_test_results(std::string test1, exec_time time1, std::string test2, e
     cout.setf(flags);
 }
 
+void print_test_results(std::string test1, exec_time time1)
+{
+    cout << "Test run " << time1.iterations << " times" << endl;
+
+    auto flags = cout.flags();
+
+    cout << fixed;
+    cout << setprecision(2);
+
+    cout << test1 << ": " << time1.time << " usec (standard deviation is " << 100.0*time1.std_dev/time1.time << "%)" << endl;
+    cout.setf(flags);
+}
+
 void print_test_title(string s)
 {
     int l = 80 - s.length() - 2;

@@ -124,6 +124,7 @@ struct Parameters
 	// Other params
 	double visc;
 	double kx, kz;
+	double perm;
 	double rate;
 	
 	// Numbers

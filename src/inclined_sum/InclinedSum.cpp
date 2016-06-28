@@ -57,7 +57,7 @@ double InclinedSum::get2D(const Point& r)
 		}
 	}
 	
-	sum *= (props->visc * props->sizes.x / M_PI / M_PI / props->sizes.z / props->kz / sin(props->alpha));
+	sum *= (props->visc * props->sizes.x / M_PI / M_PI / props->sizes.z / props->kx / sin(props->alpha));
 
 	return sum;	
 }
