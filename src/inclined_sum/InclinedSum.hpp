@@ -12,9 +12,11 @@ protected:
 	const Parameters* props;
 	const Well* well;
 	
-	//int size, rank;
-	//int startIdx, finishIdx;
+	double*** F;
+	double*** buf;
 	
+	void prepare3D();
+		
 public:
 	InclinedSum(const Parameters* _props, const Well* _well);
 	~InclinedSum();
