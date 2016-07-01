@@ -1,0 +1,146 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{indentfirst}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{mathtext}
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+\usepackage{cite}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{subcaption}
+\usepackage[top=1.5cm,bottom=1.5cm,left=2.5cm,right=1.5cm]{geometry}
+\usepackage[unicode]{hyperref}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[format=hang, labelsep=period, margin=7pt, figurename=Рис.]{caption}
+\usepackage[onehalfspacing, nodisplayskipstretch]{setspace}
+\usepackage{hyperref}
+
+\newcommand*\rfrac[2]{{}^{#1}\!/_{#2}}
+
+\SetLabelAlign{myright}{\hss\llap{$#1$}}
+\newlist{where}{description}{1}
+\setlist[where]{labelwidth=2cm,labelsep=1em,
+                        leftmargin=!,align=myright,font=\normalfont}
+
+\DeclareMathSizes{11}{19}{13}{9}
+
+\begin{document}
+	
+\section*{Вывод выражения для наклонной скважины}
+\setcounter{equation}{0}
+
+	В случае установившейся фильтрации имеем следующее выражение:
+\begin{align}
+	\label{initial_statement}
+	p(\boldsymbol{r}) &= \frac{8\mu}{V k}\int d\boldsymbol{r}' F(\boldsymbol{r}') \sum\limits_{m, n, l = 0}^{\infty} \frac{\chi_{m, n, l}(\boldsymbol{r}, \boldsymbol{r}')}{\lambda_{m, n, l}}, \quad V=s_x s_y s_z \\
+	F(\boldsymbol{r}') &= \int\limits_{\Gamma} q(x'', y'', z'')\delta(x' -x'')\delta(y'-y'')\delta(z'-z'')dl \\
+	\chi_{m,n,l}(\boldsymbol{r}, \boldsymbol{r}') &= \text{sin}\left(\frac{\pi m x}{s_x}\right)\text{sin}\left(\frac{\pi n y}{s_y}\right)\text{cos}\left(\frac{\pi l z}{s_z}\right) \text{sin}\left(\frac{\pi m x'}{s_x}\right)\text{sin}\left(\frac{\pi n y'}{s_y}\right)\text{cos}\left(\frac{\pi l z'}{s_z}\right) \\
+	 \lambda_{m, n, l} &= \pi^2 \left(\frac{m^2}{s_x^2}+\frac{n^2}{s_y^2}+\frac{l^2}{s_z^2}\right),
+\end{align}
+	где траекторию скважины $\Gamma$ считаем прямой линией, задаваемой выражением:
+\begin{equation}
+	\label{well_eqn}
+	x = x_0 - z\tg{\alpha}, \quad -s_z \leq z \leq 0.
+\end{equation}
+
+	Разобъём скважину на $K$ частей, на каждой из которых будем предполагать $q = \displaystyle\frac{Q_k}{L_k} \equiv \textit{const}$, где $L_k$ -- длина скважины на $k$-ой части. Для каждого из участков будем рассматривать уравнение \eqref{well_eqn} в виде:
+\begin{equation}
+	\label{well_eqn1}
+	x = x_k + (z_{k} - z) \tg{\alpha}, \quad z_{k+1} \leq z \leq z_{k}, \quad z_{k}-z_{k+1} = s_{zk}.
+\end{equation}
+	Ось $z$ направлена вверх.
+
+\subsection*{$l=0$}
+	Рассмотрим случай $l = 0$, имеем:
+\begin{align}
+	\label{eqn1}
+	p(\boldsymbol{r}) = \frac{4\mu}{\pi^2V k\cos{\alpha}}\sum\limits_{k=1}^K \sum\limits_{m, n = 1}^{\infty}\int\limits_{z_{k+1}}^{z_{k}}\frac{Q_k}{L_k}\frac{\chi_{m, n}(x, x_k+(z_{k}-z'')\tg{\alpha}, y, y_0)}{\displaystyle\frac{m^2}{s_x^2} + \frac{n^2}{s_y^2}}dz'',\\
+	\chi_{m, n}(\cdots) = \sin\left({\frac{\pi m x}{s_x}}\right)\sin\left({\frac{\pi m}{s_x}(x_k + (z_{k}-z'')\tg{\alpha})}\right)\sin\left({\frac{\pi n y}{s_y}}\right)\sin\left({\frac{\pi n y_0}{s_y}}\right).
+\end{align}
+	
+	Тогда интеграл примет вид:
+\begin{multline}
+	\label{eqn2}
+	\int\limits_{z_{k+1}}^{z_{k}}\chi_{m,n}dz'' = \frac{\sin\left({\frac{\pi m x}{s_x}}\right)\sin\left({\frac{\pi n y}{s_y}}\right)\sin\left({\frac{\pi n y_0}{s_y}}\right)}{\frac{\pi m}{s_x}\tg\alpha}
+	\left[\cos\left(\frac{\pi m}{s_x}(x_k + (z_k-z'')\tg\alpha\right)\right]_{z_{k+1}}^{z_k} = \nonumber\\
+	=\frac{s_x}{\pi m \tg \alpha}\sin\left({\frac{\pi m x}{s_x}}\right)\sin\left({\frac{\pi n y}{s_y}}\right)\sin\left({\frac{\pi n y_0}{s_y}}\right)
+	\left[\cos\frac{\pi m x_k}{s_x} - \cos\frac{\pi m x_{k+1}}{s_x}\right]
+\end{multline}
+	
+	Общее же выражение предстанет в виде:
+\begin{equation}
+	\label{eqn3}
+	p(\boldsymbol{r}) = \frac{4\mu}{\pi s_y s_z k \sin{\alpha}}
+	\sum\limits_{k=1}^K\sum\limits_{m, n = 1}^{\infty}
+	\frac{Q_k}{mL_k}\frac{\sin\left(\frac{\pi n y}{s_y}\right) \sin\left(\frac{\pi m y_0}{s_y}\right)\left[\cos\frac{\pi m x_k}{s_x} - \cos\frac{\pi m x_{k+1}}{s_x}\right]}
+	{\pi^2\left(\displaystyle\frac{m^2}{s_x^2} + \frac{n^2}{s_y^2}\right)}.
+\end{equation}
+	
+	Воспользуемся соотношением:
+\begin{multline}
+	\label{statement}
+	\frac{2}{l}\sum\limits_{n=0}^{\infty} \exp\left(-\frac{\pi^2 n^2 a t}{l^2}\right)\sin\left(\frac{\pi n \xi}{l}\right)\sin\left(\frac{\pi n x}{l}\right) =\\
+	=\frac{1}{2\sqrt{\pi a t}}\sum\limits_{n = -\infty}^{+\infty}\left[\exp\left(-\frac{(x-\xi+2nl)^2}{4at}\right)-\exp\left(-\frac{(x+\xi+2nl)^2}{4at}\right)\right],
+\end{multline}
+	и применим его к переменной $y$.
+	
+	Рассмотрим следующий интеграл:
+\begin{equation}
+	\label{eqn4}
+	\int\limits_0^{\infty}\frac{\exp(-\frac{\pi^2m^2}{s_x^2}\xi - \frac{(y-y_0+2i s_y)^2}{4\xi})}{\sqrt{\xi}} = \frac{s_x}{m\sqrt{\pi}}\exp\left(-\frac{\pi m}{s_x}|y-y_0+2i s_y|\right).
+\end{equation}	
+	Тогда финальное выражение примет вид:
+\begin{multline}
+	\label{eqn5}
+	p(\boldsymbol{r}) = \frac{\mu s_x}{\pi^2 s_z k\sin{\alpha}}
+	\sum\limits_{k=1}^K\sum\limits_{m = 1}^{\infty}\frac{Q_k}{m^2 L_k}
+	\left(\exp\left(-\frac{\pi m}{s_x}|y-y_0+2is_y|\right)-\exp\left(-\frac{\pi m}{s_x}|y+y_0+2is_y|\right)\right)\cdot\\
+	\cdot \sin\frac{\pi m x}{s_x}\left(\cos\frac{\pi m x_k}{s_x} - \cos\frac{\pi m x_{k+1}}{s_x}\right).
+\end{multline}
+	
+\subsection*{$l \neq 0$}
+	В случае $l \neq 0$ имеем:
+\begin{equation}
+	\label{eqn6}
+	p(\boldsymbol{r}) = \frac{8\mu}{\pi^2 V k \cos{\alpha}}\sum\limits_{k=1}^K \sum\limits_{m, n, l = 1}^{\infty} \int\limits_{z_{k+1}}^{z_k}
+	\frac{Q_k}{L_k}
+	\frac{\chi_{m, n, l}(x, x_k+(z_k-z'')\tg\alpha, y, y_0, z, z'')}{\frac{m^2}{s_x^2} + \frac{n^2}{s_y^2} + \frac{l^2}{s_z^2}}dz''
+\end{equation}
+\begin{multline}
+	\label{eqn7}
+	\chi_{m, n, l}(\cdots) = \sin\left(\frac{\pi m x}{s_x}\right)\sin\left(\frac{\pi n y}{s_y}\right)\cos\left(\frac{\pi l z}{s_z}\right)\\
+	 \sin\left(\frac{\pi m}{s_x}(x_k + (z_k-z''))\tg \alpha\right)\sin\left(\frac{\pi n y_0}{s_y}\right)\cos\left(\frac{\pi l z''}{s_z}\right).
+\end{multline}
+
+	Проинтегрируем:
+\begin{multline}
+	\label{eqn8}
+	\int\limits_{z_{k+1}}^{z_{k}} \sin\left(\frac{\pi m}{s_x}(x_k + (z_{k}-z''))\tg \alpha\right)\cos\left(\frac{\pi l z''}{s_z}\right)dz'' = \\ =\frac{1}{2}
+	\left[\frac{\cos\left(\displaystyle\frac{\pi m x_{k}}{s_x} - \displaystyle\frac{\pi l z_{k}}{s_z}\right)
+	- \cos\left(\displaystyle\frac{\pi m x_{k+1}}{s_x} - \displaystyle\frac{\pi l z_{k+1}}{s_z}\right)}{\displaystyle\frac{\pi m}{s_x}\tg \alpha + \displaystyle\frac{\pi l}{s_z}} +\right. \\
+	\left.+\frac{\cos\left(\displaystyle\frac{\pi m x_{k}}{s_x} + \displaystyle\frac{\pi l z_{k}}{s_z}\right)
+	- \cos\left(\displaystyle\frac{\pi m x_{k+1}}{s_x} + \displaystyle\frac{\pi l z_{k+1}}{s_z}\right)}{\displaystyle\frac{\pi m}{s_x}\tg \alpha - \displaystyle\frac{\pi l}{s_z}}\right] \equiv F_{m, l}.
+\end{multline}
+
+	Запишем выражение \eqref{eqn6} в виде:
+\begin{multline}
+	\label{eqn9}
+	p(\boldsymbol{r}) = \frac{8\mu}{Vk\cos\alpha}\sum\limits_{k=1}^K \sum\limits_{m, n, l = 1}^{\infty} \frac{F_{m, l}Q_k}{L_k} \int\limits_0^{\infty}\exp\left(-\pi^2\left(\frac{m^2}{s_x^2} + \frac{n^2}{s_y^2} + \frac{l^2}{s_z^2}\right)\xi\right)\sin\frac{\pi m x}{s_x}\sin\frac{\pi n y}{s_y} \cdot\\
+	\cdot\sin\frac{\pi n y_0}{s_y}\cos\frac{\pi l z}{s_z}d\xi = 
+	\frac{2\mu}{s_x s_z k \cos\alpha}\sum\limits_{k=1}^K \sum\limits_{m, l = 1}^{\infty} \frac{F_{m, l}Q_k}{L_k} \int\limits_0^{\infty}\frac{\exp\left(-\pi^2\left(\frac{m^2}{s_x^2} + \frac{l^2}{s_z^2}\right)\xi\right)}{\sqrt{\pi \xi}}\sin\frac{\pi m x}{s_x}\cos\frac{\pi l z}{s_z}\cdot\\
+	\cdot\sum\limits_{i=-\infty}^{+\infty}\left(\exp\left(-\frac{(y-y_0 + 2is_y)^2}{4\xi}\right) - \exp\left(-\frac{(y+y_0 + 2is_y)^2}{4\xi}\right)\right)d\xi=\\
+	= \frac{2\mu}{\pi s_x s_z k \cos\alpha}\sum\limits_{k=1}^K \sum\limits_{m, l = 1}^{\infty}\sum\limits_{i = -\infty}^{+\infty}\frac{F_{m, l}Q_k}{L_k}
+	\frac{\sin\displaystyle\frac{\pi m x}{s_x}\cos\displaystyle\frac{\pi l z}{s_z}}{\sqrt{\displaystyle\frac{m^2}{s_x^2}+\displaystyle\frac{l^2}{s_z^2}}}\cdot\\
+	\cdot\left(\exp\left(-\pi \sqrt{\frac{m^2}{s_x^2} + \frac{l^2}{s_z^2}}\left|y-y_0+2is_y\right|\right)-\exp\left(-\pi \sqrt{\frac{m^2}{s_x^2} + \frac{l^2}{s_z^2}}\left|y+y_0+2is_y\right|\right)\right).
+\end{multline}
+	
+\end{document}
