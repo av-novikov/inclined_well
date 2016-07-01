@@ -1,4 +1,5 @@
 #include <iomanip>
+#include <omp.h>
 
 #include "src/inclined_sum/InclinedSum.hpp"
 
@@ -8,11 +9,11 @@ using namespace MPI;
 
 InclinedSum::InclinedSum(const Parameters* _props, const Well* _well) : props(_props), well(_well)
 {
-	rank = COMM_WORLD.Get_rank();
-	size = COMM_WORLD.Get_size();
+	//rank = COMM_WORLD.Get_rank();
+	//size = COMM_WORLD.Get_size();
 	
-	startIdx = 1 + int((double)(rank) / (double)(size) * (double)(props->M));
-	finishIdx = int((double)(rank + 1) / (double)(size) * (double)(props->M));
+	//startIdx = 1 + int((double)(rank) / (double)(size) * (double)(props->M));
+	//finishIdx = int((double)(rank + 1) / (double)(size) * (double)(props->M));
 }
 
 InclinedSum::~InclinedSum()
@@ -69,7 +70,10 @@ double InclinedSum::get3D(const Point& r)
 	int break_idx1, break_idx2;
 	double F, buf;
 	
-	for(int k = 0; k < props->K; k++)
+	int k;
+	
+	#pragma omp parallel for reduction(+: sum) private(F, buf, sum_prev1, sum_prev2, break_idx1, break_idx2) schedule(static) 
+	for(k = 0; k < props->K; k++)
 	{
 		break_idx2 = 0;
 		
@@ -80,10 +84,6 @@ double InclinedSum::get3D(const Point& r)
 			for(int l = 1; l <= props->L; l++)
 			{
 				buf = sqrt((double)(m) * (double)(m) / props->sizes.x / props->sizes.x + (double)(l) * (double)(l) / props->sizes.z / props->sizes.z);
-				
-				/*double ttmp = M_PI * (double)(l) / props->sizes.z - M_PI * (double)(m) * tan(props->alpha) / props->sizes.x;
-				if(fabs( ttmp ) < 1.E-3)
-					std::cout << "ttmp=" << ttmp << std::endl;*/
 				
 				F = ((	cos(M_PI * (double)(m) * well->segs[k].r1.x / props->sizes.x - M_PI * (double)(l) * well->segs[k].r1.z / props->sizes.z) -
 						cos(M_PI * (double)(m) * well->segs[k].r2.x / props->sizes.x - M_PI * (double)(l) * well->segs[k].r2.z / props->sizes.z)) /

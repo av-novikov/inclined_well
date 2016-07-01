@@ -12,8 +12,8 @@ protected:
 	const Parameters* props;
 	const Well* well;
 	
-	int size, rank;
-	int startIdx, finishIdx;
+	//int size, rank;
+	//int startIdx, finishIdx;
 	
 public:
 	InclinedSum(const Parameters* _props, const Well* _well);
