@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 	auto t = measure_time2(
 		[&](){ DUMMY_FUNC; },
         [&](){ p1 = solver.getP_bhp() * props->p_dim / BAR; },
-        [&](){ omp_set_num_threads( n ); },
+        [&](){ DUMMY_FUNC;/*omp_set_num_threads( n );*/ },
         [&](){ p2 = solver.getP_bhp() * props->p_dim / BAR; },
         1
     );

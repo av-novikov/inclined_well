@@ -20,6 +20,7 @@ WellFlow::WellFlow(const string fileName)
 	well->setRate(props.rate);
 	well->setUniformRate();
 	
+	props.r_obs = well->segs[ int(props.K / 2) ].r_bhp;
 	inclSum = new InclinedSum(&props, well);
 }
 
@@ -69,10 +70,10 @@ void WellFlow::findRateDistribution()
 			for(int j = 1; j < props.K; j++)
 			{
 				setRateDev(j, -ratio);	setRateDev(0, ratio);
-				p1 = inclSum->getPres( well->segs[i].r_bhp );
+				p1 = inclSum->getPres( i );
 				
 				setRateDev(j, 2.0 * ratio);	setRateDev(0, -2.0 * ratio);
-				p2 = inclSum->getPres( well->segs[i].r_bhp );
+				p2 = inclSum->getPres( i );
 				
 				gsl_matrix_set(dpdq_gsl, i, j-1, (p2 - p1) / (2.0 * ratio * props.rate) );
 			}
@@ -97,8 +98,8 @@ void WellFlow::findRateDistribution()
 			s = 0.0;
 			for(int k = 0; k < props.K-1; k++)
 			{
-				p1 = inclSum->getPres( well->segs[k].r_bhp );
-				p2 = inclSum->getPres( well->segs[k+1].r_bhp );
+				p1 = inclSum->getPres( k );
+				p2 = inclSum->getPres( k + 1 );
 				s += ( p2 - p1 ) * ( gsl_matrix_get(dpdq_gsl, k+1, i) - gsl_matrix_get(dpdq_gsl, k, i) );
 			}
 			gsl_vector_set(b_gsl, i, -s);
@@ -166,16 +167,18 @@ void WellFlow::calcPressure()
 {
 	well->pres_av = well->pres_dev = 0.0;
 	
-	for_each(well->segs.begin(), well->segs.end(), [this](WellSegment& seg)
-	{		
-		seg.pres2D = inclSum->get2D( seg.r_bhp );
-		seg.pres3D = inclSum->get3D( seg.r_bhp );
+	for(int k = 0; k < props.K; k++)
+	{
+		WellSegment& seg = well->segs[k];
+		seg.pres2D = inclSum->get2D( k );
+		seg.pres3D = inclSum->get3D( k );
 		seg.pres = seg.pres2D + seg.pres3D;
 	
-		std::cout << std::setprecision(10) << props.x_dim * seg.r_bhp << "2d = " << seg.pres2D << "\t3d = " << seg.pres3D << std::endl;
+		//std::cout << std::setprecision(10) << props.x_dim * seg.r_bhp << "2d = " << seg.pres2D << "\t3d = " << seg.pres3D << std::endl;
 		
 		well->pres_av += seg.pres;
-	});
+	}
+	
 	well->pres_av /= well->segs.size();
 	
 	// Evaluation of pressure deviation
@@ -279,15 +282,9 @@ const Well* WellFlow::getWell() const
 	return well;
 }
 
-Point WellFlow::getObsPoint() const
-{
-	return well->segs[ int(props.K / 2) ].r_bhp;
-}
-
 double WellFlow::getP_bhp()
 {
 	findRateDistribution();
 	
-	//Point p = getObsPoint();
 	return well->pres_av;
 }

@@ -59,7 +59,7 @@ void Snapshotter::snapshot(string name)
 			for(int i = startIdx; i < finishIdx+1; i++)		
 			{
 				Point point( (double)(i) * steps.x, (double)(j) * steps.y, -(double)(k) * steps.z );
-				pres->InsertNextValue( presFoo(point) / BAR );
+				//pres->InsertNextValue( presFoo(point) / BAR );
 			}
 			
 	vtkPointData* fd = grid->GetPointData();

@@ -12,8 +12,8 @@ protected:
 	const Parameters* props;
 	const Well* well;
 	
-	double*** F;
-	double*** buf;
+	double** F;
+	//double*** buf;
 	
 	void prepare3D();
 		
@@ -21,9 +21,9 @@ public:
 	InclinedSum(const Parameters* _props, const Well* _well);
 	~InclinedSum();
 		
-	virtual double getPres(const Point& r);
-	virtual double get2D(const Point& r);
-	virtual double get3D(const Point& r);
+	virtual double getPres(int seg_idx);
+	virtual double get2D(int seg_idx);
+	virtual double get3D(int seg_idx);
 };
 
 #endif /* INCLINEDSUM_HPP_ */

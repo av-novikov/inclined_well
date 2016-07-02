@@ -40,7 +40,6 @@ class WellFlow
 				
 		void calcPressure();
 		double getP_bhp();
-		Point getObsPoint() const;
 };
 
 #endif /* WELLFLOW_HPP_ */

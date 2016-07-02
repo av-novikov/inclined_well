@@ -137,6 +137,9 @@ struct Parameters
 	
 	// Integral division limit
 	double xi_c;
+	
+	// Observation point
+	Point r_obs;
 };
 
 class Well

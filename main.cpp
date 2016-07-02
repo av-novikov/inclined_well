@@ -27,15 +27,14 @@ int main(int argc, char* argv[])
 		}
 	}
 	
-	cout << "Run programm with OpenMP, " << n << " thereads" << endl;
-	omp_set_num_threads( n );
+	//cout << "Run programm with OpenMP, " << n << " thereads" << endl;
+	//omp_set_num_threads( n );
 	
 	WellFlow solver ("task/config.xml");
 	InclinedSum inclSum( solver.getProps(), solver.getWell() );
 	solver.setSummator( &inclSum );
 
 	const Parameters* props = solver.getProps();
-	Point p = solver.getObsPoint();
 
 	cout << "P_bhp = " << solver.getP_bhp() * props->p_dim / BAR << endl;		
 	
