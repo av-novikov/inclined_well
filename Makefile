@@ -1,5 +1,5 @@
 CPP    = mpic++
-CFLAGS = --std=c++11 -Wall -g
+CFLAGS = --std=c++11 -Wall -O3
 LIBFLAGS = -fopenmp -lgsl -lgslcblas -lm -ltinyxml -lvtkCommonCore-7.0 -lvtkFiltersCore-7.0 -lvtkIOCore-7.0 -lvtkIOXML-7.0 -lvtkCommonDataModel-7.0 -L/usr/local/lib
 INCLUDEFLAGS =-iquote. -I/usr/local/include/vtk-7.0
 
@@ -27,6 +27,6 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CPP) $(CFLAGS) $(INCLUDEFLAGS) -c $< -o $@ $(LIBFLAGS)
 
 clean:
-	rm -f $(OBJECTS) ./test/perf/2dVS3d_test.o ./test/vertical_test.o
-	rm -f $(EXECUTABLE) ./bin/2dVS3d_test ./bin/vertical_test
+	rm -f $(OBJECTS) ./test/perf/openmp_test.o ./test/vertical_test.o
+	rm -f $(EXECUTABLE) ./bin/openmp_test ./bin/vertical_test
 	rm -f *.vts

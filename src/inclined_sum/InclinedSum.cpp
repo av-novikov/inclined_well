@@ -6,19 +6,13 @@
 
 InclinedSum::InclinedSum(const Parameters* _props, const Well* _well) : props(_props), well(_well)
 {
-	F = new double* [props->K];
-	
-	for(int i = 0; i < props->K; i++)
-		F[i] = new double [props->K];
-	
+	F = new double [props->K * props->K];
+
 	prepare3D();
 }
 
 InclinedSum::~InclinedSum()
-{
-	for(int i = 0; i < props->K; i++)
-		delete [] F[i];
-		
+{	
 	delete [] F;
 }
 
@@ -74,7 +68,7 @@ double InclinedSum::get3D(int seg_idx)
 	
 	for(k = 0; k < props->K; k++)
 	{
-		sum += F[seg_idx][k] * well->segs[k].rate;
+		sum += F[seg_idx * props->K + k] * well->segs[k].rate;
 	}
 				
 	sum *= (2.0 * props->visc / M_PI / props->sizes.x / props->sizes.z / props->kx / cos(props->alpha));
@@ -86,7 +80,8 @@ void InclinedSum::prepare3D()
 {
 	double buf1, buf2;
 	double sum_prev1 = 0.0, sum_prev2 = 0.0;
-	int break_idx1, break_idx2;		
+	int break_idx1, break_idx2;	
+	int arr_idx;
 	
 	//#pragma omp parallel for private(sum_prev1, sum_prev2, break_idx1, break_idx2) schedule(dynamic, 1) 
 	for(int seg_idx = 0; seg_idx < props->K; seg_idx++)
@@ -95,7 +90,8 @@ void InclinedSum::prepare3D()
 					
 		for(int k = 0; k < props->K; k++)
 		{
-			F[seg_idx][k] = 0.0;
+			arr_idx = seg_idx * props->K + k;
+			F[arr_idx] = 0.0;
 			
 			break_idx2 = 0;
 			
@@ -118,16 +114,16 @@ void InclinedSum::prepare3D()
 					for(int i = -props->I; i <= props->I; i++)
 					{	
 						
-						F[seg_idx][k] += buf1 / well->segs[k].length / buf2 *
+						F[arr_idx] += buf1 / well->segs[k].length / buf2 *
 							( exp(-M_PI * buf2 * fabs(r.y - props->r1.y + 2.0 * (double)(i) * props->sizes.y)) - 
 							exp(-M_PI * buf2 * fabs(r.y + props->r1.y + 2.0 * (double)(i) * props->sizes.y)) ) *
 							sin(M_PI * (double)(m) * r.x / props->sizes.x) * 
 							cos(M_PI * (double)(l) * r.z / props->sizes.z);
 					}
 					
-					if( fabs(F[seg_idx][k] - sum_prev1) > F[seg_idx][k] * EQUALITY_TOLERANCE )
+					if( fabs(F[arr_idx] - sum_prev1) > F[arr_idx] * EQUALITY_TOLERANCE )
 					{
-						sum_prev1 = F[seg_idx][k];
+						sum_prev1 = F[arr_idx];
 						break_idx1 = 0;
 					} else
 						break_idx1++;
@@ -139,9 +135,9 @@ void InclinedSum::prepare3D()
 					}
 				}
 				
-				if( fabs(F[seg_idx][k] - sum_prev2) > F[seg_idx][k] * EQUALITY_TOLERANCE )
+				if( fabs(F[arr_idx] - sum_prev2) > F[arr_idx] * EQUALITY_TOLERANCE )
 				{
-					sum_prev2 = F[seg_idx][k];
+					sum_prev2 = F[arr_idx];
 					break_idx2 = 0;
 				} else
 					break_idx2++;

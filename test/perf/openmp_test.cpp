@@ -27,16 +27,23 @@ int main(int argc, char* argv[])
 	}
 	
 	WellFlow solver ("task/config.xml");
-	InclinedSum inclSum( solver.getProps(), solver.getWell() );
-	solver.setSummator( &inclSum );
-	const Parameters* props = solver.getProps();
 
 	double p1, p2;
 	auto t = measure_time2(
 		[&](){ DUMMY_FUNC; },
-        [&](){ p1 = solver.getP_bhp() * props->p_dim / BAR; },
+        [&](){ 
+				InclinedSum inclSum( solver.getProps(), solver.getWell() );
+				solver.setSummator( &inclSum );
+				const Parameters* props = solver.getProps();
+				p1 = solver.getP_bhp() * props->p_dim / BAR; 
+			},
         [&](){ DUMMY_FUNC;/*omp_set_num_threads( n );*/ },
-        [&](){ p2 = solver.getP_bhp() * props->p_dim / BAR; },
+        [&](){ 
+				InclinedSum inclSum( solver.getProps(), solver.getWell() );
+				solver.setSummator( &inclSum );
+				const Parameters* props = solver.getProps();
+				p2 = solver.getP_bhp() * props->p_dim / BAR; 
+			},
         1
     );
 

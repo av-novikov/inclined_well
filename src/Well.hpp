@@ -168,6 +168,7 @@ class Well
 		double pres_dev;
 		
 		void printRates(const Parameters* props);
+		void writeRates(const Parameters* props);
 
 };
 

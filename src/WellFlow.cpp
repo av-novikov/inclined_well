@@ -21,14 +21,10 @@ WellFlow::WellFlow(const string fileName)
 	well->setUniformRate();
 	
 	props.r_obs = well->segs[ int(props.K / 2) ].r_bhp;
-	inclSum = new InclinedSum(&props, well);
 }
 
 WellFlow::~WellFlow()
 {
-	//delete well;
-	//delete inclSum;
-	
 	if( props.K > 1 )
 	{
 		gsl_vector_free( q_gsl );
@@ -131,7 +127,6 @@ void WellFlow::findRateDistribution()
 	// Body of function
 	well->setUniformRate();
 	calcPressure();
-	well->printRates(&props);
 	
 	double H0 = well->pres_dev;
 	if(H0 > 0.1)
@@ -139,7 +134,7 @@ void WellFlow::findRateDistribution()
 		well->printRates(&props);
 		fill_q();
 		
-		double mult = 0.9;
+		double mult = 0.98;
 		double H = H0;	
 		
 		while(H > H0 / 50.0 || H > 0.05)
@@ -161,6 +156,8 @@ void WellFlow::findRateDistribution()
 				H = well->pres_dev;
 		}
 	}
+	else 
+		well->printRates(&props);
 }
 
 void WellFlow::calcPressure()

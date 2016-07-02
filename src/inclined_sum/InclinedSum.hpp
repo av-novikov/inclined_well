@@ -12,8 +12,7 @@ protected:
 	const Parameters* props;
 	const Well* well;
 	
-	double** F;
-	//double*** buf;
+	double* F;
 	
 	void prepare3D();
 		
