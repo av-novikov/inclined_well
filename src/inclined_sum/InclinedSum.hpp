@@ -2,7 +2,6 @@
 #define INCLINEDSUM_HPP_
 
 #include <cmath>
-#include <mpi.h>
 
 #include "src/Well.hpp"
 

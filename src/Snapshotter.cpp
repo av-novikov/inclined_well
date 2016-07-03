@@ -7,8 +7,6 @@
 #include <vtkStructuredGrid.h>
 #include <vtkXMLStructuredGridWriter.h>
 
-#include <mpi.h>
-
 #include "src/Snapshotter.hpp"
 #include "src/WellFlow.hpp"
 
@@ -21,8 +19,8 @@ Snapshotter::Snapshotter(const Point& _sizes, const int _nx, const int _ny, cons
 	steps.y = sizes.y / (double)(ny);
 	steps.z = sizes.z / (double)(nz);
 	
-	rank = MPI::COMM_WORLD.Get_rank();
-	size = MPI::COMM_WORLD.Get_size();
+	//rank = MPI::COMM_WORLD.Get_rank();
+	//size = MPI::COMM_WORLD.Get_size();
 	
 	startIdx = int((double)(rank) / (double)(size) * (double)(nx));
 	finishIdx = int((double)(rank + 1) / (double)(size) * (double)(nx));
