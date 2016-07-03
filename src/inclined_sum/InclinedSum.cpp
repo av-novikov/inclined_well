@@ -1,5 +1,4 @@
 #include <iomanip>
-#include <omp.h>
 #include <new>
 
 #include "src/inclined_sum/InclinedSum.hpp"
@@ -83,7 +82,6 @@ void InclinedSum::prepare3D()
 	int break_idx1, break_idx2;	
 	int arr_idx;
 	
-	//#pragma omp parallel for private(sum_prev1, sum_prev2, break_idx1, break_idx2) schedule(dynamic, 1) 
 	for(int seg_idx = 0; seg_idx < props->K; seg_idx++)
 	{
 		const Point& r = well->segs[seg_idx].r_bhp;
@@ -160,6 +158,5 @@ double InclinedSum::getPres(int seg_idx)
 	s1 = get2D(seg_idx);
 	s2 = get3D(seg_idx);
 	
-	//std::cout << std::setprecision(10) << props->x_dim * r << "2d = " << s1 << "\t3d = " << s2 << std::endl;
 	return s1 + s2;
 }

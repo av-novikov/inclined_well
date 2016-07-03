@@ -3,9 +3,7 @@
 #include <functional>
 #include <fstream>
 
-using namespace std::placeholders;
 using std::for_each;
-using std::bind;
 using std::cout;
 using std::endl;
 using std::ofstream;

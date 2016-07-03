@@ -1,7 +1,7 @@
-CPP    = mpic++
-CFLAGS = --std=c++11 -Wall -O3
-LIBFLAGS = -fopenmp -lgsl -lgslcblas -lm -ltinyxml -lvtkCommonCore-7.0 -lvtkFiltersCore-7.0 -lvtkIOCore-7.0 -lvtkIOXML-7.0 -lvtkCommonDataModel-7.0 -L/usr/local/lib
-INCLUDEFLAGS =-iquote. -I/usr/local/include/vtk-7.0
+CPP    = g++
+CFLAGS = -std=c++11 -Wall -O3
+LIBFLAGS = -lgsl -lgslcblas -lm -ltinyxml -L/usr/local/lib
+INCLUDEFLAGS =-iquote.
 
 SOURCEDIR=./src
 
