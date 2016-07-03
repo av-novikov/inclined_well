@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 {
 	WellFlow solver ("task/config.xml");
 
-	double p1, p2;
+	double p1;
 	auto t = measure_time(
         [&](){ 
 				InclinedSum inclSum( solver.getProps(), solver.getWell() );

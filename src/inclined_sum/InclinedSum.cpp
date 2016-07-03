@@ -153,7 +153,6 @@ void InclinedSum::prepare3D()
 double InclinedSum::getPres(int seg_idx)
 {
 	double s1, s2;
-	const Point& r = well->segs[seg_idx].r_bhp;
 	
 	s1 = get2D(seg_idx);
 	s2 = get3D(seg_idx);
