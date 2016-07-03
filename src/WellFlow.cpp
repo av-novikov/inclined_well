@@ -25,6 +25,8 @@ WellFlow::WellFlow(const string fileName)
 
 WellFlow::~WellFlow()
 {
+	delete well;
+	
 	if( props.K > 1 )
 	{
 		gsl_vector_free( q_gsl );
@@ -240,6 +242,8 @@ void WellFlow::loadTask(const string fileName)
 	TiXmlElement* xml_xi_c = xml_task->FirstChildElement("xi_c");
 	props.xi_c = stod( xml_xi_c->Attribute("value") ) / props.x_dim / props.x_dim;
 	
+	delete xml_file;
+	 
 	double alpha = props.alpha;
 	props.alpha = atan( tan(alpha) * sqrt(props.kz / props.kx) );
 	props.length *= sin(alpha) / sin(props.alpha);
