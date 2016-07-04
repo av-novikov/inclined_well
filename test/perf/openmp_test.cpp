@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 				const Parameters* props = solver.getProps();
 				p1 = solver.getP_bhp() * props->p_dim / BAR; 
 			},
-        [&](){ DUMMY_FUNC;/*omp_set_num_threads( n );*/ },
+        [&](){ omp_set_num_threads( n ); },
         [&](){ 
 				InclinedSum inclSum( solver.getProps(), solver.getWell() );
 				solver.setSummator( &inclSum );

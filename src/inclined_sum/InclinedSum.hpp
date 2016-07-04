@@ -11,8 +11,10 @@ protected:
 	const Parameters* props;
 	const Well* well;
 	
-	double* F;
+	double* F2d;
+	double* F3d;
 	
+	void prepare2D();
 	void prepare3D();
 		
 public:
