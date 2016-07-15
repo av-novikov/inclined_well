@@ -1,0 +1,22 @@
+﻿  
+  C:\proj\inclined_well>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\nvcc.exe" -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin"  -IC:\proj\inclined_well -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile   -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd " -o Debug\Well.cu.obj "C:\proj\inclined_well\src\Well.cu" -clean 
+  Well.cu
+  Compiling CUDA source file src\Well.cu...
+  
+  C:\proj\inclined_well>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\nvcc.exe" -gencode=arch=compute_20,code=\"sm_20,compute_20\" --use-local-env --cl-version 2015 -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin"  -IC:\proj\inclined_well -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile -cudart static  -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd " -o Debug\Well.cu.obj "C:\proj\inclined_well\src\Well.cu" 
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include\thrust/detail/allocator/allocator_traits.inl(110): warning : calling a __host__ function from a __host__ __device__ function is not allowed
+C:/proj/inclined_well/src/Well.cu(94): warning : calling a __host__ function("thrust::device_vector< ::WellSegment,  ::thrust::device_malloc_allocator< ::WellSegment> > ::device_vector") from a __host__ __device__ function("Well_Device::Well_Device") is not allowed
+C:/proj/inclined_well/src/Well.cu(105): warning : calling a __host__ function("thrust::detail::vector_base< ::WellSegment,  ::thrust::device_malloc_allocator< ::WellSegment> > ::push_back") from a __host__ __device__ function("Well_Device::Well_Device") is not allowed
+C:/proj/inclined_well/src/Well.cu(112): warning : calling a __host__ function("thrust::device_vector< ::WellSegment,  ::thrust::device_malloc_allocator< ::WellSegment> > ::~device_vector") from a __host__ __device__ function("Well_Device::~Well_Device") is not allowed
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include\thrust/detail/allocator/allocator_traits.inl(110): warning : calling a __host__ function("std::allocator< ::WellSegment> ::construct< ::WellSegment, const  ::WellSegment & > ") from a __host__ __device__ function("thrust::detail::allocator_traits_detail::construct<std::allocator< ::WellSegment> ,  ::WellSegment,  ::WellSegment> ") is not allowed
+  Well.cu
+C:/proj/inclined_well/src/Well.cu(40): warning C4018: <: несоответствие типов со знаком и без знака
+  main.cpp
+c:\program files\nvidia gpu computing toolkit\cuda\v8.0\include\thrust\system\detail\error_category.inl(102): warning C4996: 'strerror': This function or variable may be unsafe. Consider using strerror_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\string.h(178): note:  см. объявление "strerror"
+c:\program files\nvidia gpu computing toolkit\cuda\v8.0\include\thrust\system\cuda\detail\bulk\detail\pointer_traits.hpp(55): warning C4800: unsigned int: принудительно задано логическое значение "true" или "false" (предупреждение о производительности)
+  inclined_well.vcxproj -> C:\proj\inclined_well\Debug\inclined_well.exe
+  copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\cudart*.dll" "C:\proj\inclined_well\Debug\"
+  C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\cudart32_80.dll
+  C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\cudart64_80.dll
+          2 file(s) copied.
