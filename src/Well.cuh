@@ -4,9 +4,6 @@
 #include <cuda_runtime.h>
 #include <cuda_runtime_api.h>
 
-#include <thrust/host_vector.h>
-#include <thrust/device_vector.h>
-
 #define EQUALITY_TOLERANCE 1.E-8
 #define BAR 1.E+5
 
@@ -94,6 +91,10 @@ struct WellSegment
 	double pres3D;
 	double rate;
 
+	__host__ __device__ WellSegment()
+	{
+	};
+
 	__host__ __device__ WellSegment(const Point& _r1, const Point& _r2, const Point _r_bhp) : r1(_r1), r2(_r2), r_bhp(_r_bhp)
 	{
 		length = sqrt((r2 - r1) * (r2 - r1));
@@ -161,7 +162,7 @@ public:
 	void setRate(double _rate);
 	void setUniformRate();
 
-	thrust::host_vector<WellSegment> segs;
+	WellSegment* segs;
 
 	double pres_av;
 	double pres_dev;
@@ -169,29 +170,7 @@ public:
 	void printRates(const Parameters* props);
 	void writeRates(const Parameters* props);
 
-};
-
-class Well_Device
-{
-protected:
-
-	const Point r1;
-	const Point r2;
-	const int num;
-	const double r_w;
-
-	double alpha;
-	double length;
-	double rate;
-
-public:
-	__host__ __device__ Well_Device(const Point& _r1, const Point& _r2, const int _num, const double _r_w);
-	__host__ __device__ ~Well_Device();
-
-	thrust::device_vector<WellSegment> segs;
-
-	double pres_av;
-	double pres_dev;
+	Well& operator=(const Well& well);
 };
 
 #endif /* WELL_CUH_ */

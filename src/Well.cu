@@ -15,13 +15,20 @@ Well::Well(const Point& _r1, const Point& _r2, const int _num, const double _r_w
 	alpha = atan((r2.x - r1.x) / (r1.z - r2.z));
 	pres_av = pres_dev = rate = 0.0;
 
+	segs = new WellSegment[num];
+
 	Point tmp1 = r1;
 	Point tmp2, tmp3;
 	for (int i = 0; i < num; i++)
 	{
 		tmp2 = r1 + (double)(i + 1) * (r2 - r1) / (double)(num);
 		tmp3 = (tmp1 + tmp2) / 2.0;		tmp3.y += r_w; // cos(alpha);
-		segs.push_back(WellSegment(tmp1, tmp2, tmp3));
+		segs[i].r1 = tmp1;
+		segs[i].r2 = tmp2;
+		segs[i].r_bhp = tmp3;
+		segs[i].length = sqrt((r2 - r1) * (r2 - r1));
+		segs[i].pres = segs[i].pres2D = segs[i].pres3D = segs[i].rate = 0.0;
+
 		tmp1 = tmp2;
 	};
 }
@@ -37,7 +44,7 @@ void Well::setRate(double _rate)
 
 void Well::setUniformRate()
 {
-	for (int i = 0; i < segs.size(); i++)
+	for (int i = 0; i < num; i++)
 	{
 		WellSegment& seg = segs[i];
 		seg.rate = seg.length / length * rate;
@@ -90,23 +97,10 @@ void Well::writeRates(const Parameters* props)
 	file.close();
 }
 
-Well_Device::Well_Device(const Point& _r1, const Point& _r2, const int _num, const double _r_w) : r1(_r1), r2(_r2), num(_num), r_w(_r_w)
+Well& Well::operator=(const Well& well)
 {
-	length = sqrt((r2 - r1) * (r2 - r1));
-	alpha = atan((r2.x - r1.x) / (r1.z - r2.z));
-	pres_av = pres_dev = rate = 0.0;
-
-	Point tmp1 = r1;
-	Point tmp2, tmp3;
 	for (int i = 0; i < num; i++)
-	{
-		tmp2 = r1 + (double)(i + 1) * (r2 - r1) / (double)(num);
-		tmp3 = (tmp1 + tmp2) / 2.0;		tmp3.y += r_w; // cos(alpha);
-		segs.push_back(WellSegment(tmp1, tmp2, tmp3));
-		tmp1 = tmp2;
-	};
-}
+		segs[i] = well.segs[i];
 
-Well_Device::~Well_Device()
-{
-}
+	return *this;
+};
