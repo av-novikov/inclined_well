@@ -1,18 +1,75 @@
 ﻿  
-  C:\proj\inclined_well>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\nvcc.exe" -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin"  -IC:\proj\tinyxml -IC:\proj\inclined_well -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile   -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd " -o Debug\InclinedSum.cu.obj "C:\proj\inclined_well\src\InclinedSum.cu" -clean 
+  C:\proj\inclined_well>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\nvcc.exe" -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin"  -I"C:\paralution-1.1.0\src" -IC:\proj\tinyxml -IC:\proj\inclined_well -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile   -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd " -o Debug\BaseSum.cu.obj "C:\proj\inclined_well\src\summators\BaseSum.cu" -clean 
+  BaseSum.cu
+  
+  C:\proj\inclined_well>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\nvcc.exe" -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin"  -I"C:\paralution-1.1.0\src" -IC:\proj\tinyxml -IC:\proj\inclined_well -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile   -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd " -o Debug\Inclined3dSum.cu.obj "C:\proj\inclined_well\src\summators\Inclined3dSum.cu" -clean 
+  Inclined3dSum.cu
+  
+  C:\proj\inclined_well>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\nvcc.exe" -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin"  -I"C:\paralution-1.1.0\src" -IC:\proj\tinyxml -IC:\proj\inclined_well -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile   -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd " -o Debug\InclinedSum.cu.obj "C:\proj\inclined_well\src\summators\InclinedSum.cu" -clean 
   InclinedSum.cu
   
-  C:\proj\inclined_well>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\nvcc.exe" -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin"  -IC:\proj\tinyxml -IC:\proj\inclined_well -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile   -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd " -o Debug\Well.cu.obj "C:\proj\inclined_well\src\Well.cu" -clean 
+  C:\proj\inclined_well>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\nvcc.exe" -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin"  -I"C:\paralution-1.1.0\src" -IC:\proj\tinyxml -IC:\proj\inclined_well -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile   -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd " -o Debug\Well.cu.obj "C:\proj\inclined_well\src\Well.cu" -clean 
   Well.cu
-  Compiling CUDA source file src\InclinedSum.cu...
+  Compiling CUDA source file src\summators\BaseSum.cu...
   
-  C:\proj\inclined_well>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\nvcc.exe" -gencode=arch=compute_20,code=\"sm_20,compute_20\" --use-local-env --cl-version 2015 -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin"  -IC:\proj\tinyxml -IC:\proj\inclined_well -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile -cudart static  -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd " -o Debug\InclinedSum.cu.obj "C:\proj\inclined_well\src\InclinedSum.cu" 
+  C:\proj\inclined_well>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\nvcc.exe" -gencode=arch=compute_20,code=\"sm_20,compute_20\" --use-local-env --cl-version 2015 -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin"  -I"C:\paralution-1.1.0\src" -IC:\proj\tinyxml -IC:\proj\inclined_well -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile -cudart static  -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd " -o Debug\BaseSum.cu.obj "C:\proj\inclined_well\src\summators\BaseSum.cu" 
+  BaseSum.cu
+  Compiling CUDA source file src\summators\Inclined3dSum.cu...
+  
+  C:\proj\inclined_well>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\nvcc.exe" -gencode=arch=compute_20,code=\"sm_20,compute_20\" --use-local-env --cl-version 2015 -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin"  -I"C:\paralution-1.1.0\src" -IC:\proj\tinyxml -IC:\proj\inclined_well -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile -cudart static  -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd " -o Debug\Inclined3dSum.cu.obj "C:\proj\inclined_well\src\summators\Inclined3dSum.cu" 
+  Inclined3dSum.cu
+C:/proj/inclined_well/src/summators/Inclined3dSum.cu(82): warning C4244: *=: преобразование "double" в "float", возможна потеря данных
+  C:/proj/inclined_well/src/summators/Inclined3dSum.cu(73): note: при компиляции функции-члена "<Нет данных>" класса <Нет данных>
+  C:/proj/inclined_well/src/summators/Inclined3dSum.cu(88): note: см. ссылку на создание экземпляров класса шаблон при компиляции "Inclined3dSum<float>"
+  Compiling CUDA source file src\summators\InclinedSum.cu...
+  
+  C:\proj\inclined_well>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\nvcc.exe" -gencode=arch=compute_20,code=\"sm_20,compute_20\" --use-local-env --cl-version 2015 -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin"  -I"C:\paralution-1.1.0\src" -IC:\proj\tinyxml -IC:\proj\inclined_well -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile -cudart static  -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd " -o Debug\InclinedSum.cu.obj "C:\proj\inclined_well\src\summators\InclinedSum.cu" 
   InclinedSum.cu
+C:/proj/inclined_well/src/summators/InclinedSum.cu(72): warning C4244: *=: преобразование "double" в "float", возможна потеря данных
+  C:/proj/inclined_well/src/summators/InclinedSum.cu(63): note: при компиляции функции-члена "<Нет данных>" класса <Нет данных>
+  C:/proj/inclined_well/src/summators/InclinedSum.cu(93): note: см. ссылку на создание экземпляров класса шаблон при компиляции "InclinedSum<float>"
+C:/proj/inclined_well/src/summators/InclinedSum.cu(88): warning C4244: *=: преобразование "double" в "float", возможна потеря данных
+  C:/proj/inclined_well/src/summators/InclinedSum.cu(79): note: при компиляции функции-члена "<Нет данных>" класса <Нет данных>
   Compiling CUDA source file src\Well.cu...
   
-  C:\proj\inclined_well>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\nvcc.exe" -gencode=arch=compute_20,code=\"sm_20,compute_20\" --use-local-env --cl-version 2015 -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin"  -IC:\proj\tinyxml -IC:\proj\inclined_well -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile -cudart static  -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd " -o Debug\Well.cu.obj "C:\proj\inclined_well\src\Well.cu" 
+  C:\proj\inclined_well>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin\nvcc.exe" -gencode=arch=compute_20,code=\"sm_20,compute_20\" --use-local-env --cl-version 2015 -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin"  -I"C:\paralution-1.1.0\src" -IC:\proj\tinyxml -IC:\proj\inclined_well -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v8.0\include"  -G   --keep-dir Debug -maxrregcount=0  --machine 32 --compile -cudart static  -g   -DWIN32 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd " -o Debug\Well.cu.obj "C:\proj\inclined_well\src\Well.cu" 
   Well.cu
   WellFlow.cpp
+c:\proj\inclined_well\src\wellflow.cpp(182): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+  c:\proj\inclined_well\src\wellflow.cpp(161): note: при компиляции функции-члена "<Нет данных>" класса <Нет данных>
+  c:\proj\inclined_well\src\wellflow.cpp(324): note: см. ссылку на создание экземпляров класса шаблон при компиляции "WellFlow<float>"
+c:\proj\inclined_well\src\wellflow.cpp(191): warning C4244: аргумент: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(194): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(266): warning C4305: инициализация: усечение из "double" к "float"
+c:\proj\inclined_well\src\wellflow.cpp(56): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+  c:\proj\inclined_well\src\wellflow.cpp(49): note: при компиляции функции-члена "<Нет данных>" класса <Нет данных>
+c:\proj\inclined_well\src\wellflow.cpp(57): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(58): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(62): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(63): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(64): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(66): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(67): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(68): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(70): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(72): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(74): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(77): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(81): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(82): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(85): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(100): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(103): warning C4244: =: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(104): warning C4244: *=: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(109): warning C4244: -=: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(110): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(111): warning C4244: +=: преобразование "double" в "float", возможна потеря данных
+c:\proj\inclined_well\src\wellflow.cpp(112): warning C4244: -=: преобразование "double" в "float", возможна потеря данных
+  perf-utils.cpp
+c:\proj\inclined_well\src\utils\perf-utils.cpp(40): warning C4244: +=: преобразование "double" в "long", возможна потеря данных
+c:\proj\inclined_well\src\utils\perf-utils.cpp(44): warning C4244: =: преобразование "double" в "long", возможна потеря данных
+c:\proj\inclined_well\src\utils\perf-utils.cpp(45): warning C4244: =: преобразование "double" в "long", возможна потеря данных
+c:\proj\inclined_well\src\utils\perf-utils.cpp(80): warning C4244: инициализация: преобразование "double" в "float", возможна потеря данных
   main.cpp
   Создание кода...
 LINK : warning LNK4098: библиотека по умолчанию "LIBCMTD" противоречит использованию других библиотек; используйте параметр /NODEFAULTLIB:library

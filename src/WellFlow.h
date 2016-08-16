@@ -5,14 +5,36 @@
 #include <math.h>
 #include <string>
 
-#include "src/Well.cuh"
-#include "src/InclinedSum.cuh"
+#include "paralution.hpp"
 
+#include "src/Well.cuh"
+#include "src/summators/InclinedSum.cuh"
+#include "src/summators/Inclined3dSum.cuh"
+
+template <class T>
 class WellFlow
 {
 protected:
-	Parameters props;
-	Well* well;
+	Parameters<T> props;
+	Well<T>* well;
+	BaseSum<T>* inclSum;
+
+	int matSize;
+	paralution::Inversion<paralution::LocalMatrix<T>, paralution::LocalVector<T>, T> ls;
+
+	T* q;
+	T* dq;
+	T* b;
+	T* x;
+	T* a;
+	T** dpdq;
+
+	int* ind_i;
+	int* ind_j;
+
+	paralution::LocalMatrix<T> A;
+	paralution::LocalVector<T> X;
+	paralution::LocalVector<T> B;
 
 	void findRateDistribution();
 	void loadTask(const std::string fileName);
@@ -21,13 +43,12 @@ public:
 	WellFlow(const std::string fileName);
 	~WellFlow();
 
-	InclinedSum* inclSum;
+	void setSummator(BaseSum<T>* _inclSum);
+	const Parameters<T>* getProps() const;
+	const Well<T>* getWell() const;
 
-	void setSummator(InclinedSum* _inclSum);
-	const Parameters* getProps() const;
-	const Well* getWell() const;
-
-	double getP_bhp();
+	void calcPressure();
+	T getP_bhp();
 };
 
 #endif /* WELLFLOW_H_ */

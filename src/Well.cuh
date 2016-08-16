@@ -7,19 +7,20 @@
 #define EQUALITY_TOLERANCE 1.E-8
 #define BAR 1.E+5
 
+template <class T>
 struct Point
 {
 	union
 	{
-		double coords[3];
+		T coords[3];
 		struct
 		{
-			double x;	double y;	double z;
+			T x;	T y;	T z;
 		};
 	};
 
 	__host__ __device__ Point() {};
-	__host__ __device__ Point(const double _x, const double _y, const double _z) : x(_x), y(_y), z(_z) { };
+	__host__ __device__ Point(const T _x, const T _y, const T _z) : x(_x), y(_y), z(_z) { };
 
 	__host__ __device__ Point(const Point& a)
 	{
@@ -30,14 +31,15 @@ struct Point
 		x = rhs.x, y = rhs.y, z = rhs.z;
 		return *this;
 	};
-	__host__ __device__ Point& operator/=(const double k)
+	__host__ __device__ Point& operator/=(const T k)
 	{
 		x /= k;	y /= k;	z /= k;
 		return *this;
 	};
 };
 
-__host__ __device__ inline bool operator==(const Point& a1, const Point& a2)
+template <class T>
+__host__ __device__ inline bool operator==(const Point<T>& a1, const Point<T>& a2)
 {
 	if ((fabs(a2.x - a1.x) > EQUALITY_TOLERANCE) ||
 		(fabs(a2.y - a1.y) > EQUALITY_TOLERANCE) ||
@@ -46,86 +48,101 @@ __host__ __device__ inline bool operator==(const Point& a1, const Point& a2)
 	else
 		return true;
 };
-__host__ __device__ inline Point operator-(const Point& rhs)
+
+template <class T>
+__host__ __device__ inline Point<T> operator-(const Point<T>& rhs)
 {
-	return Point(-rhs.x, -rhs.y, -rhs.z);
+	return Point<T>(-rhs.x, -rhs.y, -rhs.z);
 };
-__host__ __device__ inline Point operator-(const Point& a1, const Point& a2)
+
+template <class T>
+__host__ __device__ inline Point<T> operator-(const Point<T>& a1, const Point<T>& a2)
 {
-	return Point(a1.x - a2.x, a1.y - a2.y, a1.z - a2.z);
+	return Point<T>(a1.x - a2.x, a1.y - a2.y, a1.z - a2.z);
 };
-__host__ __device__ inline Point operator+(const Point& rhs)
+
+template <class T>
+__host__ __device__ inline Point<T> operator+(const Point<T>& rhs)
 {
-	return Point(rhs.x, rhs.y, rhs.z);
+	return Point<T>(rhs.x, rhs.y, rhs.z);
 };
-__host__ __device__ inline Point operator+(const Point& a1, const Point& a2)
+
+template <class T>
+__host__ __device__ inline Point<T> operator+(const Point<T>& a1, const Point<T>& a2)
 {
-	return Point(a1.x + a2.x, a1.y + a2.y, a1.z + a2.z);
+	return Point<T>(a1.x + a2.x, a1.y + a2.y, a1.z + a2.z);
 };
-__host__ __device__ inline Point operator*(const Point& a1, double k)
+
+template <class T>
+__host__ __device__ inline Point<T> operator*(const Point<T>& a1, T k)
 {
-	return Point(a1.x * k, a1.y * k, a1.z * k);
+	return Point<T>(a1.x * k, a1.y * k, a1.z * k);
 };
-__host__ __device__ inline Point operator*(double k, const Point& a1)
+
+template <class T>
+__host__ __device__ inline Point<T> operator*(T k, const Point<T>& a1)
 {
 	return a1 * k;
 };
-__host__ __device__ inline Point operator/(const Point& a1, double k)
+
+template <class T>
+__host__ __device__ inline Point<T> operator/(const Point<T>& a1, T k)
 {
-	return Point(a1.x / k, a1.y / k, a1.z / k);
+	return Point<T>(a1.x / k, a1.y / k, a1.z / k);
 };
-__host__ __device__ inline double operator*(const Point& a1, const Point& a2)
+
+template <class T>
+__host__ __device__ inline T operator*(const Point<T>& a1, const Point<T>& a2)
 {
 	return a1.x * a2.x + a1.y * a2.y + a1.z * a2.z;
 };
 
+template <class T>
 struct WellSegment
 {
-	Point r1;
-	Point r2;
-	Point r_bhp;
+	Point<T> r1;
+	Point<T> r2;
+	Point<T> r_bhp;
 
-	double length;
-	double pres;
-	double pres2D;
-	double pres3D;
-	double rate;
+	T length;
+	T pres;
+	T pres2D;
+	T pres3D;
+	T rate;
 
 	__host__ __device__ WellSegment()
 	{
 	};
 
-	__host__ __device__ WellSegment(const Point& _r1, const Point& _r2, const Point _r_bhp) : r1(_r1), r2(_r2), r_bhp(_r_bhp)
+	__host__ __device__ WellSegment(const Point<T>& _r1, const Point<T>& _r2, const Point<T> _r_bhp) : r1(_r1), r2(_r2), r_bhp(_r_bhp)
 	{
 		length = sqrt((r2 - r1) * (r2 - r1));
 		pres = pres2D = pres3D = rate = 0.0;
 	};
 
 	__host__ __device__ WellSegment& operator=(const WellSegment& rhs) = default;
-	/*{
-		r1 = rhs.r1;
-	};*/
 };
 
+template <class T>
 struct Parameters
 {
 	// Dimensions
-	double x_dim, t_dim, p_dim;
+	T x_dim, t_dim, p_dim;
 
 	// Spacial params
-	Point sizes;
-	Point rc;	// middle point of well
-	double length;
-	double alpha;
-	Point r1, r2;
+	Point<T> sizes;
+	Point<T> rc;	// middle point of well
+	T length;
+	T alpha;
+	Point<T> r1, r2;
 
-	double rw;
+	T rw;
 
 	// Other params
-	double visc;
-	double kx, kz;
-	double perm;
-	double rate;
+	T visc;
+	T kx, kz;
+	T perm;
+	T rate;
 
 	// Numbers
 	int K;
@@ -136,39 +153,40 @@ struct Parameters
 	int nx, ny, nz;
 
 	// Integral division limit
-	double xi_c;
+	T xi_c;
 
 	// Observation point
-	Point r_obs;
+	Point<T> r_obs;
 };
 
+template <class T>
 class Well
 {
 protected:
 
-	const Point r1;
-	const Point r2;
+	const Point<T> r1;
+	const Point<T> r2;
 	const int num;
-	const double r_w;
+	const T r_w;
 
-	double alpha;
-	double length;
-	double rate;
+	T alpha;
+	T length;
+	T rate;
 
 public:
-	Well(const Point& _r1, const Point& _r2, const int _num, const double _r_w);
+	Well(const Point<T>& _r1, const Point<T>& _r2, const int _num, const T _r_w);
 	~Well();
 
-	void setRate(double _rate);
+	void setRate(T _rate);
 	void setUniformRate();
 
-	WellSegment* segs;
+	WellSegment<T>* segs;
 
-	double pres_av;
-	double pres_dev;
+	T pres_av;
+	T pres_dev;
 
-	void printRates(const Parameters* props);
-	void writeRates(const Parameters* props);
+	void printRates(const Parameters<T>* props);
+	void writeRates(const Parameters<T>* props);
 
 	Well& operator=(const Well& well);
 };
