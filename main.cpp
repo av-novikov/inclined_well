@@ -9,6 +9,7 @@
 
 #include "src/inclined_sum/InclinedSum.hpp"
 #include "src/inclined_sum/VerticalDirichlet.h"
+#include "src/inclined_sum/VerticalNeumann.h"
 
 using namespace std;
 using namespace paralution;
@@ -22,7 +23,7 @@ int main(int argc, char* argv[])
 
 	auto t = measure_time(
 		[&]() {
-			VerticalDirichlet inclSum(solver.getProps(), solver.getWell());
+			VerticalNeumann inclSum(solver.getProps(), solver.getWell());
 			solver.setSummator(&inclSum);
 			const Parameters* props = solver.getProps();
 			p_bhp = solver.getP_bhp() * props->p_dim / BAR;
@@ -34,7 +35,7 @@ int main(int argc, char* argv[])
 	cout << "P_bhp = " << p_bhp << endl;		
 
 	while (true)
-	{
+ 	{
 	}
 
 	return 0;
