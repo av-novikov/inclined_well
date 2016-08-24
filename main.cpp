@@ -8,6 +8,7 @@
 #include "src/utils/perf-utils.hpp"
 
 #include "src/inclined_sum/InclinedSum.hpp"
+#include "src/inclined_sum/Inclined3dSum.h"
 #include "src/inclined_sum/VerticalDirichlet.h"
 #include "src/inclined_sum/VerticalNeumann.h"
 
