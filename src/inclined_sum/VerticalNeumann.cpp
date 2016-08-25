@@ -78,6 +78,6 @@ double VerticalNeumann::fourierSum()
 				expint(1, (buf12 * buf12 + buf21 * buf21) / props->xi_c) + expint(1, (buf12 * buf12 + buf22 * buf22) / props->xi_c);
 		}
 	}
-
-	return props->visc * props->rate / props->sizes.z / props->kx / 4.0 / M_PI * sum;
+	
+	return props->visc * props->rate / props->kx * (sum / props->sizes.z / 4.0 / M_PI - props->xi_c / props->sizes.x / props->sizes.y / props->sizes.z);
 }

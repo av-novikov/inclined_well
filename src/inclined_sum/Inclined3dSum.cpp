@@ -58,6 +58,12 @@ void Inclined3dSum::prepare3D()
 	double buf1, buf2;
 	int k;
 
+	auto intExpansion = [this](double A, double B) {
+		return 2.0 / sqrt(M_PI) * B / sqrt(props->xi_c) *
+			(2.0 - 2.0 * B * B / 9.0 / props->xi_c * (3.0 * A / B / B + 1.0) +
+			B * B * B * B / 75.0 / props->xi_c / props->xi_c * (15.0 * A * A / B / B / B / B + 10.0 * A / B / B + 3.0));
+	};
+
 	for (int arr_idx = 0; arr_idx < props->K * props->K; arr_idx++)
 	{
 		const WellSegment seg = well->segs[arr_idx % props->K];
@@ -78,19 +84,123 @@ void Inclined3dSum::prepare3D()
 					e[0] = props->r1.z - props->r2.z;	f[0] = point.z + 2.0 * (double)(r)* props->sizes.z - props->r1.z;
 					e[1] = props->r2.z - props->r1.z;	f[1] = point.z + 2.0 * (double)(r)* props->sizes.z + props->r1.z;
 
-					// First
+					// 0-0-0
 					A = (a[0] * a[0] * (d[0] * d[0] + f[0] * f[0]) -
 						2.0 * a[0] * b[0] * (c[0] * d[0] + e[0] * f[0]) +
 						b[0] * b[0] * (c[0] * c[0] + e[0] * e[0]) +
 						(e[0] * d[0] - c[0] * f[0]) * (e[0] * d[0] - c[0] * f[0])) / 
 						(4.0 * (a[0] * a[0] + c[0] * c[0] + e[0] * e[0]));
-					B1 = a[0] * (a[0] * +b[0]) + c[0] * (c[0] * +d[0]) + e[0] * (e[0] * +f[0]) / 
+					B1 = a[0] * (a[0] * seg.tau1 + b[0]) + c[0] * (c[0] * seg.tau1 + d[0]) + e[0] * (e[0] * seg.tau1 + f[0]) / 
 						(2.0 * sqrt(a[0] * a[0] + c[0] * c[0] + e[0] * e[0]));
-					B2 = a[0] * (a[0] * +b[0]) + c[0] * (c[0] * +d[0]) + e[0] * (e[0] * +f[0]) /
+					B2 = a[0] * (a[0] * seg.tau2 + b[0]) + c[0] * (c[0] * seg.tau2 + d[0]) + e[0] * (e[0] * seg.tau2 + f[0]) /
 						(2.0 * sqrt(a[0] * a[0] + c[0] * c[0] + e[0] * e[0]));
+
+					sum1 += sqrt(M_PI / (a[0] * a[0] + c[0] * c[0] + e[0] * e[0])) *
+							(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion(A, B2) - intExpansion(A, B1));
+
+					// 0-0-1
+					A = (a[0] * a[0] * (d[0] * d[0] + f[1] * f[1]) -
+						2.0 * a[0] * b[0] * (c[0] * d[0] + e[1] * f[1]) +
+						b[0] * b[0] * (c[0] * c[0] + e[1] * e[1]) +
+						(e[1] * d[0] - c[0] * f[1]) * (e[1] * d[0] - c[0] * f[1])) /
+						(4.0 * (a[0] * a[0] + c[0] * c[0] + e[1] * e[1]));
+					B1 = a[0] * (a[0] * seg.tau1 + b[0]) + c[0] * (c[0] * seg.tau1 + d[0]) + e[1] * (e[1] * seg.tau1 + f[1]) /
+						(2.0 * sqrt(a[0] * a[0] + c[0] * c[0] + e[1] * e[1]));
+					B2 = a[0] * (a[0] * seg.tau2 + b[0]) + c[0] * (c[0] * seg.tau2 + d[0]) + e[1] * (e[1] * seg.tau2 + f[1]) /
+						(2.0 * sqrt(a[0] * a[0] + c[0] * c[0] + e[1] * e[1]));
+
+					sum1 += sqrt(M_PI / (a[0] * a[0] + c[0] * c[0] + e[1] * e[1])) *
+						(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion(A, B2) - intExpansion(A, B1));
+
+					// 0-1-0
+					A = (a[0] * a[0] * (d[1] * d[1] + f[0] * f[0]) -
+						2.0 * a[0] * b[0] * (c[1] * d[1] + e[0] * f[0]) +
+						b[0] * b[0] * (c[1] * c[1] + e[0] * e[0]) +
+						(e[0] * d[1] - c[1] * f[0]) * (e[0] * d[1] - c[1] * f[0])) /
+						(4.0 * (a[0] * a[0] + c[1] * c[1] + e[0] * e[0]));
+					B1 = a[0] * (a[0] * seg.tau1 + b[0]) + c[1] * (c[1] * seg.tau1 + d[1]) + e[0] * (e[0] * seg.tau1 + f[0]) /
+						(2.0 * sqrt(a[0] * a[0] + c[1] * c[1] + e[0] * e[0]));
+					B2 = a[0] * (a[0] * seg.tau2 + b[0]) + c[1] * (c[1] * seg.tau2 + d[1]) + e[0] * (e[0] * seg.tau2 + f[0]) /
+						(2.0 * sqrt(a[0] * a[0] + c[1] * c[1] + e[0] * e[0]));
+
+					sum1 += sqrt(M_PI / (a[0] * a[0] + c[1] * c[1] + e[0] * e[0])) *
+						(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion(A, B2) - intExpansion(A, B1));
+
+					// 0-1-1
+					A = (a[0] * a[0] * (d[1] * d[1] + f[1] * f[1]) -
+						2.0 * a[0] * b[0] * (c[1] * d[1] + e[1] * f[1]) +
+						b[0] * b[0] * (c[1] * c[1] + e[1] * e[1]) +
+						(e[1] * d[1] - c[1] * f[1]) * (e[1] * d[1] - c[1] * f[1])) /
+						(4.0 * (a[0] * a[0] + c[1] * c[1] + e[1] * e[1]));
+					B1 = a[0] * (a[0] * seg.tau1 + b[0]) + c[1] * (c[1] * seg.tau1 + d[1]) + e[1] * (e[1] * seg.tau1 + f[1]) /
+						(2.0 * sqrt(a[0] * a[0] + c[1] * c[1] + e[1] * e[1]));
+					B2 = a[0] * (a[0] * seg.tau2 + b[0]) + c[1] * (c[1] * seg.tau2 + d[1]) + e[1] * (e[1] * seg.tau2 + f[1]) /
+						(2.0 * sqrt(a[0] * a[0] + c[1] * c[1] + e[1] * e[1]));
+
+					sum1 += sqrt(M_PI / (a[0] * a[0] + c[1] * c[1] + e[1] * e[1])) *
+						(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion(A, B2) - intExpansion(A, B1));
+
+					// 1-0-0
+					A = (a[1] * a[1] * (d[0] * d[0] + f[0] * f[0]) -
+						2.0 * a[1] * b[1] * (c[0] * d[0] + e[0] * f[0]) +
+						b[1] * b[1] * (c[0] * c[0] + e[0] * e[0]) +
+						(e[0] * d[0] - c[0] * f[0]) * (e[0] * d[0] - c[0] * f[0])) /
+						(4.0 * (a[1] * a[1] + c[0] * c[0] + e[0] * e[0]));
+					B1 = a[1] * (a[1] * seg.tau1 + b[1]) + c[0] * (c[0] * seg.tau1 + d[0]) + e[0] * (e[0] * seg.tau1 + f[0]) /
+						(2.0 * sqrt(a[1] * a[1] + c[0] * c[0] + e[0] * e[0]));
+					B2 = a[1] * (a[1] * seg.tau2 + b[1]) + c[0] * (c[0] * seg.tau2 + d[0]) + e[0] * (e[0] * seg.tau2 + f[0]) /
+						(2.0 * sqrt(a[1] * a[1] + c[0] * c[0] + e[0] * e[0]));
+
+					sum1 += sqrt(M_PI / (a[1] * a[1] + c[0] * c[0] + e[0] * e[0])) *
+						(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion(A, B2) - intExpansion(A, B1));
+
+					// 1-0-1
+					A = (a[1] * a[1] * (d[0] * d[0] + f[1] * f[1]) -
+						2.0 * a[1] * b[1] * (c[0] * d[0] + e[1] * f[1]) +
+						b[1] * b[1] * (c[0] * c[0] + e[1] * e[1]) +
+						(e[1] * d[0] - c[0] * f[1]) * (e[1] * d[0] - c[0] * f[1])) /
+						(4.0 * (a[1] * a[1] + c[0] * c[0] + e[1] * e[1]));
+					B1 = a[1] * (a[1] * seg.tau1 + b[1]) + c[0] * (c[0] * seg.tau1 + d[0]) + e[1] * (e[1] * seg.tau1 + f[1]) /
+						(2.0 * sqrt(a[1] * a[1] + c[0] * c[0] + e[1] * e[1]));
+					B2 = a[1] * (a[1] * seg.tau2 + b[1]) + c[0] * (c[0] * seg.tau2 + d[0]) + e[1] * (e[1] * seg.tau2 + f[1]) /
+						(2.0 * sqrt(a[1] * a[1] + c[0] * c[0] + e[1] * e[1]));
+
+					sum1 += sqrt(M_PI / (a[1] * a[1] + c[0] * c[0] + e[1] * e[1])) *
+						(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion(A, B2) - intExpansion(A, B1));
+
+					// 1-1-0
+					A = (a[1] * a[1] * (d[1] * d[1] + f[0] * f[0]) -
+						2.0 * a[1] * b[1] * (c[1] * d[1] + e[0] * f[0]) +
+						b[1] * b[1] * (c[1] * c[1] + e[0] * e[0]) +
+						(e[0] * d[1] - c[1] * f[0]) * (e[0] * d[1] - c[1] * f[0])) /
+						(4.0 * (a[1] * a[1] + c[1] * c[1] + e[0] * e[0]));
+					B1 = a[1] * (a[1] * seg.tau1 + b[1]) + c[1] * (c[1] * seg.tau1 + d[1]) + e[0] * (e[0] * seg.tau1 + f[0]) /
+						(2.0 * sqrt(a[1] * a[1] + c[1] * c[1] + e[0] * e[0]));
+					B2 = a[1] * (a[1] * seg.tau2 + b[1]) + c[1] * (c[1] * seg.tau2 + d[1]) + e[0] * (e[0] * seg.tau2 + f[0]) /
+						(2.0 * sqrt(a[1] * a[1] + c[1] * c[1] + e[0] * e[0]));
+
+					sum1 += sqrt(M_PI / (a[1] * a[1] + c[1] * c[1] + e[0] * e[0])) *
+						(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion(A, B2) - intExpansion(A, B1));
+
+					// 1-1-1
+					A = (a[1] * a[1] * (d[1] * d[1] + f[1] * f[1]) -
+						2.0 * a[1] * b[1] * (c[1] * d[1] + e[1] * f[1]) +
+						b[1] * b[1] * (c[1] * c[1] + e[1] * e[1]) +
+						(e[1] * d[1] - c[1] * f[1]) * (e[1] * d[1] - c[1] * f[1])) /
+						(4.0 * (a[1] * a[1] + c[1] * c[1] + e[1] * e[1]));
+					B1 = a[1] * (a[1] * seg.tau1 + b[1]) + c[1] * (c[1] * seg.tau1 + d[1]) + e[1] * (e[1] * seg.tau1 + f[1]) /
+						(2.0 * sqrt(a[1] * a[1] + c[1] * c[1] + e[1] * e[1]));
+					B2 = a[1] * (a[1] * seg.tau2 + b[1]) + c[1] * (c[1] * seg.tau2 + d[1]) + e[1] * (e[1] * seg.tau2 + f[1]) /
+						(2.0 * sqrt(a[1] * a[1] + c[1] * c[1] + e[1] * e[1]));
+
+					sum1 += sqrt(M_PI / (a[1] * a[1] + c[1] * c[1] + e[1] * e[1])) *
+						(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion(A, B2) - intExpansion(A, B1));
+
 				}
 			}
 		}
+
+		sum1 *= (props->visc * props->length / 8.0 / sqrt(M_PI) / M_PI / props->kx);
 
 	}
 }

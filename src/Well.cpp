@@ -18,11 +18,14 @@ Well::Well(const Point& _r1, const Point& _r2, const int _num, const double _r_w
 	
 	Point tmp1 = r1;
 	Point tmp2, tmp3;
+	double tau1, tau2;
 	for(int i = 0; i < num; i++)
 	{
 		tmp2 = r1 + (double)( i + 1 ) * (r2 - r1) / (double)( num );
 		tmp3 = (tmp1 + tmp2) / 2.0;		tmp3.y += r_w; // cos(alpha);
-		segs.push_back( WellSegment(tmp1, tmp2, tmp3) );
+		tau1 = (double)(i) / (double)(num);
+		tau2 = (double)(i+1) / (double)(num);
+		segs.push_back( WellSegment(tmp1, tmp2, tmp3, tau1, tau2) );
 		tmp1 = tmp2;
 	};
 }

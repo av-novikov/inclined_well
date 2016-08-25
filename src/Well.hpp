@@ -94,13 +94,14 @@ struct WellSegment
 	const Point r2;
 	const Point r_bhp;
 	
+	double tau1, tau2;
 	double length;
 	double pres;
 	double pres2D;
 	double pres3D;
 	double rate;
 	
-	WellSegment(const Point& _r1, const Point& _r2, const Point _r_bhp) : r1(_r1), r2(_r2), r_bhp(_r_bhp)
+	WellSegment(const Point& _r1, const Point& _r2, const Point _r_bhp, double _tau1, double _tau2) : r1(_r1), r2(_r2), r_bhp(_r_bhp), tau1(_tau1), tau2(_tau2)
 	{
 		length = sqrt((r2 - r1) * (r2 -r1));
 		pres = pres2D = pres3D = rate = 0.0;
