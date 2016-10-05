@@ -1,7 +1,7 @@
 #ifndef INCLINED3DSUM_H_
 #define INCLINED3DSUM_H_
 
-#include "src\inclined_sum\BaseSum.h"
+#include "src/inclined_sum/BaseSum.h"
 
 class Inclined3dSum : public BaseSum
 {
@@ -14,6 +14,7 @@ public:
 	~Inclined3dSum();
 
 	void prepare();
+	double getPres(const Point& point);
 	double get2D(int seg_idx);
 	double get3D(int seg_idx);
 };

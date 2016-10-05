@@ -141,6 +141,12 @@ struct Parameters
 	
 	// Observation point
 	Point r_obs;
+
+	// Boundary fluxes
+	double fx1, fx2, fy1, fy2, fz1, fz2;
+
+	// Average pressure
+	double p_avg;
 };
 
 class Well

@@ -21,6 +21,7 @@ public:
 	virtual ~BaseSum();
 
 	virtual void prepare() = 0;
+	virtual double getPres(const Point& point) = 0;
 	virtual double get2D(int seg_idx);
 	virtual double get3D(int seg_idx);
 	double getPres(int seg_idx);

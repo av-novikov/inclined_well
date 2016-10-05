@@ -96,6 +96,17 @@ void WellFlow::loadTask(const string fileName)
 	TiXmlElement* xml_xi_c = xml_task->FirstChildElement("xi_c");
 	props.xi_c = stod(xml_xi_c->Attribute("value")) / props.x_dim / props.x_dim;
 
+	TiXmlElement* xml_fluxes = xml_task->FirstChildElement("boundary_fluxes");
+	props.fx1 = stod(xml_fluxes->Attribute("fx1")) / 86400.0 / (props.x_dim * props.x_dim * props.x_dim / props.t_dim);
+	props.fx2 = stod(xml_fluxes->Attribute("fx2")) / 86400.0 / (props.x_dim * props.x_dim * props.x_dim / props.t_dim);
+	props.fy1 = stod(xml_fluxes->Attribute("fy1")) / 86400.0 / (props.x_dim * props.x_dim * props.x_dim / props.t_dim);
+	props.fy2 = stod(xml_fluxes->Attribute("fy2")) / 86400.0 / (props.x_dim * props.x_dim * props.x_dim / props.t_dim);
+
+	props.fx1 *= (props.visc / props.kx / props.sizes.y / props.sizes.z);
+	props.fx2 *= (props.visc / props.kx / props.sizes.y / props.sizes.z);
+	props.fy1 *= (props.visc / props.kx / props.sizes.x / props.sizes.z);
+	props.fy2 *= (props.visc / props.kx / props.sizes.x / props.sizes.z);
+	
 	double alpha = props.alpha;
 	props.alpha = atan(tan(alpha) * sqrt(props.kz / props.kx));
 	props.length *= sin(alpha) / sin(props.alpha);

@@ -153,10 +153,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\inclined_sum\BaseSum.h" />
+    <ClInclude Include="src\inclined_sum\Inclined3dSum.h" />
     <ClInclude Include="src\inclined_sum\InclinedSum.hpp" />
+    <ClInclude Include="src\inclined_sum\neumann\VerticalNeumann.h" />
+    <ClInclude Include="src\inclined_sum\neumann\VerticalNeumannBoundaries.h" />
     <ClInclude Include="src\inclined_sum\VerticalDirichlet.h" />
-    <ClInclude Include="src\inclined_sum\VerticalNeumann.h" />
-    <ClInclude Include="src\Snapshotter.hpp" />
     <ClInclude Include="src\utils\perf-utils.hpp" />
     <ClInclude Include="src\Well.hpp" />
     <ClInclude Include="src\WellFlow.h" />
@@ -164,9 +165,11 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\inclined_sum\BaseSum.cpp" />
+    <ClCompile Include="src\inclined_sum\Inclined3dSum.cpp" />
     <ClCompile Include="src\inclined_sum\InclinedSum.cpp" />
+    <ClCompile Include="src\inclined_sum\neumann\VerticalNeumann.cpp" />
+    <ClCompile Include="src\inclined_sum\neumann\VerticalNeumannBoundaries.cpp" />
     <ClCompile Include="src\inclined_sum\VerticalDirichlet.cpp" />
-    <ClCompile Include="src\inclined_sum\VerticalNeumann.cpp" />
     <ClCompile Include="src\utils\perf-utils.cpp" />
     <ClCompile Include="src\Well.cpp" />
     <ClCompile Include="src\WellFlow.cpp" />

@@ -1,5 +1,5 @@
 #include "boost/math/special_functions/expint.hpp"
-#include "src\inclined_sum\VerticalNeumann.h"
+#include "src/inclined_sum/neumann/VerticalNeumann.h"
 
 using boost::math::expint;
 
@@ -11,9 +11,15 @@ VerticalNeumann::~VerticalNeumann()
 {
 }
 
+double VerticalNeumann::getPres(const Point& point)
+{
+	return directSum(point) + fourierSum(point);
+}
+
 void VerticalNeumann::prepare()
 {
-	F2d[0] = directSum() + fourierSum();
+	const Point& r = well->segs[0].r_bhp;
+	F2d[0] = directSum(r) + fourierSum(r);
 }
 
 double VerticalNeumann::get2D(int seg_idx)
@@ -21,11 +27,10 @@ double VerticalNeumann::get2D(int seg_idx)
 	return F2d[0];
 }
 
-double VerticalNeumann::directSum()
+double VerticalNeumann::directSum(const Point& r)
 {
 	double sum = 0.0, sum_m = 0.0, sum_n = 0.0;
 	double buf1, buf2;
-	const Point& r = well->segs[0].r_bhp;
 
 	for (int m = 1; m < props->M; m++)
 	{
@@ -48,8 +53,6 @@ double VerticalNeumann::directSum()
 			sum += exp(-buf2 * props->xi_c) * buf1 / buf2 *
 				cos(M_PI * (double)(n)* r.y / props->sizes.y) * cos(M_PI * (double)(n)* props->rc.y / props->sizes.y);
 		}
-
-
 	}
 
 	sum *= (4.0 * props->visc * props->rate / props->sizes.x / props->sizes.y / props->sizes.z / props->kx);
@@ -59,11 +62,10 @@ double VerticalNeumann::directSum()
 	return sum + sum_m + sum_n;
 }
 
-double VerticalNeumann::fourierSum()
+double VerticalNeumann::fourierSum(const Point& r)
 {
 	double sum = 0.0;
 	double buf11, buf12, buf21, buf22;
-	const Point& r = well->segs[0].r_bhp;
 
 	for (int p = -props->I; p < props->I; p++)
 	{

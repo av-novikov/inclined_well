@@ -11,6 +11,11 @@ InclinedSum::~InclinedSum()
 {	
 }
 
+double InclinedSum::getPres(const Point& point)
+{
+	return 0.0;
+}
+
 double InclinedSum::get2D(int seg_idx)
 {
 	double sum = 0.0;

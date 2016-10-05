@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "boost/math/special_functions/expint.hpp"
-#include "src\inclined_sum\VerticalDirichlet.h"
+#include "src/inclined_sum/VerticalDirichlet.h"
 
 using boost::math::expint;
 

@@ -1,7 +1,7 @@
 #ifndef VERTICALDIRICHLET_H_
 #define VERTICALDIRICHLET_H_
 
-#include "src\inclined_sum\BaseSum.h"
+#include "src/inclined_sum/BaseSum.h"
 
 class VerticalDirichlet : public BaseSum
 {
