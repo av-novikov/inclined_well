@@ -12,6 +12,7 @@
 #include "src/inclined_sum/VerticalDirichlet.h"
 #include "src/inclined_sum/neumann/VerticalNeumann.h"
 #include "src/inclined_sum/neumann/VerticalNeumannUniformBoundaries.h"
+#include "src/inclined_sum/neumann/VerticalNeumannGaussBoundaries.h"
 
 using namespace std;
 using namespace paralution;
@@ -34,7 +35,7 @@ void testNeumann()
 	cout << "P_bhp = " << p_bhp << endl;
 }
 
-void testNeumannBoundary()
+void testNeumannUniformBoundary()
 {
 	WellFlow solver("task/config2d.xml");
 	double p_bhp;
@@ -43,6 +44,27 @@ void testNeumannBoundary()
 	auto t = measure_time(
 		[&]() {
 		VerticalNeumannUniformBoundaries inclSum(solver.getProps(), solver.getWell());
+		solver.setSummator(&inclSum);
+		const Parameters* props = solver.getProps();
+		p_bhp = solver.getP_bhp() * props->p_dim / BAR;
+		p_avg = inclSum.getPresAvg() * props->p_dim / BAR;
+	}, 1);
+
+	print_test_results("PERF_TEST", t);
+
+	cout << "P_bhp = " << p_bhp << endl;
+	cout << "P_avg = " << p_avg << endl;
+}
+
+void testNeumannGaussBoundary()
+{
+	WellFlow solver("task/config2d.xml");
+	double p_bhp;
+	double p_avg;
+
+	auto t = measure_time(
+		[&]() {
+		VerticalNeumannGaussBoundaries inclSum(solver.getProps(), solver.getWell());
 		solver.setSummator(&inclSum);
 		const Parameters* props = solver.getProps();
 		p_bhp = solver.getP_bhp() * props->p_dim / BAR;
@@ -95,7 +117,8 @@ int main(int argc, char* argv[])
 {
 	init_paralution();
 
-	testNeumannBoundary();
+	testNeumannUniformBoundary();
+	//testNeumannGaussBoundary();
 	//testDirichlet();
 	//test3D();
 
