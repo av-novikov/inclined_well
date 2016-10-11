@@ -13,5 +13,5 @@
 	<indexes K="1" M="50" N="50" L="10" I="100" />
 	<grid nx="20" ny="20" nz="10" />
 	<xi_c value="5000" />
-  <boundary_fluxes fx1="49.9" fx2="0.0" fy1="0.1" fy2="0.0" />
+  <boundary_fluxes fx1="12.5" fx2="-12.5" fy1="12.5" fy2="-12.5" />
 </task>
