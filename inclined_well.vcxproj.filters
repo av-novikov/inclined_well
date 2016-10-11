@@ -39,7 +39,7 @@
     <ClInclude Include="src\inclined_sum\neumann\VerticalNeumann.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="src\inclined_sum\neumann\VerticalNeumannUniformBoundaries.h">
+    <ClInclude Include="src\inclined_sum\neumann\VerticalNeumannBoundaries.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
@@ -71,7 +71,7 @@
     <ClCompile Include="src\inclined_sum\neumann\VerticalNeumann.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="src\inclined_sum\neumann\VerticalNeumannUniformBoundaries.cpp">
+    <ClCompile Include="src\inclined_sum\neumann\VerticalNeumannBoundaries.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
   </ItemGroup>

@@ -11,7 +11,7 @@
 #include "src/inclined_sum/Inclined3dSum.h"
 #include "src/inclined_sum/VerticalDirichlet.h"
 #include "src/inclined_sum/neumann/VerticalNeumann.h"
-#include "src/inclined_sum/neumann/VerticalNeumannUniformBoundaries.h"
+#include "src/inclined_sum/neumann/VerticalNeumannBoundaries.h"
 
 using namespace std;
 using namespace paralution;
@@ -23,7 +23,7 @@ void testNeumann()
 
 	auto t = measure_time(
 		[&]() {
-		VerticalNeumann inclSum(solver.getProps(), solver.getWell());
+		VerticalNeumannBoundaries inclSum(solver.getProps(), solver.getWell());
 		solver.setSummator(&inclSum);
 		const Parameters* props = solver.getProps();
 		p_bhp = solver.getP_bhp() * props->p_dim / BAR;
@@ -42,7 +42,7 @@ void testNeumannBoundary()
 
 	auto t = measure_time(
 		[&]() {
-		VerticalNeumannUniformBoundaries inclSum(solver.getProps(), solver.getWell());
+		VerticalNeumannBoundaries inclSum(solver.getProps(), solver.getWell());
 		solver.setSummator(&inclSum);
 		const Parameters* props = solver.getProps();
 		p_bhp = solver.getP_bhp() * props->p_dim / BAR;
