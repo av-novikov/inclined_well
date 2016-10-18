@@ -23,6 +23,11 @@ double VerticalDirichlet::get2D(int seg_idx)
 	return F2d[0];
 }
 
+double VerticalDirichlet::getPres(const Point& p)
+{
+	return 0.0;
+}
+
 double VerticalDirichlet::directSum()
 {
 	double sum = 0.0;
@@ -65,4 +70,27 @@ double VerticalDirichlet::fourierSum()
 	}
 
 	return props->visc * props->rate / props->sizes.z / props->kx / 4.0 / M_PI * sum;
+}
+
+double VerticalDirichlet::getAnalyticalPres()
+{
+	const Point& r = well->segs[0].r_bhp;
+	double qwe = r.y - props->rc.y;
+	return -props->visc * props->rate / props->sizes.z / props->kx / 4.0 / M_PI *
+			(log((1.0 - 2.0 * exp(-M_PI / props->sizes.x * (r.y - props->rc.y)) * cos(M_PI * (r.x - props->rc.x) / props->sizes.x) +
+				exp(-2.0 * M_PI / props->sizes.x * (r.y - props->rc.y))) /
+			((1.0 - 2.0 * exp(-M_PI / props->sizes.x * (r.y - props->rc.y)) * cos(M_PI * (r.x + props->rc.x) / props->sizes.x) +
+				exp(-2.0 * M_PI / props->sizes.x * (r.y - props->rc.y))))) +
+			log((1.0 - 2.0 * exp(-M_PI * props->sizes.y / props->sizes.x * (2.0 - (r.y - props->rc.y) / props->sizes.y)) * cos(M_PI * (r.x - props->rc.x) / props->sizes.x) +
+				exp(-2.0 * M_PI * props->sizes.y / props->sizes.x * (2.0 - (r.y - props->rc.y) / props->sizes.y))) /
+			((1.0 - 2.0 * exp(-M_PI * props->sizes.y / props->sizes.x * (2.0 - (r.y - props->rc.y) / props->sizes.y)) * cos(M_PI * (r.x + props->rc.x) / props->sizes.x) +
+				exp(-2.0 * M_PI * props->sizes.y / props->sizes.x * (2.0 - (r.y - props->rc.y) / props->sizes.y))))) -
+			log((1.0 - 2.0 * exp(-M_PI / props->sizes.x * (r.y + props->rc.y)) * cos(M_PI * (r.x - props->rc.x) / props->sizes.x) +
+				exp(-2.0 * M_PI / props->sizes.x * (r.y + props->rc.y))) /
+			((1.0 - 2.0 * exp(-M_PI / props->sizes.x * (r.y + props->rc.y)) * cos(M_PI * (r.x + props->rc.x) / props->sizes.x) +
+				exp(-2.0 * M_PI / props->sizes.x * (r.y + props->rc.y))))) -
+			log((1.0 - 2.0 * exp(-M_PI * props->sizes.y / props->sizes.x * (2.0 - (r.y + props->rc.y) / props->sizes.y)) * cos(M_PI * (r.x - props->rc.x) / props->sizes.x) +
+				exp(-2.0 * M_PI * props->sizes.y / props->sizes.x * (2.0 - (r.y + props->rc.y) / props->sizes.y))) /
+			((1.0 - 2.0 * exp(-M_PI * props->sizes.y / props->sizes.x * (2.0 - (r.y + props->rc.y) / props->sizes.y)) * cos(M_PI * (r.x + props->rc.x) / props->sizes.x) +
+				exp(-2.0 * M_PI * props->sizes.y / props->sizes.x * (2.0 - (r.y + props->rc.y) / props->sizes.y))))));
 }

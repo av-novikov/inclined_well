@@ -15,6 +15,9 @@ public:
 
 	double get2D(int seg_idx);
 	void prepare();
+
+	double getPres(const Point& p);
+	double getAnalyticalPres();
 };
 
 #endif /* VERTICALDIRICHLET_H_ */

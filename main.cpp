@@ -113,11 +113,32 @@ void testDirichlet()
 	cout << "P_bhp = " << p_bhp << endl;
 }
 
+void testVerticalDirichlet()
+{
+	WellFlow solver("task/config2d.xml");
+	double p_bhp, p_an;
+
+	auto t = measure_time(
+		[&]() {
+		VerticalDirichlet inclSum(solver.getProps(), solver.getWell());
+		solver.setSummator(&inclSum);
+		const Parameters* props = solver.getProps();
+		p_bhp = solver.getP_bhp() * props->p_dim / BAR;
+		p_an = inclSum.getAnalyticalPres() * props->p_dim / BAR;
+	}, 1);
+
+	print_test_results("PERF_TEST", t);
+
+	cout << "P_bhp = " << p_bhp << endl;
+	cout << "P_ana = " << p_an << endl;
+}
+
 int main(int argc, char* argv[])
 {
 	init_paralution();
 
-	testNeumannUniformBoundary();
+	testVerticalDirichlet();
+	//testNeumannUniformBoundary();
 	//testNeumannGaussBoundary();
 	//testDirichlet();
 	//test3D();
