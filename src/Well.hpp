@@ -147,6 +147,10 @@ struct Parameters
 
 	// Average pressure
 	double p_avg;
+
+	// Other props
+	static const double porosity;
+	static const double compressibility;
 };
 
 class Well

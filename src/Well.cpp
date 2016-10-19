@@ -10,6 +10,9 @@ using std::cout;
 using std::endl;
 using std::ofstream;
 
+const double Parameters::porosity = 0.1;
+const double Parameters::compressibility = 1.E-4;
+
 Well::Well(const Point& _r1, const Point& _r2, const int _num, const double _r_w) : r1(_r1), r2(_r2), num(_num), r_w(_r_w)
 {
 	length = sqrt((r2 - r1) * (r2 - r1));

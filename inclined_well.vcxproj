@@ -159,6 +159,7 @@
     <ClInclude Include="src\inclined_sum\neumann\VerticalNeumannGaussBoundaries.h" />
     <ClInclude Include="src\inclined_sum\neumann\VerticalNeumannUniformBoundaries.h" />
     <ClInclude Include="src\inclined_sum\VerticalDirichlet.h" />
+    <ClInclude Include="src\inclined_sum\welltests\HorizontalLogDerivation.hpp" />
     <ClInclude Include="src\utils\perf-utils.hpp" />
     <ClInclude Include="src\Well.hpp" />
     <ClInclude Include="src\WellFlow.h" />
@@ -172,6 +173,7 @@
     <ClCompile Include="src\inclined_sum\neumann\VerticalNeumannGaussBoundaries.cpp" />
     <ClCompile Include="src\inclined_sum\neumann\VerticalNeumannUniformBoundaries.cpp" />
     <ClCompile Include="src\inclined_sum\VerticalDirichlet.cpp" />
+    <ClCompile Include="src\inclined_sum\welltests\HorizontalLogDerivation.cpp" />
     <ClCompile Include="src\utils\perf-utils.cpp" />
     <ClCompile Include="src\Well.cpp" />
     <ClCompile Include="src\WellFlow.cpp" />

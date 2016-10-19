@@ -1,0 +1,17 @@
+<task>
+  <dimensions x_dim="1000" t_dim="3600" p_dim="100000" />
+  <geometry>
+    <sizes sx="1000" sy="1000" sz="10" />
+    <rc x="500" y="500" z="-5" />
+    <length value="300" />
+    <alpha value="90" />
+    <rw value="0.1" />
+  </geometry>
+  <viscosity value="1" />
+  <permeability kx="20" kz="20" />
+  <rate value="50" />
+  <indexes K="10" M="10" N="10" L="10" I="10" />
+  <grid nx="20" ny="20" nz="10" />
+  <xi_c value="5000" />
+  <boundary_fluxes fx1="12.5" fx2="-12.5" fy1="12.5" fy2="-12.5" />
+</task>

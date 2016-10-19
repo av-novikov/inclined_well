@@ -15,7 +15,7 @@ WellFlow::WellFlow(const string fileName)
 	loadTask(fileName);
 
 	assert(fabs(props.alpha) > EQUALITY_TOLERANCE); // non-vertical
-	assert(fabs(props.alpha) < M_PI_2 - EQUALITY_TOLERANCE); // non-horizontal
+	//assert(fabs(props.alpha) < M_PI_2 - EQUALITY_TOLERANCE); // non-horizontal
 
 	well = new Well(props.r1, props.r2, props.K, props.rw);
 	well->setRate(props.rate);
@@ -183,7 +183,7 @@ void WellFlow::findRateDistribution()
 	// Fills dpdq matrix
 	auto fill_dpdq = [&, this](double mult) {
 		double p1, p2, ratio;
-		ratio = mult * 0.0001 / (double)(props.K);
+		ratio = mult * 0.00001 / (double)(props.K);
 
 		for (int i = 0; i < props.K; i++)
 		{
@@ -262,15 +262,15 @@ void WellFlow::findRateDistribution()
 	calcPressure();
 
 	double H0 = well->pres_dev;
-	if (H0 > 0.1)
+	if (sqrt(H0) > 0.1 * fabs(well->pres_av))
 	{
 		well->printRates(&props);
 		fill_q();
 
-		double mult = 0.98;
+		double mult = 0.9;
 		double H = H0;
 
-		while (H > H0 / 50.0 || H > 0.05)
+		while (H > H0 / 50.0 || (sqrt(H) > 0.1 * fabs(well->pres_av)))
 		{
 			solve_dq(mult);
 

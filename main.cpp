@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <vector>
+#include <vector>
 
 #include "paralution.hpp"
 
@@ -13,6 +15,7 @@
 #include "src/inclined_sum/neumann/VerticalNeumann.h"
 #include "src/inclined_sum/neumann/VerticalNeumannUniformBoundaries.h"
 #include "src/inclined_sum/neumann/VerticalNeumannGaussBoundaries.h"
+#include "src/inclined_sum/welltests/HorizontalLogDerivation.hpp"
 
 using namespace std;
 using namespace paralution;
@@ -133,11 +136,38 @@ void testVerticalDirichlet()
 	cout << "P_ana = " << p_an << endl;
 }
 
+void testHorizontalLogDerivative()
+{
+	WellFlow solver("task/horizontal.xml");
+
+	HorizontalLogDerivation inclSum(solver.getProps(), solver.getWell());
+	solver.setSummator(&inclSum);
+	const Parameters* props = solver.getProps();
+
+	ofstream file;
+	file.open("P.txt", ofstream::out);
+
+	//const double finalTime = 20.0 * 86400.0;
+	double initStep = 10.0;
+	const int size = 100;
+	for (int i = 1; i <= size; i++)
+	{
+		inclSum.setTime(initStep);
+		file << initStep / 3600.0 << "\t" <<
+				solver.getP_bhp() * props->p_dim / BAR << "\t" <<
+				inclSum.getLogDerivative() * props->p_dim / BAR << endl;
+		initStep *= 1.2;
+	}
+
+	file.close();
+}
+
 int main(int argc, char* argv[])
 {
 	init_paralution();
 
-	testVerticalDirichlet();
+	testHorizontalLogDerivative();
+	//testVerticalDirichlet();
 	//testNeumannUniformBoundary();
 	//testNeumannGaussBoundary();
 	//testDirichlet();
