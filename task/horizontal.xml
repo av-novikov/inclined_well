@@ -1,5 +1,5 @@
 <task>
-  <dimensions x_dim="2100" t_dim="3600" p_dim="100000" />
+  <dimensions x_dim="0.1" t_dim="3600" p_dim="100000" />
   <geometry>
     <sizes sx="2100" sy="2100" sz="10" />
     <rc x="1050" y="1050" z="-5" />
@@ -10,7 +10,7 @@
   <viscosity value="1" />
   <permeability kx="20" kz="20" />
   <rate value="50" />
-  <indexes K="10" M="20" N="20" L="20" I="10" />
+  <indexes K="10" M="100" N="100" L="100" I="1" />
   <grid nx="50" ny="50" nz="50" />
   <xi_c value="5000" />
   <boundary_fluxes fx1="12.5" fx2="-12.5" fy1="12.5" fy2="-12.5" />

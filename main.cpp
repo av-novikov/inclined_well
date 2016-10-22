@@ -148,14 +148,15 @@ void testHorizontalLogDerivative()
 	file.open("P.txt", ofstream::out);
 
 	//const double finalTime = 20.0 * 86400.0;
-	double initStep = 10.0;
+	double initStep = 1000.0;
 	const int size = 100;
 	for (int i = 1; i <= size; i++)
 	{
 		inclSum.setTime(initStep);
 		file << initStep / 3600.0 << "\t" <<
 				solver.getP_bhp() * props->p_dim / BAR << "\t" <<
-				inclSum.getLogDerivative() * props->p_dim / BAR << endl;
+				inclSum.getLogDerivative() * props->p_dim / BAR << endl; 
+		cout << "P_bhp = " << solver.getP_bhp() * props->p_dim / BAR << "\t" << endl;
 		initStep *= 1.2;
 	}
 

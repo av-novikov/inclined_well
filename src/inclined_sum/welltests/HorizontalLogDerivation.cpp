@@ -84,7 +84,7 @@ double HorizontalLogDerivation::get2D(int seg_idx)
 		sum += F2d[seg_idx * props->K + k] * seg.rate / seg.length;
 	}
 
-	sum *= (-4.0 / M_PI / props->sizes.y / props->sizes.z / Parameters::compressibility);
+	sum *= (4.0 / M_PI / props->sizes.y / props->sizes.z / Parameters::compressibility);
 
 	return sum;
 }
@@ -99,7 +99,7 @@ double HorizontalLogDerivation::get3D(int seg_idx)
 		sum += F3d[seg_idx * props->K + k] * seg.rate / seg.length;
 	}
 
-	sum *= (-8.0 / M_PI / props->sizes.y / props->sizes.z / Parameters::compressibility);
+	sum *= (8.0 / M_PI / props->sizes.y / props->sizes.z / Parameters::compressibility);
 
 	return sum;
 }

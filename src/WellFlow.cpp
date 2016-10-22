@@ -262,7 +262,7 @@ void WellFlow::findRateDistribution()
 	calcPressure();
 
 	double H0 = well->pres_dev;
-	if (sqrt(H0) > 0.1 * fabs(well->pres_av))
+	if (sqrt(H0) > 0.05 * fabs(well->pres_av))
 	{
 		well->printRates(&props);
 		fill_q();
@@ -270,7 +270,7 @@ void WellFlow::findRateDistribution()
 		double mult = 0.9;
 		double H = H0;
 
-		while (H > H0 / 50.0 || (sqrt(H) > 0.1 * fabs(well->pres_av)))
+		while (H > H0 / 50.0 || (sqrt(H) > 0.01 * fabs(well->pres_av)))
 		{
 			solve_dq(mult);
 
