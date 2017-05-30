@@ -35,10 +35,11 @@ protected:
 	paralution::LocalVector<double> B;
 
 	void findRateDistribution();
-	void loadTask(const std::string fileName);
+	void loadTask(const std::string fileName, const WellType type = SLANTED);
 
+	bool firstTime;
 public:
-	WellFlow(const std::string fileName);
+	WellFlow(const std::string fileName, const WellType type = SLANTED);
 	~WellFlow();
 
 	void setSummator(BaseSum* _inclSum);

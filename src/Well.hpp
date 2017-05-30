@@ -7,8 +7,10 @@
 #include <new>
 #include <cmath>
 
-#define EQUALITY_TOLERANCE 1.E-8
+#define EQUALITY_TOLERANCE 1.E-9
 #define BAR 1.E+5
+
+enum WellType {SLANTED, FRAC};
 
 struct Point
 {

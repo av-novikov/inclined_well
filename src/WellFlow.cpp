@@ -10,11 +10,12 @@ using std::string;
 using std::stoi;
 using std::stod;
 
-WellFlow::WellFlow(const string fileName)
+WellFlow::WellFlow(const string fileName, const WellType type)
 {
-	loadTask(fileName);
+	loadTask(fileName, type);
 
-	assert(fabs(props.alpha) > EQUALITY_TOLERANCE); // non-vertical
+	if(type == SLANTED)
+		assert(fabs(props.alpha) > EQUALITY_TOLERANCE); // non-vertical
 	//assert(fabs(props.alpha) < M_PI_2 - EQUALITY_TOLERANCE); // non-horizontal
 
 	well = new Well(props.r1, props.r2, props.K, props.rw);
@@ -22,8 +23,9 @@ WellFlow::WellFlow(const string fileName)
 	well->setUniformRate();
 
 	props.r_obs = well->segs[int(props.K / 2)].r_bhp;
-}
 
+	firstTime = true;
+}
 WellFlow::~WellFlow()
 {
 	delete well;
@@ -41,8 +43,7 @@ WellFlow::~WellFlow()
 		delete dpdq;
 	}
 }
-
-void WellFlow::loadTask(const string fileName)
+void WellFlow::loadTask(const string fileName, const WellType type)
 {
 	TiXmlDocument* xml_file = new TiXmlDocument(fileName.c_str());
 	if (!xml_file->LoadFile())
@@ -108,16 +109,31 @@ void WellFlow::loadTask(const string fileName)
 	props.fy2 *= (props.visc / props.kx / props.sizes.x / props.sizes.z);
 	
 	double alpha = props.alpha;
-	props.alpha = atan(tan(alpha) * sqrt(props.kz / props.kx));
-	props.length *= sin(alpha) / sin(props.alpha);
-	props.sizes.z *= sqrt(props.kx / props.kz);
-	props.rc.z *= sqrt(props.kx / props.kz);
+	switch (type)
+	{
+	case SLANTED:
+		props.alpha = atan(tan(alpha) * sqrt(props.kz / props.kx));
+		props.length *= sin(alpha) / sin(props.alpha);
+		props.sizes.z *= sqrt(props.kx / props.kz);
+		props.rc.z *= sqrt(props.kx / props.kz);
 
-	props.r1 = props.r2 = props.rc;
-	props.r1.x -= props.length * sin(props.alpha) / 2.0;
-	props.r2.x += props.length * sin(props.alpha) / 2.0;
-	props.r1.z += props.length * cos(props.alpha) / 2.0;
-	props.r2.z -= props.length * cos(props.alpha) / 2.0;
+		props.r1 = props.r2 = props.rc;
+		props.r1.x -= props.length * sin(props.alpha) / 2.0;
+		props.r2.x += props.length * sin(props.alpha) / 2.0;
+		props.r1.z += props.length * cos(props.alpha) / 2.0;
+		props.r2.z -= props.length * cos(props.alpha) / 2.0;
+		break;
+	case FRAC:
+		props.sizes.z *= sqrt(props.kx / props.kz);
+		props.rc.z *= sqrt(props.kx / props.kz);
+
+		props.r1 = props.r2 = props.rc;
+		props.r1.x -= props.length * cos(props.alpha) / 2.0;
+		props.r2.x += props.length * cos(props.alpha) / 2.0;
+		props.r1.y -= props.length * sin(props.alpha) / 2.0;
+		props.r2.y += props.length * sin(props.alpha) / 2.0;
+		break;
+	}
 
 	if (props.K > 1)
 	{
@@ -145,22 +161,18 @@ void WellFlow::loadTask(const string fileName)
 		B.Allocate("B", props.K - 1);
 	}
 }
-
 void WellFlow::setSummator(BaseSum* _inclSum)
 {
 	inclSum = _inclSum;
 }
-
 const Parameters* WellFlow::getProps() const
 {
 	return &props;
 }
-
 const Well* WellFlow::getWell() const
 {
 	return well;
 }
-
 void WellFlow::findRateDistribution()
 {
 	// Fills the vector of rates
@@ -257,12 +269,10 @@ void WellFlow::findRateDistribution()
 		solve_sys();
 	};
 
-	// Body of function
-	well->setUniformRate();
 	calcPressure();
 
 	double H0 = well->pres_dev;
-	if (sqrt(H0) > 0.05 * fabs(well->pres_av))
+	if (sqrt(H0) > 0.001 * fabs(well->pres_av))
 	{
 		well->printRates(&props);
 		fill_q();
@@ -270,7 +280,7 @@ void WellFlow::findRateDistribution()
 		double mult = 0.9;
 		double H = H0;
 
-		while (H > H0 / 50.0 || (sqrt(H) > 0.01 * fabs(well->pres_av)))
+		while (H > H0 / 200.0 || (sqrt(H) > 0.002 * fabs(well->pres_av)))
 		{
 			solve_dq(mult);
 
@@ -290,7 +300,6 @@ void WellFlow::findRateDistribution()
 	else
 		well->printRates(&props);
 }
-
 void WellFlow::calcPressure()
 {
 	well->pres_av = well->pres_dev = 0.0;
@@ -317,11 +326,19 @@ void WellFlow::calcPressure()
 
 	well->pres_dev /= 2.0;
 }
-
 double WellFlow::getP_bhp()
 {
 	inclSum->prepare();
-	findRateDistribution();
+
+	if (firstTime)
+	{
+		// Body of function
+		well->setUniformRate();
+		firstTime = false;
+		findRateDistribution();
+	}
+
+	calcPressure();
 
 	return well->pres_av;
 }

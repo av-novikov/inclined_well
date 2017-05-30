@@ -1,16 +1,16 @@
 <task>
-	<dimensions x_dim="2100" t_dim="3600" p_dim="100000" />
+	<dimensions x_dim="2100" t_dim="100" p_dim="100000" />
 	<geometry>
-		<sizes sx="2100" sy="2100" sz="10" />
-		<rc x="1050" y="1050" z="-5" />
-		<length value="10" />
+		<sizes sx="2100" sy="2100" sz="1" />
+		<rc x="1000" y="1000" z="-0.5" />
+		<length value="1" />
 		<alpha value="0.01" />
 		<rw value="0.1" />	
 	</geometry>
 	<viscosity value="1" />
 	<permeability kx="20" kz="20" />
-	<rate value="50" />
-	<indexes K="1" M="5000" N="50" L="10" I="10" />
+	<rate value="5" />
+	<indexes K="1" M="10000" N="50" L="100" I="2" />
 	<grid nx="20" ny="20" nz="10" />
 	<xi_c value="5000" />
   <boundary_fluxes fx1="12.5" fx2="-12.5" fy1="12.5" fy2="-12.5" />
