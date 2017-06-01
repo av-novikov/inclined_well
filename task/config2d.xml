@@ -11,7 +11,6 @@
 	<permeability kx="20" kz="20" />
 	<rate value="5" />
 	<indexes K="1" M="10000" N="50" L="100" I="2" />
-	<grid nx="20" ny="20" nz="10" />
 	<xi_c value="5000" />
   <boundary_fluxes fx1="12.5" fx2="-12.5" fy1="12.5" fy2="-12.5" />
 </task>

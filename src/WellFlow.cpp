@@ -89,11 +89,6 @@ void WellFlow::loadTask(const string fileName, const WellType type)
 	props.L = stoi(xml_idxs->Attribute("L"));
 	props.I = stoi(xml_idxs->Attribute("I"));
 
-	TiXmlElement* xml_grid = xml_task->FirstChildElement("grid");
-	props.nx = stoi(xml_grid->Attribute("nx"));
-	props.ny = stoi(xml_grid->Attribute("ny"));
-	props.nz = stoi(xml_grid->Attribute("nz"));
-
 	TiXmlElement* xml_xi_c = xml_task->FirstChildElement("xi_c");
 	props.xi_c = stod(xml_xi_c->Attribute("value")) / props.x_dim / props.x_dim;
 
@@ -180,18 +175,15 @@ void WellFlow::findRateDistribution()
 		for (int i = 0; i < props.K; i++)
 			q[i] = well->segs[i].rate;
 	};
-
 	// Fills the vector of rate's deviations with zeros
 	auto fill_dq = [this]() {
 		for (int i = 0; i < props.K; i++)
 			dq[i] = 0.0;
 	};
-
 	// Set rate deviation
 	auto setRateDev = [this](int seg_idx, double ratio) {
 		well->segs[seg_idx].rate += props.rate * ratio;
 	};
-
 	// Fills dpdq matrix
 	auto fill_dpdq = [&, this](double mult) {
 		double p1, p2, ratio;
@@ -211,7 +203,6 @@ void WellFlow::findRateDistribution()
 			}
 		}
 	};
-
 	auto solve_sys = [this]() {
 		double s, p1, p2;
 
@@ -260,7 +251,6 @@ void WellFlow::findRateDistribution()
 		}
 		dq[0] = -s;
 	};
-
 	// Finds dq
 	auto solve_dq = [&, this](double mult) {
 		fill_dq();

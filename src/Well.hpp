@@ -89,6 +89,10 @@ inline double operator*(const Point& a1, const Point& a2)
 {
 	return a1.x * a2.x + a1.y * a2.y + a1.z * a2.z;
 };
+inline Point product(const Point& a1, const Point& a2)
+{
+	return Point(a1.x * a2.x, a1.y * a2.y, a1.z * a2.z);
+};
 
 struct WellSegment
 {
@@ -134,9 +138,6 @@ struct Parameters
 	int K;	
 	int M, N, L;	
 	int I;
-	
-	// Grid sizes
-	int nx, ny, nz;
 	
 	// Integral division limit
 	double xi_c;
