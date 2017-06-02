@@ -96,8 +96,8 @@ void Frac2dSum::prepareDirect()
 }
 void Frac2dSum::prepareFourier()
 {
-	double buf1[2], buf2[2], buf3[2], buf4[2], res;
-	Point v1, v2, v3, v4;
+	double buf1[3], buf2[3], buf3[3], buf4[3], res;
+	Point v1, v2, v3, v4, v5, v6;
 	int break_idx = 0;
 
 	for (int arr_idx = 0; arr_idx < props->K * props->K; arr_idx++)
@@ -112,22 +112,27 @@ void Frac2dSum::prepareFourier()
 			for (int q = -props->I; q <= props->I; q++)
 			{
 				Point pt((double)p, (double)q, 0.0);
+				const Point av_r = (seg.r1 + seg.r2) / 2.0;
 				v1 = (r - seg.r1 + 2.0 * product(pt, props->sizes));	v1 = product(v1, v1) / 4.0 / props->xi_c;
 				v2 = (r + seg.r1 + 2.0 * product(pt, props->sizes));	v2 = product(v2, v2) / 4.0 / props->xi_c;
 				v3 = (r - seg.r2 + 2.0 * product(pt, props->sizes));	v3 = product(v3, v3) / 4.0 / props->xi_c;
 				v4 = (r + seg.r2 + 2.0 * product(pt, props->sizes));	v4 = product(v4, v4) / 4.0 / props->xi_c;
+				v5 = (r - av_r + 2.0 * product(pt, props->sizes));		v5 = product(v5, v5) / 4.0 / props->xi_c;
+				v6 = (r + av_r + 2.0 * product(pt, props->sizes));		v6 = product(v6, v6) / 4.0 / props->xi_c;
 
 				buf1[0] = v1.x + v1.y;		buf2[0] = v1.x + v2.y;
 				buf3[0] = v2.x + v1.y;		buf4[0] = v2.x + v2.y;
 				buf1[1] = v3.x + v3.y;		buf2[1] = v3.x + v4.y;
 				buf3[1] = v4.x + v3.y;		buf4[1] = v4.x + v4.y;
+				buf1[2] = v5.x + v5.y;		buf2[2] = v5.x + v6.y;
+				buf3[2] = v6.x + v5.y;		buf4[2] = v6.x + v6.y;
 
-				res = (expint(-buf1[0]) + expint(-buf1[1]) + 4.0 * expint(-(buf1[0] + buf1[1]) / 2.0)) * (buf1[1] - buf1[0]) / 6.0;
-				res -= (expint(-buf2[0]) + expint(-buf2[1]) + 4.0 * expint(-(buf2[0] + buf2[1]) / 2.0)) * (buf2[1] - buf2[0]) / 6.0;
-				res -= (expint(-buf3[0]) + expint(-buf3[1]) + 4.0 * expint(-(buf3[0] + buf3[1]) / 2.0)) * (buf3[1] - buf3[0]) / 6.0;
-				res += (expint(-buf4[0]) + expint(-buf4[1]) + 4.0 * expint(-(buf4[0] + buf4[1]) / 2.0)) * (buf4[1] - buf4[0]) / 6.0;
+				res = (expint(-buf1[0]) + expint(-buf1[1]) + 4.0 * expint(-buf1[2]));
+				res -= (expint(-buf2[0]) + expint(-buf2[1]) + 4.0 * expint(-buf2[2]));
+				res -= (expint(-buf3[0]) + expint(-buf3[1]) + 4.0 * expint(-buf3[2]));
+				res += (expint(-buf4[0]) + expint(-buf4[1]) + 4.0 * expint(-buf4[2]));
 
-				F3d[arr_idx] -= res;
+				F3d[arr_idx] -= res * (seg.r2.x - seg.r1.x) / 6.0;
 			}
 		}
 	}

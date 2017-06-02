@@ -32,16 +32,13 @@ Well::Well(const Point& _r1, const Point& _r2, const int _num, const double _r_w
 		tmp1 = tmp2;
 	};
 }
-
 Well::~Well()
 {
 }
-
 void Well::setRate(double _rate)
 {
 	rate = _rate;
 }
-
 void Well::setUniformRate()
 {
 	for_each(segs.begin(), segs.end(), [this](WellSegment& seg)
@@ -49,7 +46,6 @@ void Well::setUniformRate()
 		seg.rate = seg.length / length * rate;
 	});
 }
-
 void Well::printRates(const Parameters* props)
 {
 	double av2d = 0.0, av3d = 0.0;
@@ -68,7 +64,6 @@ void Well::printRates(const Parameters* props)
 	cout << "Av. 3D = " << av3d * props->p_dim / BAR << endl;
 	cout << "Deviation = " << pres_dev * props->p_dim * props->p_dim / BAR / BAR << endl;
 }
-
 void Well::writeRates(const Parameters* props)
 {
 	double av2d = 0.0, av3d = 0.0;	

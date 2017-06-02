@@ -47,7 +47,6 @@ inline std::ostream& operator<<(std::ostream& os, const Point& a)
 	os << a.x << " " << a.y << " " << a.z << std::endl;
 	return os;
 }
-
 inline bool operator==(const Point& a1, const Point& a2)
 {
 	if( (fabs(a2.x - a1.x) > EQUALITY_TOLERANCE) || 

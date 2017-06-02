@@ -168,6 +168,7 @@ const Well* WellFlow::getWell() const
 {
 	return well;
 }
+
 void WellFlow::findRateDistribution()
 {
 	// Fills the vector of rates

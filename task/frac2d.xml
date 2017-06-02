@@ -10,7 +10,7 @@
 	<viscosity value="1" />
 	<permeability kx="20" kz="20" />
 	<rate value="50" />
-	<indexes K="5" M="100" N="10" L="100" I="1" />
+	<indexes K="30" M="10" N="10" L="100" I="1" />
 	<xi_c value="50000" />
   <boundary_fluxes fx1="12.5" fx2="-12.5" fy1="12.5" fy2="-12.5" />
 </task>
