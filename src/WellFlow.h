@@ -4,47 +4,76 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <string>
+#include <vector>
+#include <cassert>
 
 #include "paralution.hpp"
+#include "tinyxml2.h"
 
 #include "src/Well.hpp"
+#include "src/Fracture.hpp"
 #include "src/inclined_sum/BaseSum.h"
 
 class WellFlow
 {
 protected:
-	Parameters props;
-	Well* well;
-	BaseSum* inclSum;
+	std::vector<Well> wells;
+	std::vector<Fracture> fractures;
+	std::vector<WellSegment*> segs;
+	std::vector<BaseSum*> summators;
+	MainProperties props;
 
-	int matSize;
-	paralution::Inversion<paralution::LocalMatrix<double>, paralution::LocalVector<double>, double> ls;
-
-	double* q;
-	double* dq;
-	double* b;
-	double* x;
-	double* a;
-	double** dpdq;
-
-	int* ind_i;
-	int* ind_j;
-
-	paralution::LocalMatrix<double> A;
-	paralution::LocalVector<double> X;
-	paralution::LocalVector<double> B;
+	// For linear system treating
+	int seg_num;
+		int matSize;
+		paralution::Inversion<paralution::LocalMatrix<double>, paralution::LocalVector<double>, double> ls;
+		double* q;
+		double* dq;
+		double* b;
+		double* x;
+		double* a;
+		double** dpdq;
+		int* ind_i;
+		int* ind_j;
+		paralution::LocalMatrix<double> A;
+		paralution::LocalVector<double> X;
+		paralution::LocalVector<double> B;
 
 	void findRateDistribution();
-	void loadTask(const std::string fileName, const WellType type = SLANTED);
+	void load(const std::string fileName);
+	void loadGeomProps(tinyxml2::XMLElement* xml_well, WellGeomProperties* geom_props);
+	void loadSumProps(tinyxml2::XMLElement* xml_summator, SummatorProperties* sum_props);
 
 	bool firstTime;
+
+	double pres_av, pres_dev;
+
+	inline const int getWellIdx(const int seg_idx) const
+	{
+		int s = 0;
+		for (int i = 0; i < wells.size() - 1; i++)
+		{
+			s += wells[i].getGeomProps()->seg_num;
+			if (seg_idx < s)
+				return i;
+		}
+	}
+	inline const int getSumIdx(const int seg_idx) const
+	{
+		int s = 0;
+		for (int i = 0; i < wells.size() - 1; i++)
+		{
+			s += wells[i].getGeomProps()->seg_num;
+			if (seg_idx < s)
+				return i;
+		}
+	}
 public:
-	WellFlow(const std::string fileName, const WellType type = SLANTED);
+	WellFlow(const std::string fileName);
 	~WellFlow();
 
-	void setSummator(BaseSum* _inclSum);
-	const Parameters* getProps() const;
-	const Well* getWell() const;
+	const MainProperties* getProps() const;
+	const Well* getWell(const int i) const;
 
 	void calcPressure();
 	double getP_bhp();

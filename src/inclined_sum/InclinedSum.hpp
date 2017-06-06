@@ -10,7 +10,7 @@ protected:
 	void prepare3D();
 		
 public:
-	InclinedSum(const Parameters* _props, const Well* _well);
+	InclinedSum(const SummatorProperties& _sprops, const MainProperties* _props, const Well* _well);
 	~InclinedSum();
 	
 	void prepare();

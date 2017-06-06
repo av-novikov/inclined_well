@@ -9,7 +9,7 @@ protected:
 	double getBoundaries(const Point& point) const;
 
 public:
-	VerticalNeumannUniformBoundaries(const Parameters* _props, const Well* _well);
+	VerticalNeumannUniformBoundaries(const SummatorProperties& _sprops, const MainProperties* _props, const Well* _well);
 	~VerticalNeumannUniformBoundaries();
 
 	double getPresAvg() const;

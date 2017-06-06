@@ -10,7 +10,7 @@ protected:
 	double fourierSum();
 
 public:
-	VerticalDirichlet(const Parameters* _props, const Well* _well);
+	VerticalDirichlet(const SummatorProperties& _sprops, const MainProperties* _props, const Well* _well);
 	~VerticalDirichlet();
 
 	double get2D(int seg_idx);

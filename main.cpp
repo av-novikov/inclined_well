@@ -22,7 +22,7 @@
 using namespace std;
 using namespace paralution;
 
-void testNeumann()
+/*void testNeumann()
 {
 	WellFlow solver("task/config2d.xml");
 	double p_bhp;
@@ -132,17 +132,15 @@ void testVerticalDirichlet()
 
 	auto t = measure_time(
 		[&]() {
-		VerticalDirichlet inclSum(solver.getProps(), solver.getWell());
-		solver.setSummator(&inclSum);
-		const Parameters* props = solver.getProps();
+		const MainProperties* props = solver.getProps();
 		p_bhp = solver.getP_bhp() * props->p_dim / BAR;
-		p_an = inclSum.getAnalyticalPres() * props->p_dim / BAR;
+		//p_an = inclSum.getAnalyticalPres() * props->p_dim / BAR;
 	}, 1);
 
 	print_test_results("PERF_TEST", t);
 	cout << setprecision(6);
 	cout << "P_bhp = " << p_bhp << endl;
-	cout << "P_ana = " << p_an << endl;
+	//cout << "P_ana = " << p_an << endl;
 }
 void testHorizontalLogDerivative()
 {
@@ -170,31 +168,28 @@ void testHorizontalLogDerivative()
 	}
 
 	file.close();
-}
+}*/
 void testFrac2D()
 {
-	WellFlow solver("task/frac2d.xml", FRAC);
+	WellFlow solver("task/new.xml");
 	double p_bhp;
 
 	auto t = measure_time(
 		[&]() {
-		Frac2dSum inclSum(solver.getProps(), solver.getWell());
-		solver.setSummator(&inclSum);
-		const Parameters* props = solver.getProps();
+		const MainProperties* props = solver.getProps();
 		p_bhp = solver.getP_bhp() * props->p_dim / BAR;
 	}, 1);
 
 	print_test_results("PERF_TEST", t);
 
+	cout << setprecision(4);
 	cout << "P_bhp = " << p_bhp << endl;
 }
 
 int main(int argc, char* argv[])
 {
 	init_paralution();
-
 	testFrac2D();
-
 	stop_paralution();
 
 	return 0;

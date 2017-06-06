@@ -9,7 +9,7 @@ protected:
 	double getBoundaries(const Point& point) const;
 
 public:
-	VerticalNeumannGaussBoundaries(const Parameters* _props, const Well* _well);
+	VerticalNeumannGaussBoundaries(const SummatorProperties& _sprops, const MainProperties* _props, const Well* _well);
 	~VerticalNeumannGaussBoundaries();
 
 	double getPresAvg() const;

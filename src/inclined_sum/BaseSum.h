@@ -5,20 +5,26 @@
 #include <math.h>
 
 #include "src/Well.hpp"
+#include "src/Properties.hpp"
 
 class BaseSum
 {
 protected:
-	const Parameters* props;
+	const SummatorProperties sprops;
+	const MainProperties* props;
+	const WellGeomProperties* gprops;
 	const Well* well;
 
 	int size;
 	double* F2d;
 	double* F3d;
-
 public:
-	BaseSum(const Parameters* _props, const Well* _well);
+	BaseSum(const SummatorProperties& _sprops, const MainProperties* _props, const Well* _well);
 	virtual ~BaseSum();
+
+	const SummatorProperties* getSumProps() const;
+	const Well* getWell() const;
+	Well* getWell();
 
 	virtual void prepare() = 0;
 	virtual double getPres(const Point& point) = 0;

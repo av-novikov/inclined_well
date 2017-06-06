@@ -8,7 +8,7 @@ class HorizontalLogDerivation : public BaseSum
 protected:
 	double time;
 public:
-	HorizontalLogDerivation(const Parameters* _props, const Well* _well);
+	HorizontalLogDerivation(const SummatorProperties& _sprops, const MainProperties* _props, const Well* _well);
 	~HorizontalLogDerivation();
 
 	void prepare();

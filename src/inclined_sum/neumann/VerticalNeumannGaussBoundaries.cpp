@@ -1,25 +1,21 @@
 #include "src/inclined_sum/neumann/VerticalNeumannGaussBoundaries.h"
 
-VerticalNeumannGaussBoundaries::VerticalNeumannGaussBoundaries(const Parameters* _props, const Well* _well) : VerticalNeumann(_props, _well)
+VerticalNeumannGaussBoundaries::VerticalNeumannGaussBoundaries(const SummatorProperties& _sprops, const MainProperties* _props, const Well* _well) : VerticalNeumann(_sprops, _props, _well)
 {
 }
-
 VerticalNeumannGaussBoundaries::~VerticalNeumannGaussBoundaries()
 {
 }
-
 double VerticalNeumannGaussBoundaries::get2D(int seg_idx)
 {
 	const Point& r = well->segs[0].r_bhp;
 
 	return F2d[0] + getBoundaries(r) - getPresAvg();
 }
-
 double VerticalNeumannGaussBoundaries::getPres(const Point& point)
 {
 	return F2d[0] + getBoundaries(point) - getPresAvg();
 }
-
 double VerticalNeumannGaussBoundaries::getBoundaries(const Point& point) const
 {
 	double sum = 0.0;
@@ -57,7 +53,6 @@ double VerticalNeumannGaussBoundaries::getBoundaries(const Point& point) const
 
 	return sum;
 }
-
 double VerticalNeumannGaussBoundaries::getPresAvg() const
 {
 	return 0.0;

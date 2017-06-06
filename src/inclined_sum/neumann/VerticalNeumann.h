@@ -10,7 +10,7 @@ protected:
 	double fourierSum(const Point& r);
 
 public:
-	VerticalNeumann(const Parameters* _props, const Well* _well);
+	VerticalNeumann(const SummatorProperties& _sprops, const MainProperties* _props, const Well* _well);
 	~VerticalNeumann();
 
 	double getPres(const Point& point);
