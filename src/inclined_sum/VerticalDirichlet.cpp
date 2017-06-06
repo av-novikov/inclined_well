@@ -33,7 +33,7 @@ double VerticalDirichlet::directSum()
 	for (int m = 1; m < sprops.M; m++)
 	{
 		buf1 = sin(M_PI * (double)(m)* gprops->rc.x / props->sizes.x) * sin(M_PI * (double)(m)* gprops->rc.x / props->sizes.x);
-		for (int n = 1; n < sprops.N; n++)
+		for (int n = 1; n < sprops.M; n++)
 		{
 			buf2 = M_PI * M_PI * ((double)(m * m) / props->sizes.x / props->sizes.x + (double)(n * n) / props->sizes.y / props->sizes.y);
 
@@ -66,7 +66,7 @@ double VerticalDirichlet::fourierSum()
 
 	return props->visc * props->rate / props->sizes.z / props->kx / 4.0 / M_PI * sum;
 }
-double VerticalDirichlet::getAnalyticalPres()
+double VerticalDirichlet::getAnalyticalPres() const
 {
 	const Point& r = well->segs[0].r_bhp;
 	return -props->visc * props->rate / props->sizes.z / props->kx / 4.0 / M_PI *

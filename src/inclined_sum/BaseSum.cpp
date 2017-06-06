@@ -40,3 +40,7 @@ Well* BaseSum::getWell()
 {
 	return const_cast<Well*>(well);
 }
+double BaseSum::getAnalyticalPres() const
+{
+	return 0.0;
+}

@@ -17,7 +17,7 @@ public:
 	void prepare();
 
 	double getPres(const Point& p);
-	double getAnalyticalPres();
+	double getAnalyticalPres() const;
 };
 
 #endif /* VERTICALDIRICHLET_H_ */

@@ -24,7 +24,11 @@ Well::Well(const WellGeomProperties& _props, const WellType& _type, const string
 	for(int i = 0; i < num; i++)
 	{
 		tmp2 = props.r1 + (double)( i + 1 ) * (props.r2 - props.r1) / (double)( num );
-		tmp3 = (tmp1 + tmp2) / 2.0;		tmp3.y += props.rw; // cos(alpha);
+		tmp3 = (tmp1 + tmp2) / 2.0;		
+		if(type != WellType::FRAC)
+			tmp3.y += props.rw; // cos(alpha);
+		else
+			tmp3.y += props.rw / 10.0; // cos(alpha);
 		tau1 = (double)(i) / (double)(num);
 		tau2 = (double)(i+1) / (double)(num);
 		segs.push_back( WellSegment(tmp1, tmp2, tmp3, tau1, tau2, well_idx, i) );

@@ -47,33 +47,13 @@ protected:
 	bool firstTime;
 
 	double pres_av, pres_dev;
-
-	inline const int getWellIdx(const int seg_idx) const
-	{
-		int s = 0;
-		for (int i = 0; i < wells.size() - 1; i++)
-		{
-			s += wells[i].getGeomProps()->seg_num;
-			if (seg_idx < s)
-				return i;
-		}
-	}
-	inline const int getSumIdx(const int seg_idx) const
-	{
-		int s = 0;
-		for (int i = 0; i < wells.size() - 1; i++)
-		{
-			s += wells[i].getGeomProps()->seg_num;
-			if (seg_idx < s)
-				return i;
-		}
-	}
 public:
 	WellFlow(const std::string fileName);
 	~WellFlow();
 
 	const MainProperties* getProps() const;
 	const Well* getWell(const int i) const;
+	const BaseSum* getSummator(const int i) const;
 
 	void calcPressure();
 	double getP_bhp();

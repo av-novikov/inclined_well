@@ -38,6 +38,8 @@ WellFlow::~WellFlow()
 {
 	wells.clear();
 	fractures.clear();
+	for (auto& summator : summators)
+		delete summator;
 	summators.clear();
 	segs.clear();
 
@@ -99,10 +101,7 @@ void WellFlow::load(const string fileName)
 		double alpha = geom_props.alpha;
 		if(w_type == "vertical")
 		{
-			geom_props.alpha = atan(tan(alpha) * sqrt(props.kz / props.kx));
-			geom_props.length *= sin(alpha) / sin(geom_props.alpha);
-			props.sizes.z *= sqrt(props.kx / props.kz);
-			geom_props.rc.z *= sqrt(props.kx / props.kz);
+			assert(geom_props.alpha == 0.0);
 
 			geom_props.r1 = geom_props.r2 = geom_props.rc;
 			geom_props.r1.x -= geom_props.length * sin(geom_props.alpha) / 2.0;
@@ -245,6 +244,10 @@ const MainProperties* WellFlow::getProps() const
 const Well* WellFlow::getWell(const int i) const
 {
 	return &wells[i];
+}
+const BaseSum* WellFlow::getSummator(const int i) const
+{
+	return summators[i];
 }
 
 void WellFlow::findRateDistribution()

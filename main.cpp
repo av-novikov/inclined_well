@@ -125,23 +125,6 @@ void testDirichlet()
 	cout << "P_y- = " << p3 << endl;
 	cout << "P_y+ = " << p4 << endl;
 }
-void testVerticalDirichlet()
-{
-	WellFlow solver("task/config2d.xml");
-	double p_bhp, p_an;
-
-	auto t = measure_time(
-		[&]() {
-		const MainProperties* props = solver.getProps();
-		p_bhp = solver.getP_bhp() * props->p_dim / BAR;
-		//p_an = inclSum.getAnalyticalPres() * props->p_dim / BAR;
-	}, 1);
-
-	print_test_results("PERF_TEST", t);
-	cout << setprecision(6);
-	cout << "P_bhp = " << p_bhp << endl;
-	//cout << "P_ana = " << p_an << endl;
-}
 void testHorizontalLogDerivative()
 {
 	WellFlow solver("task/horizontal.xml");
@@ -185,11 +168,28 @@ void testFrac2D()
 	cout << setprecision(4);
 	cout << "P_bhp = " << p_bhp << endl;
 }
+void testVerticalDirichlet()
+{
+	WellFlow solver("task/vertical.xml");
+	double p_bhp, p_an;
+
+	auto t = measure_time(
+		[&]() {
+		const MainProperties* props = solver.getProps();
+		p_bhp = solver.getP_bhp() * props->p_dim / BAR;
+		p_an = solver.getSummator(0)->getAnalyticalPres() * props->p_dim / BAR;
+	}, 1);
+
+	print_test_results("PERF_TEST", t);
+	cout << setprecision(6);
+	cout << "P_bhp = " << p_bhp << endl;
+	cout << "P_ana = " << p_an << endl;
+}
 
 int main(int argc, char* argv[])
 {
 	init_paralution();
-	testFrac2D();
+	testVerticalDirichlet();
 	stop_paralution();
 
 	return 0;
