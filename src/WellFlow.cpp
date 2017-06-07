@@ -105,7 +105,10 @@ void WellFlow::load(const string fileName)
 		string w_type = xml_well->Attribute("type");
 		geom_props.seg_num = stoi(xml_well->Attribute("K"));
 		seg_num += geom_props.seg_num;
-		loadGeomProps(xml_well, &geom_props);
+		if(w_type == "slanted")
+			loadSlantedGeomProps(xml_well, &geom_props);
+		else
+			loadGeomProps(xml_well, &geom_props);
 
 		SummatorProperties sum_props;
 		sum_props.K = geom_props.seg_num;
@@ -154,19 +157,8 @@ void WellFlow::load(const string fileName)
 		}
 		else if (w_type == "slanted")
 		{
-			geom_props.alpha = atan(tan(alpha) * sqrt(props.kz / props.kx));
-			geom_props.length *= sin(alpha) / sin(geom_props.alpha);
-			props.sizes.z *= sqrt(props.kx / props.kz);
-			geom_props.rc.z *= sqrt(props.kx / props.kz);
-
-			geom_props.r1 = geom_props.r2 = geom_props.rc;
-			geom_props.r1.x -= geom_props.length * sin(geom_props.alpha) / 2.0;
-			geom_props.r2.x += geom_props.length * sin(geom_props.alpha) / 2.0;
-			geom_props.r1.z += geom_props.length * cos(geom_props.alpha) / 2.0;
-			geom_props.r2.z -= geom_props.length * cos(geom_props.alpha) / 2.0;
-
 			wells.push_back(Well(geom_props, WellType::SLANTED, w_name, seg_idx++));
-			summators.push_back(static_cast<BaseSum*>(new InclinedSum(sum_props, &props, &wells[wells.size() - 1])));
+			summators.push_back(static_cast<BaseSum*>(new Inclined3dSum(sum_props, &props, &wells[wells.size() - 1])));
 		}
 		else if (w_type == "horizontal")
 		{
@@ -238,6 +230,23 @@ void WellFlow::loadGeomProps(tinyxml2::XMLElement* xml_well_props, WellGeomPrope
 	geom_props->length = stod(xml_length->Attribute("value")) / props.x_dim;
 	XMLElement* xml_alpha = xml_geom->FirstChildElement("alpha");
 	geom_props->alpha = stod(xml_alpha->Attribute("value")) * M_PI / 180.0;
+	XMLElement* xml_rw = xml_geom->FirstChildElement("rw");
+	geom_props->rw = stod(xml_rw->Attribute("value")) / props.x_dim;
+}
+void WellFlow::loadSlantedGeomProps(tinyxml2::XMLElement* xml_well_props, WellGeomProperties* geom_props)
+{
+	XMLElement* xml_geom = xml_well_props->FirstChildElement("geometry");
+	XMLElement* xml_r1 = xml_geom->FirstChildElement("r1");
+	geom_props->r1.x = stod(xml_r1->Attribute("x")) / props.x_dim;
+	geom_props->r1.y = stod(xml_r1->Attribute("y")) / props.x_dim;
+	geom_props->r1.z = stod(xml_r1->Attribute("z")) / props.x_dim;
+	XMLElement* xml_r2 = xml_geom->FirstChildElement("r2");
+	geom_props->r2.x = stod(xml_r2->Attribute("x")) / props.x_dim;
+	geom_props->r2.y = stod(xml_r2->Attribute("y")) / props.x_dim;
+	geom_props->r2.z = stod(xml_r2->Attribute("z")) / props.x_dim;
+	geom_props->length = sqrt((geom_props->r2 - geom_props->r1) * (geom_props->r2 - geom_props->r1));
+	geom_props->rc = (geom_props->r1 + geom_props->r2) / 2.0;
+	geom_props->alpha = 0.0;
 	XMLElement* xml_rw = xml_geom->FirstChildElement("rw");
 	geom_props->rw = stod(xml_rw->Attribute("value")) / props.x_dim;
 }

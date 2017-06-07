@@ -42,6 +42,7 @@ protected:
 	void findRateDistribution();
 	void load(const std::string fileName);
 	void loadGeomProps(tinyxml2::XMLElement* xml_well, WellGeomProperties* geom_props);
+	void loadSlantedGeomProps(tinyxml2::XMLElement* xml_well, WellGeomProperties* geom_props);
 	void loadSumProps(tinyxml2::XMLElement* xml_summator, SummatorProperties* sum_props);
 
 	bool firstTime;

@@ -1,9 +1,6 @@
 #include <new>
 
-#include "boost/math/special_functions/gamma.hpp"
 #include "src/inclined_sum/Inclined3dSum.h"
-
-using boost::math::tgamma;
 
 Inclined3dSum::Inclined3dSum(const SummatorProperties& _sprops, const MainProperties* _props, const Well* _well) : BaseSum(_sprops, _props, _well)
 {
@@ -18,311 +15,167 @@ double Inclined3dSum::getPres(const Point& point)
 double Inclined3dSum::get2D(int seg_idx)
 {
 	double sum = 0.0;
-
 	for (int k = 0; k < sprops.K; k++)
 	{
 		const WellSegment& seg = well->segs[k];
 		sum += F2d[seg_idx * sprops.K + k] * seg.rate / seg.length;
 	}
 
+	sum *= (8.0 * props->visc * gprops->length / props->sizes.x / props->sizes.y / props->sizes.z / props->kx);
 	return sum;
 }
 double Inclined3dSum::get3D(int seg_idx)
 {
 	double sum = 0.0;
-
 	for (int k = 0; k < sprops.K; k++)
 	{
 		const WellSegment& seg = well->segs[k];
 		sum += F3d[seg_idx * sprops.K + k] * seg.rate / seg.length;
 	}
 
+	sum *= (props->visc * gprops->length / 8.0 / M_PI / props->kx);
 	return sum;
 }
 void Inclined3dSum::prepare()
 {
-	prepare2D();	prepare3D();
+	prepareDirect();	prepareFourier();
 }
-void Inclined3dSum::prepare2D()
+void Inclined3dSum::prepareDirect()
 {
-	for (int arr_idx = 0; arr_idx < sprops.K * sprops.K; arr_idx++)
-	{
-		F2d[arr_idx] = 0.0;
-	}
-}
-void Inclined3dSum::prepare3D()
-{
-	double a[2], b[2], c[2], d[2], e[2], f[2];
-	double A, B1, B2;
-	double sum1, sum2, sum3;
-	double buf1, buf2, buf3;
-	int k;
-
-	auto intExpansion2d = [this](double A, double B) {
-		return -2.0 / sqrt(M_PI) * (pow(B / sqrt(A), 1.5) * tgamma(3.0 / 4.0, A / sprops.xi_c) * 
-									(A*A - A*B*B / 4.0 + 21.0 / 160.0 * B*B*B*B) + 
-									B*B/A/A / 480.0 * pow(B / sqrt(sprops.xi_c), 1.5) * exp(-A / sqrt(sprops.xi_c)) * 
-									(4.0 * A * (3.0 * B*B / sqrt(sprops.xi_c) - 10) + 21.0 * B*B));
-	};
-	auto intExpansion3d = [this](double A, double B) {
-		return 2.0 / sqrt(M_PI) * (1.0 / 2.0 * sqrt(M_PI * B * B / A) * erf(sqrt(A / sprops.xi_c)) * (2.0 - B * B / A / 3.0 + 3.0 * B * B * B * B / A / A / 20.0) - 
-				B * B * B / A / sqrt(sprops.xi_c) * exp(-A / sprops.xi_c) * (-1.0 / 3.0 + B * B / sprops.xi_c / 10.0 + 3.0 * B * B / A / 20.0));
-	};
+	double sum = 0.0;
+	double sum_prev_m, sum_prev_n;
+	double buf, F1, F2;
+	int break_idx_m = 0, break_idx_n = 0;
 
 	for (int arr_idx = 0; arr_idx < sprops.K * sprops.K; arr_idx++)
 	{
 		const WellSegment seg = well->segs[arr_idx % sprops.K];
-		const Point& point = well->segs[int((double)(arr_idx) / (double)(sprops.K))].r_bhp;
+		const Point& r = well->segs[int((double)(arr_idx) / (double)(sprops.K))].r_bhp;
+		const Point rad = gprops->r2 - gprops->r1;
 
-		F3d[arr_idx] = sum1 = sum2 = sum3 = 0.0;
-	
-		for (int p = -sprops.I; p <= sprops.I; p++)
-		{
-			for (int q = -sprops.I; q <= sprops.I; q++)
-			{
-				for (int r = -sprops.I; r <= sprops.I; r++)
-				{
-					a[0] = gprops->r1.x - gprops->r2.x;	b[0] = point.x + 2.0 * (double)(p)* props->sizes.x - gprops->r1.x;
-					a[1] = gprops->r2.x - gprops->r1.x;	b[1] = point.x + 2.0 * (double)(p)* props->sizes.x + gprops->r1.x;
-					c[0] = gprops->r1.y - gprops->r2.y;	d[0] = point.y + 2.0 * (double)(q)* props->sizes.y - gprops->r1.y;
-					c[1] = gprops->r2.y - gprops->r1.y;	d[1] = point.y + 2.0 * (double)(q)* props->sizes.y + gprops->r1.y;
-					e[0] = gprops->r1.z - gprops->r2.z;	f[0] = point.z + 2.0 * (double)(r)* props->sizes.z - gprops->r1.z;
-					e[1] = gprops->r2.z - gprops->r1.z;	f[1] = point.z + 2.0 * (double)(r)* props->sizes.z + gprops->r1.z;
+		F2d[arr_idx] = sum_prev_m = 0.0;
 
-					// 0-0-0
-					A = (a[0] * a[0] * (d[0] * d[0] + f[0] * f[0]) -
-						2.0 * a[0] * b[0] * (c[0] * d[0] + e[0] * f[0]) +
-						b[0] * b[0] * (c[0] * c[0] + e[0] * e[0]) +
-						(e[0] * d[0] - c[0] * f[0]) * (e[0] * d[0] - c[0] * f[0])) / 
-						(4.0 * (a[0] * a[0] + c[0] * c[0] + e[0] * e[0]));
-					B1 = a[0] * (a[0] * seg.tau1 + b[0]) + c[0] * (c[0] * seg.tau1 + d[0]) + e[0] * (e[0] * seg.tau1 + f[0]) / 
-						(2.0 * sqrt(a[0] * a[0] + c[0] * c[0] + e[0] * e[0]));
-					B2 = a[0] * (a[0] * seg.tau2 + b[0]) + c[0] * (c[0] * seg.tau2 + d[0]) + e[0] * (e[0] * seg.tau2 + f[0]) /
-						(2.0 * sqrt(a[0] * a[0] + c[0] * c[0] + e[0] * e[0]));
-
-					sum1 += sqrt(M_PI / (a[0] * a[0] + c[0] * c[0] + e[0] * e[0])) *
-							(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion3d(A, B2) - intExpansion3d(A, B1));
-
-					// 0-0-1
-					A = (a[0] * a[0] * (d[0] * d[0] + f[1] * f[1]) -
-						2.0 * a[0] * b[0] * (c[0] * d[0] + e[1] * f[1]) +
-						b[0] * b[0] * (c[0] * c[0] + e[1] * e[1]) +
-						(e[1] * d[0] - c[0] * f[1]) * (e[1] * d[0] - c[0] * f[1])) /
-						(4.0 * (a[0] * a[0] + c[0] * c[0] + e[1] * e[1]));
-					B1 = a[0] * (a[0] * seg.tau1 + b[0]) + c[0] * (c[0] * seg.tau1 + d[0]) + e[1] * (e[1] * seg.tau1 + f[1]) /
-						(2.0 * sqrt(a[0] * a[0] + c[0] * c[0] + e[1] * e[1]));
-					B2 = a[0] * (a[0] * seg.tau2 + b[0]) + c[0] * (c[0] * seg.tau2 + d[0]) + e[1] * (e[1] * seg.tau2 + f[1]) /
-						(2.0 * sqrt(a[0] * a[0] + c[0] * c[0] + e[1] * e[1]));
-
-					sum1 += sqrt(M_PI / (a[0] * a[0] + c[0] * c[0] + e[1] * e[1])) *
-						(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion3d(A, B2) - intExpansion3d(A, B1));
-
-					// 0-1-0
-					A = (a[0] * a[0] * (d[1] * d[1] + f[0] * f[0]) -
-						2.0 * a[0] * b[0] * (c[1] * d[1] + e[0] * f[0]) +
-						b[0] * b[0] * (c[1] * c[1] + e[0] * e[0]) +
-						(e[0] * d[1] - c[1] * f[0]) * (e[0] * d[1] - c[1] * f[0])) /
-						(4.0 * (a[0] * a[0] + c[1] * c[1] + e[0] * e[0]));
-					B1 = a[0] * (a[0] * seg.tau1 + b[0]) + c[1] * (c[1] * seg.tau1 + d[1]) + e[0] * (e[0] * seg.tau1 + f[0]) /
-						(2.0 * sqrt(a[0] * a[0] + c[1] * c[1] + e[0] * e[0]));
-					B2 = a[0] * (a[0] * seg.tau2 + b[0]) + c[1] * (c[1] * seg.tau2 + d[1]) + e[0] * (e[0] * seg.tau2 + f[0]) /
-						(2.0 * sqrt(a[0] * a[0] + c[1] * c[1] + e[0] * e[0]));
-
-					sum1 += sqrt(M_PI / (a[0] * a[0] + c[1] * c[1] + e[0] * e[0])) *
-						(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion3d(A, B2) - intExpansion3d(A, B1));
-
-					// 0-1-1
-					A = (a[0] * a[0] * (d[1] * d[1] + f[1] * f[1]) -
-						2.0 * a[0] * b[0] * (c[1] * d[1] + e[1] * f[1]) +
-						b[0] * b[0] * (c[1] * c[1] + e[1] * e[1]) +
-						(e[1] * d[1] - c[1] * f[1]) * (e[1] * d[1] - c[1] * f[1])) /
-						(4.0 * (a[0] * a[0] + c[1] * c[1] + e[1] * e[1]));
-					B1 = a[0] * (a[0] * seg.tau1 + b[0]) + c[1] * (c[1] * seg.tau1 + d[1]) + e[1] * (e[1] * seg.tau1 + f[1]) /
-						(2.0 * sqrt(a[0] * a[0] + c[1] * c[1] + e[1] * e[1]));
-					B2 = a[0] * (a[0] * seg.tau2 + b[0]) + c[1] * (c[1] * seg.tau2 + d[1]) + e[1] * (e[1] * seg.tau2 + f[1]) /
-						(2.0 * sqrt(a[0] * a[0] + c[1] * c[1] + e[1] * e[1]));
-
-					sum1 += sqrt(M_PI / (a[0] * a[0] + c[1] * c[1] + e[1] * e[1])) *
-						(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion3d(A, B2) - intExpansion3d(A, B1));
-
-					// 1-0-0
-					A = (a[1] * a[1] * (d[0] * d[0] + f[0] * f[0]) -
-						2.0 * a[1] * b[1] * (c[0] * d[0] + e[0] * f[0]) +
-						b[1] * b[1] * (c[0] * c[0] + e[0] * e[0]) +
-						(e[0] * d[0] - c[0] * f[0]) * (e[0] * d[0] - c[0] * f[0])) /
-						(4.0 * (a[1] * a[1] + c[0] * c[0] + e[0] * e[0]));
-					B1 = a[1] * (a[1] * seg.tau1 + b[1]) + c[0] * (c[0] * seg.tau1 + d[0]) + e[0] * (e[0] * seg.tau1 + f[0]) /
-						(2.0 * sqrt(a[1] * a[1] + c[0] * c[0] + e[0] * e[0]));
-					B2 = a[1] * (a[1] * seg.tau2 + b[1]) + c[0] * (c[0] * seg.tau2 + d[0]) + e[0] * (e[0] * seg.tau2 + f[0]) /
-						(2.0 * sqrt(a[1] * a[1] + c[0] * c[0] + e[0] * e[0]));
-
-					sum1 += sqrt(M_PI / (a[1] * a[1] + c[0] * c[0] + e[0] * e[0])) *
-						(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion3d(A, B2) - intExpansion3d(A, B1));
-
-					// 1-0-1
-					A = (a[1] * a[1] * (d[0] * d[0] + f[1] * f[1]) -
-						2.0 * a[1] * b[1] * (c[0] * d[0] + e[1] * f[1]) +
-						b[1] * b[1] * (c[0] * c[0] + e[1] * e[1]) +
-						(e[1] * d[0] - c[0] * f[1]) * (e[1] * d[0] - c[0] * f[1])) /
-						(4.0 * (a[1] * a[1] + c[0] * c[0] + e[1] * e[1]));
-					B1 = a[1] * (a[1] * seg.tau1 + b[1]) + c[0] * (c[0] * seg.tau1 + d[0]) + e[1] * (e[1] * seg.tau1 + f[1]) /
-						(2.0 * sqrt(a[1] * a[1] + c[0] * c[0] + e[1] * e[1]));
-					B2 = a[1] * (a[1] * seg.tau2 + b[1]) + c[0] * (c[0] * seg.tau2 + d[0]) + e[1] * (e[1] * seg.tau2 + f[1]) /
-						(2.0 * sqrt(a[1] * a[1] + c[0] * c[0] + e[1] * e[1]));
-
-					sum1 += sqrt(M_PI / (a[1] * a[1] + c[0] * c[0] + e[1] * e[1])) *
-						(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion3d(A, B2) - intExpansion3d(A, B1));
-
-					// 1-1-0
-					A = (a[1] * a[1] * (d[1] * d[1] + f[0] * f[0]) -
-						2.0 * a[1] * b[1] * (c[1] * d[1] + e[0] * f[0]) +
-						b[1] * b[1] * (c[1] * c[1] + e[0] * e[0]) +
-						(e[0] * d[1] - c[1] * f[0]) * (e[0] * d[1] - c[1] * f[0])) /
-						(4.0 * (a[1] * a[1] + c[1] * c[1] + e[0] * e[0]));
-					B1 = a[1] * (a[1] * seg.tau1 + b[1]) + c[1] * (c[1] * seg.tau1 + d[1]) + e[0] * (e[0] * seg.tau1 + f[0]) /
-						(2.0 * sqrt(a[1] * a[1] + c[1] * c[1] + e[0] * e[0]));
-					B2 = a[1] * (a[1] * seg.tau2 + b[1]) + c[1] * (c[1] * seg.tau2 + d[1]) + e[0] * (e[0] * seg.tau2 + f[0]) /
-						(2.0 * sqrt(a[1] * a[1] + c[1] * c[1] + e[0] * e[0]));
-
-					sum1 += sqrt(M_PI / (a[1] * a[1] + c[1] * c[1] + e[0] * e[0])) *
-						(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion3d(A, B2) - intExpansion3d(A, B1));
-
-					// 1-1-1
-					A = (a[1] * a[1] * (d[1] * d[1] + f[1] * f[1]) -
-						2.0 * a[1] * b[1] * (c[1] * d[1] + e[1] * f[1]) +
-						b[1] * b[1] * (c[1] * c[1] + e[1] * e[1]) +
-						(e[1] * d[1] - c[1] * f[1]) * (e[1] * d[1] - c[1] * f[1])) /
-						(4.0 * (a[1] * a[1] + c[1] * c[1] + e[1] * e[1]));
-					B1 = a[1] * (a[1] * seg.tau1 + b[1]) + c[1] * (c[1] * seg.tau1 + d[1]) + e[1] * (e[1] * seg.tau1 + f[1]) /
-						(2.0 * sqrt(a[1] * a[1] + c[1] * c[1] + e[1] * e[1]));
-					B2 = a[1] * (a[1] * seg.tau2 + b[1]) + c[1] * (c[1] * seg.tau2 + d[1]) + e[1] * (e[1] * seg.tau2 + f[1]) /
-						(2.0 * sqrt(a[1] * a[1] + c[1] * c[1] + e[1] * e[1]));
-
-					sum1 += sqrt(M_PI / (a[1] * a[1] + c[1] * c[1] + e[1] * e[1])) *
-						(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion3d(A, B2) - intExpansion3d(A, B1));
-
-				}
-			}
-		}
-
-		sum1 *= (props->visc * gprops->length / 8.0 / sqrt(M_PI) / M_PI / props->kx);		
-
-		for (int p = -sprops.I; p <= sprops.I; p++)
-		{
-			for (int q = -sprops.I; q <= sprops.I; q++)
-			{
-				a[0] = gprops->r1.x - gprops->r2.x;	b[0] = point.x + 2.0 * (double)(p)* props->sizes.x - gprops->r1.x;
-				a[1] = gprops->r2.x - gprops->r1.x;	b[1] = point.x + 2.0 * (double)(p)* props->sizes.x + gprops->r1.x;
-				c[0] = gprops->r1.y - gprops->r2.y;	d[0] = point.y + 2.0 * (double)(q)* props->sizes.y - gprops->r1.y;
-				c[1] = gprops->r2.y - gprops->r1.y;	d[1] = point.y + 2.0 * (double)(q)* props->sizes.y + gprops->r1.y;
-
-				// 0-0-0
-				A = (a[0] * a[0] * d[0] * d[0] -
-					2.0 * a[0] * b[0] * c[0] * d[0] +
-					b[0] * b[0] * c[0] * c[0]) /
-					(4.0 * (a[0] * a[0] + c[0] * c[0]));
-				B1 = a[0] * (a[0] * seg.tau1 + b[0]) + c[0] * (c[0] * seg.tau1 + d[0]) + e[0] * (e[0] * seg.tau1 + f[0]) /
-					(2.0 * sqrt(a[0] * a[0] + c[0] * c[0] + e[0] * e[0]));
-				B2 = a[0] * (a[0] * seg.tau2 + b[0]) + c[0] * (c[0] * seg.tau2 + d[0]) + e[0] * (e[0] * seg.tau2 + f[0]) /
-					(2.0 * sqrt(a[0] * a[0] + c[0] * c[0] + e[0] * e[0]));
-
-				sum3 += sqrt(M_PI / (a[0] * a[0] + c[0] * c[0] + e[0] * e[0])) *
-					(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion3d(A, B2) - intExpansion3d(A, B1));
-
-				// 0-1-0
-				A = (a[0] * a[0] * (d[1] * d[1] + f[0] * f[0]) -
-					2.0 * a[0] * b[0] * (c[1] * d[1] + e[0] * f[0]) +
-					b[0] * b[0] * (c[1] * c[1] + e[0] * e[0]) +
-					(e[0] * d[1] - c[1] * f[0]) * (e[0] * d[1] - c[1] * f[0])) /
-					(4.0 * (a[0] * a[0] + c[1] * c[1] + e[0] * e[0]));
-				B1 = a[0] * (a[0] * seg.tau1 + b[0]) + c[1] * (c[1] * seg.tau1 + d[1]) + e[0] * (e[0] * seg.tau1 + f[0]) /
-					(2.0 * sqrt(a[0] * a[0] + c[1] * c[1] + e[0] * e[0]));
-				B2 = a[0] * (a[0] * seg.tau2 + b[0]) + c[1] * (c[1] * seg.tau2 + d[1]) + e[0] * (e[0] * seg.tau2 + f[0]) /
-					(2.0 * sqrt(a[0] * a[0] + c[1] * c[1] + e[0] * e[0]));
-
-				sum3 += sqrt(M_PI / (a[0] * a[0] + c[1] * c[1] + e[0] * e[0])) *
-					(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion3d(A, B2) - intExpansion3d(A, B1));
-
-				// 1-0-0
-				A = (a[1] * a[1] * (d[0] * d[0] + f[0] * f[0]) -
-					2.0 * a[1] * b[1] * (c[0] * d[0] + e[0] * f[0]) +
-					b[1] * b[1] * (c[0] * c[0] + e[0] * e[0]) +
-					(e[0] * d[0] - c[0] * f[0]) * (e[0] * d[0] - c[0] * f[0])) /
-					(4.0 * (a[1] * a[1] + c[0] * c[0] + e[0] * e[0]));
-				B1 = a[1] * (a[1] * seg.tau1 + b[1]) + c[0] * (c[0] * seg.tau1 + d[0]) + e[0] * (e[0] * seg.tau1 + f[0]) /
-					(2.0 * sqrt(a[1] * a[1] + c[0] * c[0] + e[0] * e[0]));
-				B2 = a[1] * (a[1] * seg.tau2 + b[1]) + c[0] * (c[0] * seg.tau2 + d[0]) + e[0] * (e[0] * seg.tau2 + f[0]) /
-					(2.0 * sqrt(a[1] * a[1] + c[0] * c[0] + e[0] * e[0]));
-
-				sum3 += sqrt(M_PI / (a[1] * a[1] + c[0] * c[0] + e[0] * e[0])) *
-					(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion3d(A, B2) - intExpansion3d(A, B1));
-
-				// 1-1-0
-				A = (a[1] * a[1] * (d[1] * d[1] + f[0] * f[0]) -
-					2.0 * a[1] * b[1] * (c[1] * d[1] + e[0] * f[0]) +
-					b[1] * b[1] * (c[1] * c[1] + e[0] * e[0]) +
-					(e[0] * d[1] - c[1] * f[0]) * (e[0] * d[1] - c[1] * f[0])) /
-					(4.0 * (a[1] * a[1] + c[1] * c[1] + e[0] * e[0]));
-				B1 = a[1] * (a[1] * seg.tau1 + b[1]) + c[1] * (c[1] * seg.tau1 + d[1]) + e[0] * (e[0] * seg.tau1 + f[0]) /
-					(2.0 * sqrt(a[1] * a[1] + c[1] * c[1] + e[0] * e[0]));
-				B2 = a[1] * (a[1] * seg.tau2 + b[1]) + c[1] * (c[1] * seg.tau2 + d[1]) + e[0] * (e[0] * seg.tau2 + f[0]) /
-					(2.0 * sqrt(a[1] * a[1] + c[1] * c[1] + e[0] * e[0]));
-
-				sum3 += sqrt(M_PI / (a[1] * a[1] + c[1] * c[1] + e[0] * e[0])) *
-					(asinh(B2 / sqrt(A)) - asinh(B1 / sqrt(A)) + intExpansion3d(A, B2) - intExpansion3d(A, B1));
-			}
-		}
-
-		sum3 *= (props->visc * gprops->length / 4.0 / M_PI / props->kx);
-
+		break_idx_m = 0;
 		for (int m = 1; m <= sprops.M; m++)
 		{
-			a[0] = M_PI * (double)(m)* seg.r1.x / props->sizes.x;
-			a[1] = M_PI * (double)(m)* seg.r2.x / props->sizes.x;
-			b[0] = M_PI * (double)(m)* (gprops->r2.x - gprops->r1.x) / props->sizes.x;
-
-			for (int n = 1; n <= sprops.N; n++)
+			sum_prev_n = 0;	 break_idx_n = 0;
+			for (int n = 1; n <= sprops.M; n++)
 			{
-				c[0] = M_PI * (double)(n)* seg.r1.y / props->sizes.y;
-				c[1] = M_PI * (double)(n)* seg.r2.y / props->sizes.y;
-				d[0] = M_PI * (double)(n)* (gprops->r2.y - gprops->r1.y) / props->sizes.y;
+				F1 = ((sin(M_PI * (double)m * seg.r2.x / props->sizes.x - M_PI * (double)n * seg.r2.y / props->sizes.y) -
+						sin(M_PI * (double)m * seg.r1.x / props->sizes.x - M_PI * (double)n * seg.r1.y / props->sizes.y)) /
+						(M_PI * (double)m / props->sizes.x * rad.x - M_PI * (double)n / props->sizes.y * rad.y) -
+					(sin(M_PI * (double)m * seg.r2.x / props->sizes.x + M_PI * (double)n * seg.r2.y / props->sizes.y) -
+						sin(M_PI * (double)m * seg.r1.x / props->sizes.x + M_PI * (double)n * seg.r1.y / props->sizes.y)) /
+						(M_PI * (double)m / props->sizes.x * rad.x + M_PI * (double)n / props->sizes.y * rad.y)) / 2.0;
+				buf = M_PI * M_PI * ((double)m * (double)m / props->sizes.x / props->sizes.x + (double)n * (double)n / props->sizes.y / props->sizes.y);
+				F2d[arr_idx] += 1.0 / 2.0 * F1 * sin(M_PI * (double)m * r.x / props->sizes.x) *	sin(M_PI * (double)n * r.y / props->sizes.y) * exp(-sprops.xi_c * buf) / buf;
 
-				for (int l = 0; l <= sprops.L; l++)
+				for (int l = 1; l <= sprops.L; l++)
 				{
-					e[0] = M_PI * (double)(l)* seg.r1.z / props->sizes.z;
-					e[1] = M_PI * (double)(l)* seg.r2.z / props->sizes.z;
-					f[0] = M_PI * (double)(l)* (gprops->r2.z - gprops->r1.z) / props->sizes.z;
-
-					if (fabs(b[0]) + fabs(d[0]) + fabs(f[0]) > 0.0)
+					auto getFoo = [=, this](const Point& pt) -> double
 					{
-						buf1 = (sin(a[0] - c[0] + e[0]) / (b[0] - d[0] + f[0]) +
-							sin(a[0] - c[0] - e[0]) / (b[0] - d[0] - f[0]) -
-							sin(a[0] + c[0] - e[0]) / (b[0] + d[0] - f[0]) -
-							sin(a[0] + c[0] + e[0]) / (b[0] + d[0] + f[0]));
+						const Point point = M_PI * pt / props->sizes;
+						const Point p1((double)m, (double)n, -(double)l);
+						const Point p2((double)m, -(double)n, (double)l);
+						const Point p3((double)m, -(double)n, -(double)l);
+						const Point p4((double)m, (double)n, (double)l);
+						return 1.0 / 4.0 * (
+							-sin(p1 * point) / (M_PI * p1 * (rad / props->sizes)) +
+							sin(p2 * point) / (M_PI * p2 * (rad / props->sizes)) +
+							sin(p3 * point) / (M_PI * p3 * (rad / props->sizes)) -
+							sin(p4 * point) / (M_PI * p4 * (rad / props->sizes)));
+					};
 
-						buf2 = (sin(a[1] - c[1] + e[1]) / (b[0] - d[0] + f[0]) +
-							sin(a[1] - c[1] - e[1]) / (b[0] - d[0] - f[0]) -
-							sin(a[1] + c[1] - e[1]) / (b[0] + d[0] - f[0]) -
-							sin(a[1] + c[1] + e[1]) / (b[0] + d[0] + f[0]));
+					F2 = getFoo(seg.r2) - getFoo(seg.r1);
+					buf = M_PI * M_PI * ((double)m * (double)m / props->sizes.x / props->sizes.x +
+						(double)n * (double)n / props->sizes.y / props->sizes.y + (double)l * (double)l / props->sizes.z / props->sizes.z);
+					F2d[arr_idx] += F2 * sin(M_PI * (double)m * r.x / props->sizes.x) *	sin(M_PI * (double)n * r.y / props->sizes.y) *
+						cos(M_PI * (double)l * r.z / props->sizes.z) * exp(-sprops.xi_c * buf) / buf;
+				}
 
-						buf3 = ((double)(m) * (double)(m) / props->sizes.x / props->sizes.x +
-							(double)(n) * (double)(n) / props->sizes.y / props->sizes.y +
-							(double)(l) * (double)(l) / props->sizes.z / props->sizes.z);
+				if (fabs(F2d[arr_idx] - sum_prev_n) > F2d[arr_idx] * EQUALITY_TOLERANCE)
+				{
+					sum_prev_n = F2d[arr_idx];
+					break_idx_n = 0;
+				}
+				else
+					break_idx_n++;
 
-						sum2 += exp(-M_PI * M_PI * buf3 * sprops.xi_c) / M_PI / M_PI / buf3 *
-							sin(M_PI * (double)(m)* point.x / props->sizes.x) *
-							sin(M_PI * (double)(n)* point.y / props->sizes.y) *
-							cos(M_PI * (double)(l)* point.z / props->sizes.z) *
-							(buf2 - buf1) / 4.0;
+				if (break_idx_n > 1)
+				{
+					//std::cout << m << std::endl;
+					//break;
+				}
+			}
+
+			if (fabs(F2d[arr_idx] - sum_prev_m) > F2d[arr_idx] * EQUALITY_TOLERANCE)
+			{
+				sum_prev_m = F2d[arr_idx];
+				break_idx_m = 0;
+			}
+			else
+				break_idx_m++;
+
+			if (break_idx_m > 1)
+			{
+				//std::cout << m << std::endl;
+				//break;
+			}
+		}
+	}
+}
+void Inclined3dSum::prepareFourier()
+{
+	for (int arr_idx = 0; arr_idx < sprops.K * sprops.K; arr_idx++)
+	{
+		const WellSegment seg = well->segs[arr_idx % sprops.K];
+		const Point& r = well->segs[int((double)(arr_idx) / (double)(sprops.K))].r_bhp;
+
+		F3d[arr_idx] = 0.0;
+
+		for (int p = -sprops.I; p <= sprops.I; p++)
+		{
+			for (int q = -sprops.I; q <= sprops.I; q++)
+			{
+				for (int s = -sprops.I; s <= sprops.I; s++)
+				{
+					Point pt((double)p, (double)q, (double)s);
+					auto getFoo = [=, this](const Point& point) -> double
+					{
+						Point vv1, vv2;
+						vv1 = (r - point + 2.0 * product(pt, props->sizes));	vv1 = product(vv1, vv1) / 4.0;
+						vv2 = (r + point + 2.0 * product(pt, props->sizes));	vv2 = product(vv2, vv2) / 4.0;
+						double bbuf1, bbuf2, bbuf3, bbuf4, bbuf5, bbuf6, bbuf7, bbuf8;
+						bbuf1 = vv1.x + vv1.y + vv1.z;		bbuf2 = vv1.x + vv1.y + vv2.z;
+						bbuf3 = vv1.x + vv2.y + vv1.z;		bbuf4 = vv1.x + vv2.y + vv2.z;
+						bbuf5 = vv2.x + vv1.y + vv1.z;		bbuf6 = vv2.x + vv1.y + vv2.z;
+						bbuf7 = vv2.x + vv2.y + vv1.z;		bbuf8 = vv2.x + vv2.y + vv2.z;
+						return	erfc(sqrt(bbuf1 / sprops.xi_c)) / sqrt(bbuf1)
+							+ erfc(sqrt(bbuf2 / sprops.xi_c)) / sqrt(bbuf2)
+							- erfc(sqrt(bbuf3 / sprops.xi_c)) / sqrt(bbuf3)
+							- erfc(sqrt(bbuf4 / sprops.xi_c)) / sqrt(bbuf4)
+							- erfc(sqrt(bbuf5 / sprops.xi_c)) / sqrt(bbuf5)
+							- erfc(sqrt(bbuf6 / sprops.xi_c)) / sqrt(bbuf6)
+							+ erfc(sqrt(bbuf7 / sprops.xi_c)) / sqrt(bbuf7)
+							+ erfc(sqrt(bbuf8 / sprops.xi_c)) / sqrt(bbuf8);
+					};
+
+					Double2d* integrand = new Double2d[PART_SIZE + 1];
+					for (int i = 0; i < PART_SIZE + 1; i++)
+					{
+						Point point = seg.r1 + (double)i * (seg.r2 - seg.r1) / (double)PART_SIZE;
+						double tau = seg.tau1 + (double)i * (seg.tau2 - seg.tau1) / (double)PART_SIZE;
+						integrand[i].x = tau;
+						double qwe = getFoo(point);
+						integrand[i].y = getFoo(point);
 					}
-					else
-						std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAA!" << std::endl;
+					integr = new Integral(integrand, PART_SIZE + 1);
+					F3d[arr_idx] += integr->Calculate(seg.tau1, seg.tau2);
+
+					delete integrand;
+					delete integr;
 				}
 			}
 		}
-
-		sum2 *= (8.0 * props->visc * gprops->length / props->sizes.x / props->sizes.y / props->sizes.z / props->kx);
-
-		F3d[arr_idx] = sum1 + sum2;
 	}
 }

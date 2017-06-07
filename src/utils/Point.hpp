@@ -77,6 +77,10 @@ inline Point operator/(const Point& a1, double k)
 {
 	return Point(a1.x / k, a1.y / k, a1.z / k);
 };
+inline Point operator/(const Point& a1, const Point& a2)
+{
+	return Point(a1.x / a2.x, a1.y / a2.y, a1.z / a2.z);
+};
 inline double operator*(const Point& a1, const Point& a2)
 {
 	return a1.x * a2.x + a1.y * a2.y + a1.z * a2.z;
