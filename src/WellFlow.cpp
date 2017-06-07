@@ -12,11 +12,15 @@
 #include "src/inclined_sum/Inclined3dSum.h"
 #include "src/inclined_sum/welltests/HorizontalLogDerivation.hpp"
 
+#define MAX_WELL_SIZE 10
+
 using namespace paralution;
 using namespace tinyxml2;
 using std::string;
 using std::stoi;
 using std::stod;
+
+#define FRAC_COEF 0.8
 
 WellFlow::WellFlow(const string fileName)
 {
@@ -24,7 +28,15 @@ WellFlow::WellFlow(const string fileName)
 
 	for (auto& well : wells)
 	{
-		well.setRate(props.rate);
+		if (wells.size() > 1)
+		{
+			if (well.type == WellType::FRAC)
+				well.setRate(FRAC_COEF * props.rate);
+			else
+				well.setRate((1.0 - FRAC_COEF) * props.rate);
+		}
+		else
+			well.setRate(props.rate);
 		well.setUniformRate();
 		for (int i = 0; i < well.segs.size(); i++)
 			segs.push_back(&well.segs[i]);
@@ -83,6 +95,7 @@ void WellFlow::load(const string fileName)
 
 	seg_num = 0;
 	int seg_idx = 0;
+	wells.reserve(MAX_WELL_SIZE);
 	for (XMLElement* xml_well = xml_task->FirstChildElement("well"); 
 			xml_well != NULL; 
 			xml_well = xml_well->NextSiblingElement("well"))
@@ -110,7 +123,7 @@ void WellFlow::load(const string fileName)
 			geom_props.r2.z -= geom_props.length * cos(geom_props.alpha) / 2.0;
 
 			wells.push_back(Well(geom_props, WellType::VERTICAL, w_name, seg_idx++));
-			summators.push_back(new VerticalDirichlet(sum_props, &props, &wells[wells.size()-1]));
+			summators.push_back(static_cast<BaseSum*>(new VerticalDirichlet(sum_props, &props, &wells[wells.size()-1])));
 		}
 		else if (w_type == "vertical_neumann")
 		{
@@ -137,7 +150,7 @@ void WellFlow::load(const string fileName)
 			props.fy2 *= (props.visc / props.kx / props.sizes.x / props.sizes.z);
 
 			wells.push_back(Well(geom_props, WellType::VERTICAL_NEUMANN, w_name, seg_idx++));
-			summators.push_back(new VerticalNeumannUniformBoundaries(sum_props, &props, &wells[wells.size() - 1]));
+			summators.push_back(static_cast<BaseSum*>(new VerticalNeumannUniformBoundaries(sum_props, &props, &wells[wells.size() - 1])));
 		}
 		else if (w_type == "slanted")
 		{
@@ -153,7 +166,7 @@ void WellFlow::load(const string fileName)
 			geom_props.r2.z -= geom_props.length * cos(geom_props.alpha) / 2.0;
 
 			wells.push_back(Well(geom_props, WellType::SLANTED, w_name, seg_idx++));
-			summators.push_back(new InclinedSum(sum_props, &props, &wells[wells.size() - 1]));
+			summators.push_back(static_cast<BaseSum*>(new InclinedSum(sum_props, &props, &wells[wells.size() - 1])));
 		}
 		else if (w_type == "horizontal")
 		{
@@ -169,7 +182,7 @@ void WellFlow::load(const string fileName)
 			geom_props.r2.z -= geom_props.length * cos(geom_props.alpha) / 2.0;
 
 			wells.push_back(Well(geom_props, WellType::HORIZONTAL, w_name, seg_idx++));
-			summators.push_back(new HorizontalLogDerivation(sum_props, &props, &wells[wells.size() - 1]));
+			summators.push_back(static_cast<BaseSum*>(new HorizontalLogDerivation(sum_props, &props, &wells[wells.size() - 1])));
 		}
 		else if (w_type == "frac2d")
 		{
@@ -183,7 +196,7 @@ void WellFlow::load(const string fileName)
 			geom_props.r2.y += geom_props.length * sin(geom_props.alpha) / 2.0;
 
 			wells.push_back(Well(geom_props, WellType::FRAC, w_name, seg_idx++));
-			summators.push_back(new Frac2dSum(sum_props, &props, &wells[wells.size() - 1]));
+			summators.push_back(static_cast<BaseSum*>(new Frac2dSum(sum_props, &props, &wells[wells.size() - 1])));
 		}
 
 	}
@@ -271,7 +284,7 @@ void WellFlow::findRateDistribution()
 	auto fill_dpdq = [&, this](double mult) {
 		double p1, p2, ratio;
 		WellSegment* seg;
-		ratio = mult * 0.00001 / (double)(seg_num);
+		ratio = mult * 0.001 / (double)(seg_num);
 
 		for (int i = 0; i < seg_num; i++)
 		{
@@ -284,6 +297,8 @@ void WellFlow::findRateDistribution()
 
 				setRateDev(j, 2.0 * ratio);	setRateDev(0, -2.0 * ratio);
 				p2 = summators[seg->well_idx]->getPres(seg->seg_idx);
+
+				setRateDev(j, -ratio);	setRateDev(0, ratio);
 
 				dpdq[i][j - 1] = (p2 - p1) / (2.0 * ratio * props.rate);
 			}
@@ -310,7 +325,7 @@ void WellFlow::findRateDistribution()
 			{
 				seg = segs[k];
 				p1 = summators[seg->well_idx]->getPres(seg->seg_idx);
-				p2 = summators[seg->well_idx]->getPres(seg->seg_idx + 1);
+				p2 = summators[segs[k+1]->well_idx]->getPres(segs[k+1]->seg_idx);
 				s += (p2 - p1) * (dpdq[k + 1][i] - dpdq[k][i]);
 			}
 			B[i] = -s;
@@ -357,7 +372,7 @@ void WellFlow::findRateDistribution()
 
 		fill_q();
 
-		double mult = 0.9;
+		double mult = 1;
 		double H = H0;
 
 		while (H > H0 / 200.0 || (sqrt(H) > 0.002 * fabs(pres_av)))

@@ -64,11 +64,11 @@ void Frac2dSum::prepareDirect()
 		{
 			for (int n = 1; n <= sprops.M; n++)
 			{
-				F = ((sin(M_PI * (double)m * seg.r2.x / props->sizes.x - M_PI * (double)m * seg.r2.y / props->sizes.y) -
-					sin(M_PI * (double)m * seg.r1.x / props->sizes.x - M_PI * (double)m * seg.r1.y / props->sizes.y)) /
+				F = ((sin(M_PI * (double)m * seg.r2.x / props->sizes.x - M_PI * (double)n * seg.r2.y / props->sizes.y) -
+					sin(M_PI * (double)m * seg.r1.x / props->sizes.x - M_PI * (double)n * seg.r1.y / props->sizes.y)) /
 					(M_PI * (double)m / props->sizes.x - M_PI * (double)n / props->sizes.y * tan(gprops->alpha)) -
-					(sin(M_PI * (double)m * seg.r2.x / props->sizes.x + M_PI * (double)m * seg.r2.y / props->sizes.y) -
-						sin(M_PI * (double)m * seg.r1.x / props->sizes.x + M_PI * (double)m * seg.r1.y / props->sizes.y)) /
+					(sin(M_PI * (double)m * seg.r2.x / props->sizes.x + M_PI * (double)n * seg.r2.y / props->sizes.y) -
+						sin(M_PI * (double)m * seg.r1.x / props->sizes.x + M_PI * (double)n * seg.r1.y / props->sizes.y)) /
 						(M_PI * (double)m / props->sizes.x + M_PI * (double)n / props->sizes.y * tan(gprops->alpha))) / 2.0;
 				buf = M_PI * M_PI * ((double)m * (double)m / props->sizes.x / props->sizes.x + 
 										(double)n * (double)n / props->sizes.y / props->sizes.y);
@@ -88,7 +88,7 @@ void Frac2dSum::prepareDirect()
 			if (break_idx > 1)
 			{
 				//std::cout << m << std::endl;
-				break;
+				//break;
 			}
 		}
 	}
@@ -128,7 +128,7 @@ void Frac2dSum::prepareFourier()
 					integrand[i].y = getFoo(point);
 				}
 				integr = new Integral(integrand, PART_SIZE + 1);
-				F3d[arr_idx] -= integr->Sympson(seg.r1.x, seg.r2.x);
+				F3d[arr_idx] -= integr->Calculate(seg.r1.x, seg.r2.x);
 
 				delete integrand;
 				delete integr;

@@ -189,7 +189,7 @@ void testVerticalDirichlet()
 int main(int argc, char* argv[])
 {
 	init_paralution();
-	testVerticalDirichlet();
+	testFrac2D();
 	stop_paralution();
 
 	return 0;

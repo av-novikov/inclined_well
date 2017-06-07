@@ -41,7 +41,6 @@ class Well
 	protected:
 		const int well_idx;
 		const WellGeomProperties props;
-		const WellType type;
 		const std::string name;
 		const int num;
 		double rate;
@@ -49,6 +48,8 @@ class Well
 		Well(const WellGeomProperties& _props, const WellType& _type, const std::string _name, const int _well_idx);
 		~Well();
 		
+		const WellType type;
+
 		void setRate(double _rate);
 		void setUniformRate();
 		
@@ -60,7 +61,6 @@ class Well
 		const WellGeomProperties* getGeomProps() const;
 		void printRates(const MainProperties* props) const;
 		void writeRates(const MainProperties* props);
-
 };
 
 #endif /* WELL_HPP_ */

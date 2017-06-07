@@ -28,7 +28,8 @@ double VerticalDirichlet::directSum()
 {
 	double sum = 0.0;
 	double buf1, buf2;
-	const Point& r = well->segs[0].r_bhp;
+	const WellSegment& seg = well->segs[0];
+	const Point& r = seg.r_bhp;
 
 	for (int m = 1; m < sprops.M; m++)
 	{
@@ -42,13 +43,14 @@ double VerticalDirichlet::directSum()
 		}
 	}
 
-	return 4.0 * props->visc * props->rate / props->sizes.x / props->sizes.y / props->sizes.z / props->kx * sum;
+	return 4.0 * props->visc * seg.rate / props->sizes.x / props->sizes.y / props->sizes.z / props->kx * sum;
 }
 double VerticalDirichlet::fourierSum()
 {
 	double sum = 0.0;
 	double buf11, buf12, buf21, buf22;
-	const Point& r = well->segs[0].r_bhp;
+	const WellSegment& seg = well->segs[0];
+	const Point& r = seg.r_bhp;
 
 	for (int p = -sprops.I; p < sprops.I; p++)
 	{
@@ -64,12 +66,13 @@ double VerticalDirichlet::fourierSum()
 		}
 	}
 
-	return props->visc * props->rate / props->sizes.z / props->kx / 4.0 / M_PI * sum;
+	return props->visc * seg.rate / props->sizes.z / props->kx / 4.0 / M_PI * sum;
 }
 double VerticalDirichlet::getAnalyticalPres() const
 {
-	const Point& r = well->segs[0].r_bhp;
-	return -props->visc * props->rate / props->sizes.z / props->kx / 4.0 / M_PI *
+	const WellSegment& seg = well->segs[0];
+	const Point& r = seg.r_bhp;
+	return -props->visc * seg.rate / props->sizes.z / props->kx / 4.0 / M_PI *
 			(log((1.0 - 2.0 * exp(-M_PI / props->sizes.x * (r.y - gprops->rc.y)) * cos(M_PI * (r.x - gprops->rc.x) / props->sizes.x) +
 				exp(-2.0 * M_PI / props->sizes.x * (r.y - gprops->rc.y))) /
 			((1.0 - 2.0 * exp(-M_PI / props->sizes.x * (r.y - gprops->rc.y)) * cos(M_PI * (r.x + gprops->rc.x) / props->sizes.x) +
