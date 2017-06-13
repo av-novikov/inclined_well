@@ -7,9 +7,6 @@ using std::stod;
 
 BaseSum::BaseSum(const SummatorProperties& _sprops, const MainProperties* _props, const Well* _well) : sprops(_sprops), props(_props), well(_well), gprops(_well->getGeomProps())
 {
-	size = sprops.K * sprops.K;
-	F2d = new double[size];
-	F3d = new double[size];
 }
 BaseSum::~BaseSum()
 {
@@ -43,4 +40,8 @@ Well* BaseSum::getWell()
 double BaseSum::getAnalyticalPres() const
 {
 	return 0.0;
+}
+void BaseSum::setSegments(std::vector<WellSegment*>* _segs)
+{
+	segs = _segs;
 }

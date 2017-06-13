@@ -9,10 +9,6 @@ VerticalNeumann::VerticalNeumann(const SummatorProperties& _sprops, const MainPr
 VerticalNeumann::~VerticalNeumann()
 {
 }
-double VerticalNeumann::getPres(const Point& point)
-{
-	return directSum(point) + fourierSum(point);
-}
 void VerticalNeumann::prepare()
 {
 	const Point& r = well->segs[0].r_bhp;

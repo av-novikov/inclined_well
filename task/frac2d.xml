@@ -4,15 +4,15 @@
     <sizes sx="2100" sy="2100" sz="10" />
     <viscosity value="1" />
     <permeability kx="20" kz="20" />
-    <rate value="5" />
+    <rate value="50" />
   </main>
-  <well name="frac#1" type="frac2d" K="10">
+  <well name="frac#1" type="frac2d" K="50">
     <geometry>
       <rc x="1050" y="1050" z="-5" />
       <length value="200" />
       <alpha value="0" />
-      <rw value="0.1" />
+      <rw value="0.01" />
     </geometry>
-    <sum_props M="100" N="10" L="100" I="1" xi_c="5000" />
+    <sum_props M="10" N="10" L="100" I="1" xi_c="50000" />
   </well>
 </task>

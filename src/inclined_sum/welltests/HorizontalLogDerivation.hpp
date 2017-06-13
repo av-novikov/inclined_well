@@ -14,7 +14,6 @@ public:
 	void prepare();
 	double get2D(int seg_idx);
 	double get3D(int seg_idx);
-	double getPres(const Point& p);
 	double getLogDerivative();
 
 	void setTime(const double _time);

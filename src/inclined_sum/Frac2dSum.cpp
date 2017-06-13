@@ -11,10 +11,6 @@ Frac2dSum::Frac2dSum(const SummatorProperties& _sprops, const MainProperties* _p
 Frac2dSum::~Frac2dSum()
 {
 }
-double Frac2dSum::getPres(const Point& point)
-{
-	return 0.0;
-}
 double Frac2dSum::get2D(int seg_idx)
 {
 	double sum = 0.0;
@@ -42,6 +38,8 @@ double Frac2dSum::get3D(int seg_idx)
 }
 void Frac2dSum::prepare()
 {
+	size = segs->size() * sprops.K;
+	F2d = new double[size];		F3d = new double[size];
 	prepareDirect();
 	prepareFourier();
 }
@@ -52,10 +50,10 @@ void Frac2dSum::prepareDirect()
 	double buf, F;
 	int break_idx = 0;
 
-	for (int arr_idx = 0; arr_idx < sprops.K * sprops.K; arr_idx++)
+	for (int arr_idx = 0; arr_idx < size; arr_idx++)
 	{
-		const WellSegment seg = well->segs[arr_idx % sprops.K];
-		const Point& r = well->segs[int((double)(arr_idx) / (double)(sprops.K))].r_bhp;
+		const WellSegment& seg = well->segs[arr_idx % sprops.K];
+		const Point& r = (*segs)[int((double)(arr_idx) / (double)(sprops.K))]->r_bhp;
 
 		F2d[arr_idx] = sum_prev = 0.0;
 
@@ -97,10 +95,10 @@ void Frac2dSum::prepareFourier()
 {
 	int break_idx = 0;
 
-	for (int arr_idx = 0; arr_idx < sprops.K * sprops.K; arr_idx++)
+	for (int arr_idx = 0; arr_idx < size; arr_idx++)
 	{
-		const WellSegment seg = well->segs[arr_idx % sprops.K];
-		const Point& r = well->segs[int((double)(arr_idx) / (double)(sprops.K))].r_bhp;
+		const WellSegment& seg = well->segs[arr_idx % sprops.K];
+		const Point& r = (*segs)[int((double)(arr_idx) / (double)(sprops.K))]->r_bhp;
 
 		F3d[arr_idx] = 0.0;
 

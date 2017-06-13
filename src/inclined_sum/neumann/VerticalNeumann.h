@@ -13,7 +13,6 @@ public:
 	VerticalNeumann(const SummatorProperties& _sprops, const MainProperties* _props, const Well* _well);
 	~VerticalNeumann();
 
-	double getPres(const Point& point);
 	double get2D(int seg_idx);
 	void prepare();
 };

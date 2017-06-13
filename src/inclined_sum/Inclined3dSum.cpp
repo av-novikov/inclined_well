@@ -38,6 +38,8 @@ double Inclined3dSum::get3D(int seg_idx)
 }
 void Inclined3dSum::prepare()
 {
+	size = segs->size() * sprops.K;
+	F2d = new double[size];		F3d = new double[size];
 	prepareDirect();	prepareFourier();
 }
 void Inclined3dSum::prepareDirect()
@@ -47,10 +49,10 @@ void Inclined3dSum::prepareDirect()
 	double buf, F1, F2;
 	int break_idx_m = 0, break_idx_n = 0;
 
-	for (int arr_idx = 0; arr_idx < sprops.K * sprops.K; arr_idx++)
+	for (int arr_idx = 0; arr_idx < size; arr_idx++)
 	{
-		const WellSegment seg = well->segs[arr_idx % sprops.K];
-		const Point& r = well->segs[int((double)(arr_idx) / (double)(sprops.K))].r_bhp;
+		const WellSegment& seg = well->segs[arr_idx % sprops.K];
+		const Point& r = (*segs)[int((double)(arr_idx) / (double)(sprops.K))]->r_bhp;
 		const Point rad = gprops->r2 - gprops->r1;
 
 		F2d[arr_idx] = sum_prev_m = 0.0;
@@ -126,10 +128,10 @@ void Inclined3dSum::prepareDirect()
 }
 void Inclined3dSum::prepareFourier()
 {
-	for (int arr_idx = 0; arr_idx < sprops.K * sprops.K; arr_idx++)
+	for (int arr_idx = 0; arr_idx < size; arr_idx++)
 	{
-		const WellSegment seg = well->segs[arr_idx % sprops.K];
-		const Point& r = well->segs[int((double)(arr_idx) / (double)(sprops.K))].r_bhp;
+		const WellSegment& seg = well->segs[arr_idx % sprops.K];
+		const Point& r = (*segs)[int((double)(arr_idx) / (double)(sprops.K))]->r_bhp;
 
 		F3d[arr_idx] = 0.0;
 
@@ -137,7 +139,7 @@ void Inclined3dSum::prepareFourier()
 		{
 			for (int q = -sprops.I; q <= sprops.I; q++)
 			{
-				for (int s = -sprops.I; s <= sprops.I; s++)
+				for (int s = -100 * sprops.I; s <= 100 * sprops.I; s++)
 				{
 					Point pt((double)p, (double)q, (double)s);
 					auto getFoo = [=, this](const Point& point) -> double

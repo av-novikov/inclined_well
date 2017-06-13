@@ -11,9 +11,8 @@
       <rc x="1050" y="1050" z="-0.5" />
       <length value="1" />
       <alpha value="0" />
-      <rw value="0.1" />
+      <rw value="0.01" />
     </geometry>
     <sum_props M="10" N="10" L="100" I="1" xi_c="50000" />
   </well>
-  <fracture name="frac#1" type="VERT_FULL" />
 </task>

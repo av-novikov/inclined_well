@@ -14,7 +14,6 @@ public:
 	~InclinedSum();
 	
 	void prepare();
-	double getPres(const Point& r);
 	double get2D(int seg_idx);
 	double get3D(int seg_idx);
 };

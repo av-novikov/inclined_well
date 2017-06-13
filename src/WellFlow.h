@@ -23,6 +23,8 @@ protected:
 	std::vector<BaseSum*> summators;
 	MainProperties props;
 
+	double getPres(const int seg_idx);
+
 	// For linear system treating
 	int seg_num;
 		int matSize;
@@ -48,6 +50,7 @@ protected:
 	bool firstTime;
 
 	double pres_av, pres_dev;
+	double perf_length, perf_surf;
 public:
 	WellFlow(const std::string fileName);
 	~WellFlow();

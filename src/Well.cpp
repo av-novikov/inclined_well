@@ -25,10 +25,7 @@ Well::Well(const WellGeomProperties& _props, const WellType& _type, const string
 	{
 		tmp2 = props.r1 + (double)( i + 1 ) * (props.r2 - props.r1) / (double)( num );
 		tmp3 = (tmp1 + tmp2) / 2.0;		
-		if(type == WellType::FRAC)
-			tmp3.y += props.rw / 10.0; // cos(alpha);
-		else
-			tmp3.y += props.rw; // cos(alpha);
+		tmp3.y += props.rw; // cos(alpha);
 		tau1 = (double)(i) / (double)(num);
 		tau2 = (double)(i+1) / (double)(num);
 		segs.push_back( WellSegment(tmp1, tmp2, tmp3, tau1, tau2, well_idx, i) );
@@ -76,6 +73,7 @@ void Well::writeRates(const MainProperties* mprops)
 	double av2d = 0.0, av3d = 0.0;	
 	ofstream file;
 	file.open("rate.dat", ofstream::out);
+	double sum_rate = 0.0;
 	for(int i = 0; i < num; i++)
 	{
 		av2d += segs[i].pres2D;
@@ -86,10 +84,12 @@ void Well::writeRates(const MainProperties* mprops)
 			segs[i].pres * mprops->p_dim / (double)(BAR) <<
 			"\t" << segs[i].pres2D * mprops->p_dim / (double)(BAR) <<
 			"\t" << segs[i].pres3D * mprops->p_dim / (double)(BAR) << endl;
+		sum_rate += segs[i].rate * 86400.0 * mprops->x_dim * mprops->x_dim * mprops->x_dim / mprops->t_dim;
 	}
 	
 	av2d /= (double)(num);	av3d /= (double)(num);
 	
+	file << "Sum_rate = " << sum_rate << endl;
 	file << "Av. pressure = " << pres_av * mprops->p_dim / BAR << endl;
 	file << "Av. 2D = " << av2d * mprops->p_dim / BAR << endl;
 	file << "Av. 3D = " << av3d * mprops->p_dim / BAR << endl;

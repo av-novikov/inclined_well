@@ -6,13 +6,20 @@
     <permeability kx="20" kz="20" />
     <rate value="5" />
   </main>
-  <well name="well#1" type="slanted" K="10">
+  <well name="well#1" type="slanted" K="5">
     <geometry>
       <r1 x="1050" y="1050" z="0.0" />
+      <r2 x="1055" y="1050" z="-5.0" />
+      <rw value="0.1" />
+    </geometry>
+    <sum_props M="10" N="10" L="2" I="1" xi_c="50000" />
+  </well>
+  <well name="well#2" type="slanted" K="5">
+    <geometry>
+      <r1 x="1055" y="1050" z="-5.0" />
       <r2 x="1060" y="1050" z="-10.0" />
       <rw value="0.1" />
     </geometry>
-    <sum_props M="100" N="10" L="2" I="1" xi_c="500000" />
+    <sum_props M="10" N="10" L="2" I="1" xi_c="50000" />
   </well>
-  <fracture name="frac#1" type="VERT_FULL" />
 </task>

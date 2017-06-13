@@ -6,18 +6,18 @@
 class VerticalDirichlet : public BaseSum
 {
 protected:
-	double directSum();
-	double fourierSum();
+	void directSum();
+	void fourierSum();
 
 public:
 	VerticalDirichlet(const SummatorProperties& _sprops, const MainProperties* _props, const Well* _well);
 	~VerticalDirichlet();
 
 	double get2D(int seg_idx);
+	double get3D(int seg_idx);
 	void prepare();
 
-	double getPres(const Point& p);
-	double getAnalyticalPres() const;
+	double getAnalyticalPres(const int seg_idx) const;
 };
 
 #endif /* VERTICALDIRICHLET_H_ */

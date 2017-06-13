@@ -6,18 +6,14 @@ HorizontalLogDerivation::HorizontalLogDerivation(const SummatorProperties& _spro
 HorizontalLogDerivation::~HorizontalLogDerivation()
 {
 }
-double HorizontalLogDerivation::getPres(const Point& point)
-{
-	return 0.0;
-}
 void HorizontalLogDerivation::prepare()
 {
 	double bufx, bufy, lambda;
 
-	for (int arr_idx = 0; arr_idx < sprops.K * sprops.K; arr_idx++)
+	for (int arr_idx = 0; arr_idx < size; arr_idx++)
 	{
-		const WellSegment seg = well->segs[arr_idx % sprops.K];
-		const Point& r = well->segs[int((double)(arr_idx) / (double)(sprops.K))].r_bhp;
+		const WellSegment& seg = well->segs[arr_idx % sprops.K];
+		const Point& r = (*segs)[int((double)(arr_idx) / (double)(sprops.K))]->r_bhp;
 
 		F2d[arr_idx] = 0.0;
 
@@ -40,10 +36,10 @@ void HorizontalLogDerivation::prepare()
 		}
 	}
 
-	for (int arr_idx = 0; arr_idx < sprops.K * sprops.K; arr_idx++)
+	for (int arr_idx = 0; arr_idx < size; arr_idx++)
 	{
-		const WellSegment seg = well->segs[arr_idx % sprops.K];
-		const Point& r = well->segs[int((double)(arr_idx) / (double)(sprops.K))].r_bhp;
+		const WellSegment& seg = well->segs[arr_idx % sprops.K];
+		const Point& r = (*segs)[int((double)(arr_idx) / (double)(sprops.K))]->r_bhp;
 
 		F3d[arr_idx] = 0.0;
 
