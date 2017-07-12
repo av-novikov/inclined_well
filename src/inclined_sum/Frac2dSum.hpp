@@ -21,6 +21,8 @@ public:
 	double get3D(int seg_idx);
 	double get2D(int seg_idx);
 	void prepare();
+
+	double getPressure(const Point& r);
 };
 
 #endif /* FRAC2DSUM_HPP_ */

@@ -33,6 +33,8 @@ public:
 	virtual double get3D(int seg_idx);
 	double getPres(int seg_idx);
 	virtual double getAnalyticalPres() const;
+
+	virtual double getPressure(const Point& r);
 };
 
 #endif /* BASESUM_H_ */

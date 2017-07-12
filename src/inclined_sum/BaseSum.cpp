@@ -45,3 +45,7 @@ void BaseSum::setSegments(std::vector<WellSegment*>* _segs)
 {
 	segs = _segs;
 }
+double BaseSum::getPressure(const Point& r)
+{
+	return 0.0;
+}

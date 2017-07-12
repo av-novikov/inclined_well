@@ -154,7 +154,7 @@ void testHorizontalLogDerivative()
 }*/
 void testFrac2D()
 {
-	WellFlow solver("task/new.xml");
+	WellFlow solver("task/frac2d.xml");
 	double p_bhp;
 
 	auto t = measure_time(

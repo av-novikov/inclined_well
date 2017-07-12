@@ -13,6 +13,7 @@
 #include "src/Well.hpp"
 #include "src/Fracture.hpp"
 #include "src/inclined_sum/BaseSum.h"
+#include "src/inclined_sum/InsideFrac1D.hpp"
 
 class WellFlow
 {
@@ -21,9 +22,11 @@ protected:
 	std::vector<Fracture> fractures;
 	std::vector<WellSegment*> segs;
 	std::vector<BaseSum*> summators;
+	InsideFrac1d* insideSum;
 	MainProperties props;
 
 	double getPres(const int seg_idx);
+	double getPresInside(const int seg_idx);
 
 	// For linear system treating
 	int seg_num;
@@ -35,6 +38,7 @@ protected:
 		double* x;
 		double* a;
 		double** dpdq;
+		double** dpdq2;
 		int* ind_i;
 		int* ind_j;
 		paralution::LocalMatrix<double> A;
@@ -42,6 +46,7 @@ protected:
 		paralution::LocalVector<double> B;
 
 	void findRateDistribution();
+	void findRateDistributionInside();
 	void load(const std::string fileName);
 	void loadGeomProps(tinyxml2::XMLElement* xml_well, WellGeomProperties* geom_props);
 	void loadSlantedGeomProps(tinyxml2::XMLElement* xml_well, WellGeomProperties* geom_props);
