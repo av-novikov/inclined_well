@@ -52,6 +52,7 @@ class Well
 
 		void setRate(double _rate);
 		void setUniformRate();
+		void setGaussRate(const double sigma);
 		
 		std::vector<WellSegment> segs;
 		

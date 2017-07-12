@@ -1,7 +1,9 @@
+#define _USE_MATH_DEFINES
 #include "src/Well.hpp"
 
 #include <functional>
 #include <fstream>
+#include <cmath>
 
 using namespace std::placeholders;
 using std::for_each;
@@ -10,6 +12,7 @@ using std::cout;
 using std::endl;
 using std::ofstream;
 using std::string;
+using std::erf;
 
 const double MainProperties::porosity = 0.1;
 const double MainProperties::compressibility = 5.E-5;
@@ -45,6 +48,16 @@ void Well::setUniformRate()
 	{
 		seg.rate = seg.length / props.length * rate;
 	});
+}
+void Well::setGaussRate(const double sigma)
+{
+	const double A = rate / erf(props.length / sqrt(8.0) / sigma);
+	const double x_c = (segs[0].r1.x + segs[segs.size() - 1].r2.x ) / 2.0;
+	for (size_t i = 0; i < num; i++)
+	{
+		auto& seg = segs[i];
+		seg.rate = A / sigma / sqrt(2.0 * M_PI) * exp(-(seg.r_bhp.x - x_c) * (seg.r_bhp.x - x_c) / 2.0 / sigma / sigma) * seg.length;
+	}
 }
 void Well::printRates(const MainProperties* mprops) const
 {
