@@ -7,6 +7,7 @@ class InsideFrac1d : public BaseSum
 {
 protected:
 	double p1, p2;
+	int mid_idx;
 public:
 	InsideFrac1d(const SummatorProperties& _sprops, const MainProperties* _props, const Well* _well);
 	~InsideFrac1d();

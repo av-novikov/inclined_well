@@ -8,7 +8,16 @@ InsideFrac1d::~InsideFrac1d()
 }
 double InsideFrac1d::get2D(int seg_idx)
 {
-	const double length = well->getGeomProps()->length;
+	double sum = 0.0;
+	for (int k = mid_idx; k < mid_idx + seg_idx; k++)
+	{
+		const WellSegment& seg = well->segs[k];
+		sum += seg.rate;
+	}
+
+	return props->visc / well->getGeomProps()->rw / (10000.0 * props->kx) / props->sizes.z * (props->rate / 2.0 - sum);
+	
+	/*const double length = well->getGeomProps()->length;
 	double sum = 0.0;
 	for (int k = 0; k < sprops.K; k++)
 	{
@@ -17,7 +26,7 @@ double InsideFrac1d::get2D(int seg_idx)
 	}
 
 	return 2.0 * props->visc / 10000.0 / props->kx / props->sizes.z / 2.0 / well->getGeomProps()->rw / length * sum + 
-			p1 + (p2 - p1) * ((*segs)[seg_idx]->tau1 + (*segs)[seg_idx]->tau2) / 2.0;
+			p1 + (p2 - p1) * ((*segs)[seg_idx]->tau1 + (*segs)[seg_idx]->tau2) / 2.0;*/
 }
 double InsideFrac1d::get3D(int seg_idx)
 {
@@ -25,11 +34,12 @@ double InsideFrac1d::get3D(int seg_idx)
 }
 void InsideFrac1d::setBounds(double _p1, double _p2)
 {
-	p1 = _p1;		p2 = _p2;
+	//p1 = _p1;		p2 = _p2;
 }
 void InsideFrac1d::prepare()
 {
-	size = segs->size() * sprops.K;
+	mid_idx = sprops.K / 2;
+	/*size = segs->size() * sprops.K;
 	F2d = new double[size];		F3d = new double[size];
 	
 	double sum = 0.0;
@@ -68,5 +78,5 @@ void InsideFrac1d::prepare()
 				//break;
 			}
 		}
-	}
+	}*/
 }

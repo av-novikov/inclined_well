@@ -81,8 +81,12 @@ WellFlow::~WellFlow()
 		delete x;
 		delete a;
 		delete ind_i;
-		for (int i = 0; i < seg_num; i++)
-			delete dpdq[i];
+		if(insideSum == nullptr)
+			for (int i = 0; i < seg_num; i++)
+				delete dpdq[i];
+		else
+			for (int i = 0; i < seg_num / 2; i++)
+				delete dpdq[i];
 		delete dpdq;
 	}
 }
@@ -251,6 +255,8 @@ void WellFlow::load(const string fileName)
 
 	if (seg_num > 1)
 	{
+		if (insideSum == nullptr)
+		{
 			matSize = (seg_num - 1) * (seg_num - 1);
 			q = new double[seg_num];
 			dq = new double[seg_num];
@@ -267,18 +273,38 @@ void WellFlow::load(const string fileName)
 			}
 
 			dpdq = new double*[seg_num];
-			if (insideSum != nullptr)
-				dpdq2 = new double*[seg_num];
 			for (int i = 0; i < seg_num; i++)
-			{
 				dpdq[i] = new double[seg_num - 1];
-				if (insideSum != nullptr)
-					dpdq2[i] = new double[seg_num - 1];
-			}
 
 			//A.AllocateDENSE("A", props.K - 1, props.K - 1);
 			X.Allocate("X", seg_num - 1);
 			B.Allocate("B", seg_num - 1);
+		}
+		else
+		{
+			matSize = (seg_num / 2 - 1) * (seg_num / 2 - 1);
+			q = new double[seg_num / 2];
+			dq = new double[seg_num / 2];
+			b = new double[seg_num / 2 - 1];
+			x = new double[seg_num / 2 - 1];
+
+			a = new double[matSize];
+			ind_i = new int[matSize];
+			ind_j = new int[matSize];
+			for (int i = 0; i < matSize; i++)
+			{
+				ind_i[i] = i / (seg_num / 2 - 1);
+				ind_j[i] = i % (seg_num / 2 - 1);
+			}
+
+			dpdq = new double*[seg_num / 2];
+			for (int i = 0; i < seg_num / 2; i++)
+				dpdq[i] = new double[seg_num / 2 - 1];
+
+			//A.AllocateDENSE("A", props.K - 1, props.K - 1);
+			X.Allocate("X", seg_num / 2 - 1);
+			B.Allocate("B", seg_num / 2 - 1);
+		}
 	}
 }
 void WellFlow::loadGeomProps(tinyxml2::XMLElement* xml_well_props, WellGeomProperties* geom_props)
@@ -484,21 +510,22 @@ void WellFlow::findRateDistributionInside()
 	auto fill_dpdq = [&, this](double mult) {
 		double p1, p2, ratio;
 		double p11, p22;
-		ratio = mult * 0.001 / (double)(seg_num);
 
-		for (int i = 0; i < seg_num; i++)
+		int mid_seg = seg_num / 2;
+
+		ratio = mult * 0.001 / (double)(mid_seg);
+
+		for (int i = 0; i < mid_seg; i++)
 		{
-			for (int j = 1; j < seg_num; j++)
+			for (int j = 1; j < mid_seg; j++)
 			{
-				setRateDev(j, -ratio);	setRateDev(0, ratio);
-				p1 = getPres(i);
-				p11 = getPresInside(i);
+				setRateDev(mid_seg + j, -ratio);		setRateDev(mid_seg - j, -ratio);		setRateDev(mid_seg, 2.0 * ratio);
+				p1 = getPres(mid_seg + i);
 
-				setRateDev(j, 2.0 * ratio);	setRateDev(0, -2.0 * ratio);
-				p2 = getPres(i);
-				p22 = getPresInside(i);
+				setRateDev(mid_seg + j, 2.0 * ratio);	setRateDev(mid_seg - j, 2.0 * ratio);	setRateDev(mid_seg, -4.0 * ratio);
+				p2 = getPres(mid_seg + i);
 
-				setRateDev(j, -ratio);	setRateDev(0, ratio);
+				setRateDev(mid_seg + j, -ratio);		setRateDev(mid_seg - j, -ratio);		setRateDev(mid_seg, 2.0 * ratio);
 
 				dpdq[i][j - 1] = (p2 - p1) / (2.0 * ratio * props.rate);
 				dpdq2[i][j - 1] = (p22 - p11) / (2.0 * ratio * props.rate);
@@ -508,20 +535,20 @@ void WellFlow::findRateDistributionInside()
 	auto solve_sys = [this]() {
 		double s, p1, p2;
 
-		for (int i = 0; i < seg_num - 1; i++)
+		for (int i = 0; i < seg_num / 2 - 1; i++)
 		{
-			for (int j = 0; j < seg_num - 1; j++)
+			for (int j = 0; j < seg_num / 2 - 1; j++)
 			{
 				s = 0.0;
-				for (int k = 0; k < seg_num; k++)
+				for (int k = 0; k < seg_num / 2; k++)
 					s += (dpdq[k][j] - dpdq2[k][j]) * (dpdq[k][i] - dpdq2[k][i]);
 
-				a[i * (seg_num - 1) + j] = s;
+				a[i * (seg_num / 2 - 1) + j] = s;
 
 			}
 
 			s = 0.0;
-			for (int k = 0; k < seg_num; k++)
+			for (int k = 0; k < seg_num / 2; k++)
 			{
 				p1 = getPres(k);
 				p2 = getPresInside(k);
@@ -531,7 +558,7 @@ void WellFlow::findRateDistributionInside()
 		}
 
 		X.Zeros();
-		A.Assemble(ind_i, ind_j, a, (seg_num - 1) * (seg_num - 1), "A", seg_num - 1, seg_num - 1);
+		A.Assemble(ind_i, ind_j, a, (seg_num / 2 - 1) * (seg_num / 2 - 1), "A", seg_num / 2 - 1, seg_num / 2 - 1);
 		A.MoveToAccelerator();	X.MoveToAccelerator();	B.MoveToAccelerator();
 
 		ls.SetOperator(A);
@@ -545,7 +572,7 @@ void WellFlow::findRateDistributionInside()
 
 		s = 0.0;
 		double tmp;
-		for (int i = 0; i < seg_num - 1; i++)
+		for (int i = 0; i < seg_num / 2 - 1; i++)
 		{
 			tmp = X[i];
 			dq[i + 1] = tmp;
@@ -622,7 +649,7 @@ void WellFlow::calcPressure()
 	{
 		Point pt1({ segs[0]->r1.x - wells[0].getGeomProps()->rw, segs[0]->r1.y, segs[0]->r1.z });
 		Point pt2({ segs[segs.size()-1]->r2.x + wells[0].getGeomProps()->rw, segs[segs.size()-1]->r2.y, segs[segs.size() - 1]->r2.z });
-		insideSum->setBounds(summators[0]->getPressure(pt1) , summators[0]->getPressure(pt2));
+		//insideSum->setBounds(summators[0]->getPressure(pt1) , summators[0]->getPressure(pt2));
 		inside2d = new double[seg_num];
 		for (size_t k = 0; k < seg_num; k++)
 			inside2d[k] = insideSum->get2D(k);
@@ -645,9 +672,10 @@ void WellFlow::calcPressure()
 			} 
 			else
 			{
-				for (int i = 0; i < K; i++)
-					well->pres_dev += (well->segs[i].pres - inside2d[i]) *
-						(well->segs[i].pres - inside2d[i]);
+				for (int i = 1; i < K; i++)
+					well->pres_dev += ((well->segs[i].pres - well->segs[i - 1].pres) / well->segs[i].length - inside2d[i]) *
+										((well->segs[i].pres - well->segs[i - 1].pres) / well->segs[i].length - inside2d[i]);
+						
 			}
 		}
 		well->pres_dev /= 2.0;
@@ -664,10 +692,10 @@ void WellFlow::calcPressure()
 		}
 		else
 		{
-			for (int seg_idx = 0; seg_idx < seg_num; seg_idx++)
+			for (int seg_idx = 1; seg_idx < seg_num; seg_idx++)
 			{
-				pres_dev += (segs[seg_idx]->pres - inside2d[seg_idx]) *
-					(segs[seg_idx]->pres - inside2d[seg_idx]);
+				pres_dev += ((segs[seg_idx]->pres - segs[seg_idx - 1]->pres) / segs[seg_idx]->length - inside2d[seg_idx]) *
+							((segs[seg_idx]->pres - segs[seg_idx - 1]->pres) / segs[seg_idx]->length - inside2d[seg_idx]);
 			}
 		}
 		pres_dev /= 2.0;
@@ -685,6 +713,7 @@ double WellFlow::getP_bhp()
 		// Body of function
 		for (auto& well : wells)
 			well.setUniformRate();
+			//well.setGaussRate(well.getGeomProps()->length / 4.0);
 		firstTime = false;
 		if (insideSum == nullptr)
 			findRateDistribution();
@@ -707,8 +736,8 @@ double WellFlow::getPres(const int seg_idx)
 double WellFlow::getPresInside(const int seg_idx)
 {
 	assert(insideSum != nullptr);
-	Point pt1({ segs[0]->r1.x - wells[0].getGeomProps()->rw, segs[0]->r1.y, segs[0]->r1.z });
-	Point pt2({ segs[segs.size() - 1]->r2.x + wells[0].getGeomProps()->rw, segs[segs.size() - 1]->r2.y, segs[segs.size() - 1]->r2.z });
-	insideSum->setBounds(summators[0]->getPressure(pt1), summators[0]->getPressure(pt2));
+	//Point pt1({ segs[0]->r1.x - wells[0].getGeomProps()->rw, segs[0]->r1.y, segs[0]->r1.z });
+	//Point pt2({ segs[segs.size() - 1]->r2.x + wells[0].getGeomProps()->rw, segs[segs.size() - 1]->r2.y, segs[segs.size() - 1]->r2.z });
+	//insideSum->setBounds(summators[0]->getPressure(pt1), summators[0]->getPressure(pt2));
 	return insideSum->getPres(seg_idx);
 }
