@@ -15,7 +15,7 @@ double InsideFrac1d::get2D(int seg_idx)
 		sum += seg.rate;
 	}
 
-	return props->visc / well->getGeomProps()->rw / (10000.0 * props->kx) / props->sizes.z * (props->rate / 2.0 - sum);
+	return props->visc / well->getGeomProps()->rw / props->kf / props->sizes.z * (props->rate / 2.0 - sum);
 	
 	/*const double length = well->getGeomProps()->length;
 	double sum = 0.0;

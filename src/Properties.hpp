@@ -10,7 +10,7 @@ struct MainProperties
 	double x_dim, t_dim, p_dim;
 	// Other params
 	double visc;
-	double kx, kz;
+	double kx, kz, kf;
 	double perm;
 	double rate;
 

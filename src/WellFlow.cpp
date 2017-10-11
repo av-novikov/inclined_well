@@ -245,6 +245,8 @@ void WellFlow::load(const string fileName)
 			geom_props.r1.y -= geom_props.length * sin(geom_props.alpha) / 2.0;
 			geom_props.r2.y += geom_props.length * sin(geom_props.alpha) / 2.0;
 
+			props.kf = 0.986923 * 1.E-15 * stod(xml_well->Attribute("kf")) / props.x_dim / props.x_dim;
+
 			perf_length += geom_props.length;
 			wells.push_back(Well(geom_props, WellType::FRAC, w_name, seg_idx++));
 			summators.push_back(static_cast<BaseSum*>(new Frac2dSum(sum_props, &props, &wells[wells.size() - 1])));
@@ -494,12 +496,12 @@ void WellFlow::findRateDistributionInside()
 	// Fills the vector of rates
 	auto fill_q = [this]()
 	{
-		for (int i = 0; i < seg_num; i++)
-			q[i] = segs[i]->rate;
+		for (int i = 0; i < seg_num / 2; i++)
+			q[i] = segs[seg_num / 2 + i]->rate;
 	};
 	// Fills the vector of rate's deviations with zeros
 	auto fill_dq = [this]() {
-		for (int i = 0; i < seg_num; i++)
+		for (int i = 0; i < seg_num / 2; i++)
 			dq[i] = 0.0;
 	};
 	// Set rate deviation
@@ -509,52 +511,63 @@ void WellFlow::findRateDistributionInside()
 	// Fills dpdq matrix
 	auto fill_dpdq = [&, this](double mult) {
 		double p1, p2, ratio;
-		double p11, p22;
 
-		int mid_seg = seg_num / 2;
-
-		ratio = mult * 0.001 / (double)(mid_seg);
+		const int mid_seg = seg_num / 2;
+		ratio = mult * 0.0001 / (double)(mid_seg);
 
 		for (int i = 0; i < mid_seg; i++)
 		{
 			for (int j = 1; j < mid_seg; j++)
 			{
-				setRateDev(mid_seg + j, -ratio);		setRateDev(mid_seg - j, -ratio);		setRateDev(mid_seg, 2.0 * ratio);
+				setRateDev(mid_seg + j, -ratio);		setRateDev(mid_seg - j, -ratio);
+				setRateDev(0, ratio);					setRateDev(seg_num - 1, ratio);
 				p1 = getPres(mid_seg + i);
 
-				setRateDev(mid_seg + j, 2.0 * ratio);	setRateDev(mid_seg - j, 2.0 * ratio);	setRateDev(mid_seg, -4.0 * ratio);
+				setRateDev(mid_seg + j, 2.0 * ratio);	setRateDev(mid_seg - j, 2.0 * ratio);	
+				setRateDev(0, -2.0 * ratio);			setRateDev(seg_num - 1, -2.0 * ratio);
 				p2 = getPres(mid_seg + i);
 
-				setRateDev(mid_seg + j, -ratio);		setRateDev(mid_seg - j, -ratio);		setRateDev(mid_seg, 2.0 * ratio);
+				setRateDev(mid_seg + j, -ratio);		setRateDev(mid_seg - j, -ratio);
+				setRateDev(0, ratio);					setRateDev(seg_num - 1, ratio);
 
 				dpdq[i][j - 1] = (p2 - p1) / (2.0 * ratio * props.rate);
-				dpdq2[i][j - 1] = (p22 - p11) / (2.0 * ratio * props.rate);
 			}
 		}
 	};
-	auto solve_sys = [this]() {
+	auto solve_sys = [this]() 
+	{
 		double s, p1, p2;
+		double tmp1;
 
+		const int mid_seg = seg_num / 2;
+		const auto& gprops = wells[0].getGeomProps();
 		for (int i = 0; i < seg_num / 2 - 1; i++)
 		{
+			tmp1 = 0.0;
+			for (int k = 1; k < seg_num / 2; k++)
+				tmp1 += (dpdq[k][i] - dpdq[k - 1][i]) / segs[mid_seg]->length;
+			tmp1 -= props.visc / props.kf / gprops->rw / props.sizes.z * (seg_num / 2 - i - 1);
+
 			for (int j = 0; j < seg_num / 2 - 1; j++)
 			{
 				s = 0.0;
-				for (int k = 0; k < seg_num / 2; k++)
-					s += (dpdq[k][j] - dpdq2[k][j]) * (dpdq[k][i] - dpdq2[k][i]);
+				for (int k = 1; k < seg_num / 2; k++)
+					s += (dpdq[k][j] - dpdq[k - 1][j]) / segs[mid_seg]->length;
 
-				a[i * (seg_num / 2 - 1) + j] = s;
+				s -= props.visc / props.kf / gprops->rw / props.sizes.z * (seg_num / 2 - j - 1);
 
+				a[i * (seg_num / 2 - 1) + j] = tmp1 * s;
 			}
 
 			s = 0.0;
-			for (int k = 0; k < seg_num / 2; k++)
+			for (int k = 1; k < seg_num / 2; k++)
 			{
-				p1 = getPres(k);
-				p2 = getPresInside(k);
-				s += (p1 - p2) * (dpdq[k][i] - dpdq2[k][i]);
+				p1 = getPres(mid_seg + k);
+				p2 = getPres(mid_seg + k - 1);
+
+				s += ((p1 - p2) / segs[0]->length + getPresInside(k));
 			}
-			B[i] = -s;
+			B[i] = -tmp1 * s;
 		}
 
 		X.Zeros();
@@ -575,10 +588,10 @@ void WellFlow::findRateDistributionInside()
 		for (int i = 0; i < seg_num / 2 - 1; i++)
 		{
 			tmp = X[i];
-			dq[i + 1] = tmp;
+			dq[i] = tmp;
 			s += tmp;
 		}
-		dq[0] = -s;
+		dq[seg_num / 2 - 1] = -s;
 	};
 	// Finds dq
 	auto solve_dq = [&, this](double mult) {
@@ -605,11 +618,10 @@ void WellFlow::findRateDistributionInside()
 		{
 			solve_dq(mult);
 
-			double tmp;
-			for (int i = 0; i < seg_num; i++)
+			for (int i = 0; i < seg_num / 2; i++)
 			{
-				tmp = q[i] + mult * dq[i];
-				segs[i]->rate = q[i] = tmp;
+				q[i] += mult * dq[i];
+				segs[seg_num / 2 + i]->rate = segs[seg_num / 2 - i - 1]->rate = q[i];
 			}
 
 			calcPressure();
@@ -650,10 +662,10 @@ void WellFlow::calcPressure()
 		Point pt1({ segs[0]->r1.x - wells[0].getGeomProps()->rw, segs[0]->r1.y, segs[0]->r1.z });
 		Point pt2({ segs[segs.size()-1]->r2.x + wells[0].getGeomProps()->rw, segs[segs.size()-1]->r2.y, segs[segs.size() - 1]->r2.z });
 		//insideSum->setBounds(summators[0]->getPressure(pt1) , summators[0]->getPressure(pt2));
-		inside2d = new double[seg_num];
-		for (size_t k = 0; k < seg_num; k++)
+		inside2d = new double[seg_num / 2];
+		for (size_t k = 0; k < seg_num / 2; k++)
 			inside2d[k] = insideSum->get2D(k);
-		for (int i = 0; i < seg_num; i++)
+		for (int i = 0; i < seg_num / 2; i++)
 			std::cout << inside2d[i] << std::endl;
 	}
 
@@ -672,7 +684,7 @@ void WellFlow::calcPressure()
 			} 
 			else
 			{
-				for (int i = 1; i < K; i++)
+				for (int i = 1; i < K / 2; i++)
 					well->pres_dev += ((well->segs[i].pres - well->segs[i - 1].pres) / well->segs[i].length - inside2d[i]) *
 										((well->segs[i].pres - well->segs[i - 1].pres) / well->segs[i].length - inside2d[i]);
 						
@@ -692,11 +704,12 @@ void WellFlow::calcPressure()
 		}
 		else
 		{
-			for (int seg_idx = 1; seg_idx < seg_num; seg_idx++)
+			for (int seg_idx = 1; seg_idx < seg_num / 2; seg_idx++)
 			{
 				pres_dev += ((segs[seg_idx]->pres - segs[seg_idx - 1]->pres) / segs[seg_idx]->length - inside2d[seg_idx]) *
 							((segs[seg_idx]->pres - segs[seg_idx - 1]->pres) / segs[seg_idx]->length - inside2d[seg_idx]);
 			}
+			delete inside2d;
 		}
 		pres_dev /= 2.0;
 	}

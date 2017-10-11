@@ -6,7 +6,7 @@
     <permeability kx="20" kz="20" />
     <rate value="50" />
   </main>
-  <well name="frac#1" type="frac2d_inside" K="20">
+  <well name="frac#1" type="frac2d_inside" K="20" kf="100000">
     <geometry>
       <rc x="1050" y="1050" z="-5" />
       <length value="200" />
