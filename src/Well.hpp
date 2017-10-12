@@ -53,6 +53,8 @@ class Well
 		void setRate(double _rate);
 		void setUniformRate();
 		void setGaussRate(const double sigma);
+		void setParabolicRate(const double ratio);
+		void setParabolicAllRate(const double ratio);
 		
 		std::vector<WellSegment> segs;
 		

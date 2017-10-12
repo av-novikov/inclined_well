@@ -1,18 +1,18 @@
 <task>
   <main>
-    <dimensions x_dim="2100" t_dim="3600" p_dim="100000" />
+    <dimensions x_dim="100" t_dim="1000000" p_dim="1000000" />
     <sizes sx="2100" sy="2100" sz="10" />
     <viscosity value="1" />
-    <permeability kx="20" kz="20" />
+    <permeability kx="10" kz="10" />
     <rate value="50" />
   </main>
   <well name="frac#1" type="frac2d_inside" K="20" kf="100000">
     <geometry>
       <rc x="1050" y="1050" z="-5" />
-      <length value="200" />
+      <length value="100" />
       <alpha value="0" />
       <rw value="0.01" />
     </geometry>
-    <sum_props M="100" N="10" L="100" I="1" xi_c="50000" />
+    <sum_props M="75" N="10" L="100" I="1" xi_c="50000" />
   </well>
 </task>
