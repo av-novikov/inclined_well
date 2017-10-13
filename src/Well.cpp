@@ -53,10 +53,16 @@ void Well::setGaussRate(const double sigma)
 {
 	const double A = rate / erf(props.length / sqrt(8.0) / sigma);
 	const double x_c = (segs[0].r1.x + segs[segs.size() - 1].r2.x ) / 2.0;
+
+	double sum = 0.0;
 	for (size_t i = 0; i < num; i++)
 	{
 		auto& seg = segs[i];
-		seg.rate = A / sigma / sqrt(2.0 * M_PI) * exp(-(seg.r_bhp.x - x_c) * (seg.r_bhp.x - x_c) / 2.0 / sigma / sigma) * seg.length;
+		if (i != num / 2 - 1)
+			seg.rate = A / sigma / sqrt(2.0 * M_PI) * exp(-(seg.r_bhp.x - x_c) * (seg.r_bhp.x - x_c) / 2.0 / sigma / sigma) * seg.length;
+		else
+			seg.rate = rate / 2.0 - sum;
+		sum += seg.rate;
 	}
 }
 void Well::setParabolicRate(const double ratio)
@@ -65,11 +71,17 @@ void Well::setParabolicRate(const double ratio)
 	const double a = 6.0 * rate / xf / xf / xf / (1 + ratio);
 	const double b = ratio / (1.0 + ratio) * rate / xf / 2.0;
 	const double xc = (segs[0].r1.x + segs[segs.size() - 1].r2.x) / 2.0;
+
+	double sum = 0.0;
 	for (int i = 0; i < num / 2; i++)
 	{
 		auto& seg1 = segs[num / 2 + i];
 		auto& seg2 = segs[num / 2 - i - 1];
-		seg1.rate = seg2.rate = (a * (seg1.r_bhp.x - xc - xf / 2.0) * (seg1.r_bhp.x - xc - xf / 2.0) + b) * seg1.length;
+		if (i != num / 2 - 1)
+			seg1.rate = seg2.rate = (a * (seg1.r_bhp.x - xc - xf / 2.0) * (seg1.r_bhp.x - xc - xf / 2.0) + b) * seg1.length;
+		else
+			seg1.rate = seg2.rate = rate / 2.0 - sum;
+		sum += seg1.rate;			
 	}
 }
 void Well::setParabolicAllRate(const double ratio)
@@ -78,11 +90,17 @@ void Well::setParabolicAllRate(const double ratio)
 	const double a = 3.0 * rate / xf / xf / xf / (1 + ratio) / 2.0;
 	const double b = ratio / (1.0 + ratio) * rate / xf / 2.0;
 	const double xc = (segs[0].r1.x + segs[segs.size() - 1].r2.x) / 2.0;
+	
+	double sum = 0.0;
 	for (int i = 0; i < num / 2; i++)
 	{
 		auto& seg1 = segs[num / 2 + i];
 		auto& seg2 = segs[num / 2 - i - 1];
-		seg1.rate = seg2.rate = (a * (seg1.r_bhp.x - xc) * (seg1.r_bhp.x - xc) + b) * seg1.length;
+		if (i != num / 2 - 1)
+			seg1.rate = seg2.rate = (a * (seg1.r_bhp.x - xc) * (seg1.r_bhp.x - xc) + b) * seg1.length;
+		else
+			seg1.rate = seg2.rate = rate / 2.0 - sum;
+		sum += seg1.rate;
 	}
 }
 void Well::printRates(const MainProperties* mprops) const
