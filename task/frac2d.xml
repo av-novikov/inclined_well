@@ -1,6 +1,6 @@
 <task>
   <main>
-    <dimensions x_dim="100" t_dim="1000000" p_dim="1000000" />
+    <dimensions x_dim="50" t_dim="1000000" p_dim="1000000" />
     <sizes sx="2100" sy="2100" sz="10" />
     <viscosity value="1" />
     <permeability kx="10" kz="10" />

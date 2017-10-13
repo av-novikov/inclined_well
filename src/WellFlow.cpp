@@ -517,20 +517,20 @@ void WellFlow::findRateDistributionInside()
 
 		for (int i = 0; i < mid_seg; i++)
 		{
-			for (int j = 1; j < mid_seg; j++)
+			for (int j = 0; j < mid_seg - 1; j++)
 			{
-				setRateDev(mid_seg + j, -ratio);		setRateDev(mid_seg - j, -ratio);
+				setRateDev(mid_seg + j, -ratio);		setRateDev(mid_seg - j - 1, -ratio);
 				setRateDev(0, ratio);					setRateDev(seg_num - 1, ratio);
 				p1 = getPres(mid_seg + i);
 
-				setRateDev(mid_seg + j, 2.0 * ratio);	setRateDev(mid_seg - j, 2.0 * ratio);	
+				setRateDev(mid_seg + j, 2.0 * ratio);	setRateDev(mid_seg - j - 1, 2.0 * ratio);	
 				setRateDev(0, -2.0 * ratio);			setRateDev(seg_num - 1, -2.0 * ratio);
 				p2 = getPres(mid_seg + i);
 
-				setRateDev(mid_seg + j, -ratio);		setRateDev(mid_seg - j, -ratio);
+				setRateDev(mid_seg + j, -ratio);		setRateDev(mid_seg - j - 1, -ratio);
 				setRateDev(0, ratio);					setRateDev(seg_num - 1, ratio);
 
-				dpdq[i][j - 1] = (p2 - p1) / (2.0 * ratio * props.rate);
+				dpdq[i][j] = (p2 - p1) / (2.0 * ratio * props.rate);
 			}
 		}
 	};
