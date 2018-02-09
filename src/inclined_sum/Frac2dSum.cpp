@@ -11,7 +11,7 @@ Frac2dSum::Frac2dSum(const SummatorProperties& _sprops, const MainProperties* _p
 Frac2dSum::~Frac2dSum()
 {
 }
-double Frac2dSum::get2D(int seg_idx)
+double Frac2dSum::get2D(int seg_idx) const
 {
 	double sum = 0.0;
 	for (int k = 0; k < sprops.K; k++)
@@ -23,7 +23,7 @@ double Frac2dSum::get2D(int seg_idx)
 	sum *= (4.0 * props->visc / props->sizes.x / props->sizes.y / props->sizes.z / props->kx / cos(gprops->alpha));
 	return sum;
 }
-double Frac2dSum::get3D(int seg_idx)
+double Frac2dSum::get3D(int seg_idx) const
 {
 	double sum = 0.0;
 

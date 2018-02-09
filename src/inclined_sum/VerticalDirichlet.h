@@ -13,10 +13,11 @@ public:
 	VerticalDirichlet(const SummatorProperties& _sprops, const MainProperties* _props, const Well* _well);
 	~VerticalDirichlet();
 
-	double get2D(int seg_idx);
-	double get3D(int seg_idx);
+	double get2D(int seg_idx) const;
+	double get3D(int seg_idx) const;
 	void prepare();
 
+	double getPressure(const Point& point);
 	double getAnalyticalPres(const int seg_idx) const;
 };
 

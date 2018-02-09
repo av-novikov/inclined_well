@@ -13,15 +13,15 @@ BaseSum::~BaseSum()
 	delete[] F2d;
 	delete[] F3d;
 }
-double BaseSum::getPres(int seg_idx)
+double BaseSum::getPres(int seg_idx) const 
 {
 	return get2D(seg_idx) + get3D(seg_idx);
 }
-double BaseSum::get2D(int seg_idx)
+double BaseSum::get2D(int seg_idx) const 
 {
 	return 0.0;
 }
-double BaseSum::get3D(int seg_idx)
+double BaseSum::get3D(int seg_idx) const
 {
 	return 0.0;
 }

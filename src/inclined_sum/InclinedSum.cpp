@@ -9,7 +9,7 @@ InclinedSum::InclinedSum(const SummatorProperties& _sprops, const MainProperties
 InclinedSum::~InclinedSum()
 {	
 }
-double InclinedSum::get2D(int seg_idx)
+double InclinedSum::get2D(int seg_idx) const
 {
 	double sum = 0.0;
 	
@@ -23,7 +23,7 @@ double InclinedSum::get2D(int seg_idx)
 				
 	return sum;	
 }
-double InclinedSum::get3D(int seg_idx)
+double InclinedSum::get3D(int seg_idx) const
 {
 	double sum = 0.0;
 

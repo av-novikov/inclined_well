@@ -66,7 +66,7 @@ void HorizontalLogDerivation::prepare()
 		}
 	}
 }
-double HorizontalLogDerivation::get2D(int seg_idx)
+double HorizontalLogDerivation::get2D(int seg_idx) const
 {
 	double sum = 0.0;
 
@@ -80,7 +80,7 @@ double HorizontalLogDerivation::get2D(int seg_idx)
 
 	return sum;
 }
-double HorizontalLogDerivation::get3D(int seg_idx)
+double HorizontalLogDerivation::get3D(int seg_idx) const
 {
 	double sum = 0.0;
 

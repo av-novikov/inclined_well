@@ -26,7 +26,7 @@ struct Point
 	};
 	Point& operator=(const Point& rhs)
 	{
-		x = rhs.x, y = rhs.y, z = rhs.z;
+		x = rhs.x; y = rhs.y; z = rhs.z;
 		return *this;
 	};
 	Point& operator/=(const double k)

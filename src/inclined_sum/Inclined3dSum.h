@@ -19,9 +19,9 @@ public:
 	~Inclined3dSum();
 
 	void prepare();
-	double getPres(const Point& point);
-	double get2D(int seg_idx);
-	double get3D(int seg_idx);
+	double getPressure(const Point& point);
+	double get2D(int seg_idx) const;
+	double get3D(int seg_idx) const;
 };
 
 #endif /* INCLINED3DSUM_H_ */

@@ -13,16 +13,16 @@ VerticalDirichlet::~VerticalDirichlet()
 }
 void VerticalDirichlet::prepare()
 {
-	size = segs->size() * sprops.K;
+	size = segs->size();
 	F2d = new double[size];		F3d = new double[size];
 	directSum(); 
 	fourierSum();
 }
-double VerticalDirichlet::get2D(int seg_idx)
+double VerticalDirichlet::get2D(int seg_idx) const
 {
 	return F2d[seg_idx];
 }
-double VerticalDirichlet::get3D(int seg_idx)
+double VerticalDirichlet::get3D(int seg_idx) const
 {
 	return F3d[seg_idx];
 }
@@ -38,13 +38,15 @@ void VerticalDirichlet::directSum()
 		F2d[arr_idx] = 0.0;
 		for (int m = 1; m < sprops.M; m++)
 		{
-			buf1 = sin(M_PI * (double)(m)* gprops->rc.x / props->sizes.x) * sin(M_PI * (double)(m)* gprops->rc.x / props->sizes.x);
+			buf1 = sin(M_PI * (double)(m)* r.x / props->sizes.x) * sin(M_PI * (double)(m)* gprops->rc.x / props->sizes.x);
 			for (int n = 1; n < sprops.M; n++)
 			{
 				buf2 = M_PI * M_PI * ((double)(m * m) / props->sizes.x / props->sizes.x + (double)(n * n) / props->sizes.y / props->sizes.y);
 
 				F2d[arr_idx] += exp(-buf2 * sprops.xi_c) * buf1 / buf2 *
 					sin(M_PI * (double)(n)* r.y / props->sizes.y) * sin(M_PI * (double)(n)* gprops->rc.y / props->sizes.y);
+				if (buf2 * sprops.xi_c > 100.0)
+					break;
 			}
 		}
 		F2d[arr_idx] *= 4.0 * props->visc * seg.rate / props->sizes.x / props->sizes.y / props->sizes.z / props->kx;
@@ -97,4 +99,53 @@ double VerticalDirichlet::getAnalyticalPres(const int seg_idx) const
 				exp(-2.0 * M_PI * props->sizes.y / props->sizes.x * (2.0 - (r.y + gprops->rc.y) / props->sizes.y))) /
 			((1.0 - 2.0 * exp(-M_PI * props->sizes.y / props->sizes.x * (2.0 - (r.y + gprops->rc.y) / props->sizes.y)) * cos(M_PI * (r.x + gprops->rc.x) / props->sizes.x) +
 				exp(-2.0 * M_PI * props->sizes.y / props->sizes.x * (2.0 - (r.y + gprops->rc.y) / props->sizes.y))))));
+}
+double VerticalDirichlet::getPressure(const Point& point)
+{
+	double sum = 0.0;
+	double buf1, buf2, F1, F2;
+	double buf11, buf12, buf21, buf22;
+	const WellSegment& seg = well->segs[0];
+	const Point& r = point;
+
+	double sum1 = 0.0, sum2 = 0.0;
+	for (int arr_idx = 0; arr_idx < size; arr_idx++)
+	{
+
+		sum1 = 0.0;
+		for (int m = 1; m < sprops.M; m++)
+		{
+			buf1 = sin(M_PI * (double)(m)* r.x / props->sizes.x) * sin(M_PI * (double)(m)* gprops->rc.x / props->sizes.x);
+			for (int n = 1; n < sprops.M; n++)
+			{
+				buf2 = M_PI * M_PI * ((double)(m * m) / props->sizes.x / props->sizes.x + (double)(n * n) / props->sizes.y / props->sizes.y);
+
+				sum1 += exp(-buf2 * sprops.xi_c) * buf1 / buf2 *
+					sin(M_PI * (double)(n)* r.y / props->sizes.y) * sin(M_PI * (double)(n)* gprops->rc.y / props->sizes.y);
+				if (buf2 * sprops.xi_c > 100.0)
+					break;
+			}
+		}
+		sum1 *= 4.0 * props->visc * seg.rate / props->sizes.x / props->sizes.y / props->sizes.z / props->kx;
+	}
+	for (int arr_idx = 0; arr_idx < size; arr_idx++)
+	{
+		sum2 = 0.0;
+		for (int p = -sprops.I; p < sprops.I; p++)
+		{
+			for (int q = -sprops.I; q < sprops.I; q++)
+			{
+				buf11 = (r.x - gprops->rc.x + 2.0 * p * props->sizes.x) / 2.0;
+				buf12 = (r.x + gprops->rc.x + 2.0 * p * props->sizes.x) / 2.0;
+				buf21 = (r.y - gprops->rc.y + 2.0 * q * props->sizes.y) / 2.0;
+				buf22 = (r.y + gprops->rc.y + 2.0 * q * props->sizes.y) / 2.0;
+
+				sum2 += expint(1, (buf11 * buf11 + buf21 * buf21) / sprops.xi_c) - expint(1, (buf11 * buf11 + buf22 * buf22) / sprops.xi_c) -
+					expint(1, (buf12 * buf12 + buf21 * buf21) / sprops.xi_c) + expint(1, (buf12 * buf12 + buf22 * buf22) / sprops.xi_c);
+			}
+		}
+		sum2 *= props->visc * seg.rate / props->sizes.z / props->kx / 4.0 / M_PI;
+	}
+
+	return sum1 + sum2;
 }

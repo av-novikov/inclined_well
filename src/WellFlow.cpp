@@ -149,7 +149,7 @@ void WellFlow::load(const string fileName)
 
 			perf_length += geom_props.length;
 			wells.push_back(Well(geom_props, WellType::VERTICAL, w_name, seg_idx++));
-			summators.push_back(static_cast<BaseSum*>(new VerticalDirichlet(sum_props, &props, &wells[wells.size()-1])));
+			summators.push_back((new VerticalDirichlet(sum_props, &props, &wells[wells.size()-1])));
 		}
 		else if (w_type == "vertical_neumann")
 		{
@@ -731,9 +731,9 @@ double WellFlow::getP_bhp()
 	{
 		// Body of function
 		for (auto& well : wells)
-			well.setParabolicRate(2.11);
+			well.setUniformRate();
+			//well.setParabolicRate(2.11);
 			//well.setGaussRate(well.getGeomProps()->length / 5.75);
-			//well.setUniformRate();
 
 		firstTime = false;
 		if (insideSum == nullptr)

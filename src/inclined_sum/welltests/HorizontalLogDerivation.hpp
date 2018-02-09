@@ -12,8 +12,8 @@ public:
 	~HorizontalLogDerivation();
 
 	void prepare();
-	double get2D(int seg_idx);
-	double get3D(int seg_idx);
+	double get2D(int seg_idx) const;
+	double get3D(int seg_idx) const;
 	double getLogDerivative();
 
 	void setTime(const double _time);
